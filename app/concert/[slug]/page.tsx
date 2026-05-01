@@ -1,0 +1,219 @@
+import { createClient } from '@supabase/supabase-js'
+import { notFound } from 'next/navigation'
+import { Concert } from '@/types'
+import Link from 'next/link'
+
+export const dynamic = 'force-dynamic'
+
+const cityNames: Record<string, string> = {
+  NYC: 'New York City',
+  LA: 'Los Angeles',
+  SF: 'San Francisco',
+  CHI: 'Chicago',
+  AUS: 'Austin',
+  SEA: 'Seattle',
+  DC: 'Washington DC',
+  BOS: 'Boston',
+  DEN: 'Denver',
+  PDX: 'Portland',
+}
+
+function formatDate(dateStr: string): string {
+  const date = new Date(dateStr + 'T00:00:00')
+  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+}
+
+function formatTime(time: string): string {
+  const [h, m] = time.split(':').map(Number)
+  const ampm = h >= 12 ? 'PM' : 'AM'
+  const hour = h % 12 || 12
+  return `${hour}:${m.toString().padStart(2, '0')} ${ampm}`
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+  const { slug } = await params
+  const { data } = await supabase.from('concerts').select('*').eq('slug', slug).single()
+  if (!data) return { title: 'Concert Not Found' }
+
+  const city = cityNames[data.city] ?? data.city
+  return {
+    title: `${data.artist_name} — Free Concert in ${city} | Free Live Music`,
+    description: `${data.artist_name} performs free at ${data.venue} in ${data.neighborhood}, ${city} on ${formatDate(data.date)}. Free admission.`,
+    openGraph: {
+      title: `${data.artist_name} — Free Concert in ${city}`,
+      description: `Free show at ${data.venue} on ${formatDate(data.date)}`,
+      url: `https://freelivemusic.co/concert/${(await params).slug}`,
+    },
+  }
+}
+
+export default async function ConcertPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+  const { data: concert } = await supabase
+    .from('concerts')
+    .select('*')
+    .eq('slug', slug)
+    .single()
+
+  if (!concert) notFound()
+
+  const city = cityNames[concert.city] ?? concert.city
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: concert.artist_name,
+    startDate: concert.time ? `${concert.date}T${concert.time}:00` : concert.date,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: {
+      '@type': 'Place',
+      name: concert.venue,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: city,
+      },
+    },
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+      url: concert.source_url ?? `https://freelivemusic.co/concert/${slug}`,
+    },
+    organizer: {
+      '@type': 'Organization',
+      name: concert.source_name ?? 'Free Live Music',
+      url: concert.source_url ?? 'https://freelivemusic.co',
+    },
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      {/* Header */}
+      <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-10">
+        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+            Back to all shows
+          </Link>
+        </div>
+      </header>
+
+      <main className="max-w-3xl mx-auto px-4 py-10">
+        {/* City + Free badge */}
+        <div className="flex items-center gap-3 mb-4">
+          <span className="text-sm text-slate-400">{city}</span>
+          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            Free Admission
+          </span>
+          {concert.admission_type === 'Free RSVP' && (
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              RSVP Required
+            </span>
+          )}
+        </div>
+
+        {/* Artist name */}
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-6 bg-gradient-to-r from-violet-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
+          {concert.artist_name}
+        </h1>
+
+        {/* Details card */}
+        <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 flex flex-col gap-5 mb-8">
+          {/* Date & Time */}
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center shrink-0">
+              <svg className="w-5 h-5 text-violet-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 9v7.5" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm text-slate-400 mb-0.5">Date & Time</p>
+              <p className="font-semibold text-white">{formatDate(concert.date)}</p>
+              {concert.time && <p className="text-slate-300 text-sm">{formatTime(concert.time)}</p>}
+            </div>
+          </div>
+
+          {/* Venue */}
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-xl bg-pink-500/20 flex items-center justify-center shrink-0">
+              <svg className="w-5 h-5 text-pink-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm text-slate-400 mb-0.5">Venue</p>
+              <p className="font-semibold text-white">{concert.venue}</p>
+              <p className="text-slate-300 text-sm">{concert.neighborhood} · {city}</p>
+            </div>
+          </div>
+
+          {/* Genre */}
+          {concert.genre && (
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-orange-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66a2.25 2.25 0 0 0 1.632-2.163Zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 0 1-.99-3.467l2.31-.66A2.25 2.25 0 0 0 9 15.553Z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm text-slate-400 mb-0.5">Genre</p>
+                <p className="font-semibold text-white">{concert.genre}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Source */}
+          {concert.source_name && (
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-emerald-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm text-slate-400 mb-0.5">Source</p>
+                <p className="font-semibold text-white">via {concert.source_name}</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* CTA */}
+        {concert.source_url && (
+          <a
+            href={concert.source_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full text-center bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white font-bold py-4 rounded-xl transition-all duration-200 shadow-lg shadow-violet-900/30 mb-6"
+          >
+            View Official Listing →
+          </a>
+        )}
+
+        <Link
+          href="/"
+          className="block w-full text-center bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-4 rounded-xl transition-all duration-200"
+        >
+          ← Browse All Free Shows
+        </Link>
+      </main>
+    </div>
+  )
+}

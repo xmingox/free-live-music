@@ -1,0 +1,66 @@
+import type { ImportRow } from './types'
+
+const SOURCE_NAME = 'SummerStage'
+const SOURCE_URL = 'https://cityparksfoundation.org/summerstage/'
+
+const SHOWS: { date: string; artist: string; venue: string; neighborhood: string }[] = [
+  { date: '2026-06-08', artist: 'Metropolitan Opera Summer Recital: Tessa McQueen / Lonwabo Mose / Alex McKissick / Mariam Bombrun', venue: 'Williamsbridge Oval', neighborhood: 'Bronx' },
+  { date: '2026-06-10', artist: 'Metropolitan Opera Summer Recital: Tessa McQueen / Lonwabo Mose / Alex McKissick / Mariam Bombrun', venue: 'Socrates Sculpture Park', neighborhood: 'Astoria' },
+  { date: '2026-06-10', artist: 'Ledisi for Dinah / Spilata / DJ Kultured Child', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-06-12', artist: 'Metropolitan Opera Summer Recital: Tessa McQueen / Lonwabo Mose / Alex McKissick / Mariam Bombrun', venue: 'Jackie Robinson Park', neighborhood: 'Harlem' },
+  { date: '2026-06-15', artist: 'Metropolitan Opera Summer Recital: Emily Pogorelc / Joshua Blue / Edward Nelson / Dmitri Dover', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-06-17', artist: 'Metropolitan Opera Summer Recital: Emily Pogorelc / Joshua Blue / Edward Nelson / Dmitri Dover', venue: 'Brooklyn Bridge Park', neighborhood: 'DUMBO' },
+  { date: '2026-06-22', artist: 'New York Sings Yiddish: The Shvesters / Yidlife Crisis', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-06-24', artist: 'Black Country New Road / Horsegirl / Sharp Pins', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-06-26', artist: 'Laurie Anderson: Republic of Love with Sexmob', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-07-01', artist: 'SHABAKA / Kokoroko / Omar / Lovie', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-07-08', artist: 'Spoon / Ratboys / Bodega', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-07-09', artist: 'Heltah Skeltah and OGC of Boot Camp Clik', venue: 'Herbert Von King Park', neighborhood: 'Brooklyn' },
+  { date: '2026-07-09', artist: 'Shaggy The Yaad', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-07-10', artist: 'Mereba / Mack Keane / Arima Ederra / Halfmoon BK', venue: 'Herbert Von King Park', neighborhood: 'Brooklyn' },
+  { date: '2026-07-11', artist: 'MIKE Young World: Max B / MIKE with The Band of the Century', venue: 'Herbert Von King Park', neighborhood: 'Brooklyn' },
+  { date: '2026-07-12', artist: 'Bilal / GENA / DJ Tara', venue: 'Herbert Von King Park', neighborhood: 'Brooklyn' },
+  { date: '2026-07-12', artist: 'Bastille Day: Black M / Laurent Voulzy / Michel Polnareff', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-07-15', artist: 'Morocco: Hoba Hoba Spirit / Hamid El Kasri Dakhla / Casa Xpress / Mr ID', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-07-16', artist: 'Mavis Staples / Brother Wallace', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-07-17', artist: 'De La Soul / Pete Rock', venue: 'Flushing Meadows-Corona Park', neighborhood: 'Queens' },
+  { date: '2026-07-18', artist: 'DJ Rekha Basement Bhangra Beyond: Jaz Dhami / Mitika Kanwar / Babbulicious', venue: 'Flushing Meadows-Corona Park', neighborhood: 'Queens' },
+  { date: '2026-07-22', artist: 'Complexions Contemporary Ballet / Paul Taylor Dance Company / Latasha Barnes', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-07-26', artist: 'Afro-Latinas: Luedji Luna ft. Liniker / Susana Baca / Lady G / Mai-Elka Prado', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-07-29', artist: 'Julieta Venegas / Lasso / DJ Anamaria Sayre', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-07-30', artist: 'UBB 40th Anniversary: BreakBeat Lou / Lord Finesse / Diamond D / Grand Puba / Sadat X', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-07-31', artist: 'Doug E. Fresh and Funk Flex Hip-Hop Appreciation Park Jam', venue: 'Crotona Park', neighborhood: 'Bronx' },
+  { date: '2026-08-01', artist: 'Trueno / Milo J / J Noa / DJ Albina Cabrera', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-08-01', artist: 'Ghanafest-NY: Edem / Andy Dosty', venue: 'Crotona Park', neighborhood: 'Bronx' },
+  { date: '2026-08-02', artist: 'WayV / The Either / Chopstix', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-08-06', artist: 'Andrew Bird with Wordless Music Orchestra', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-08-07', artist: 'Funk Flex Birthday R&B Picnic: Jon B / Fonda Rae / Taana Gardner / Strafe / Dres from Blacksheep', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-08-16', artist: 'Taiwanese Waves 10th Anniversary: 9m88 / OZI / YELLOW / Chance Emerson / Mong Tong', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-08-21', artist: 'The Voice of Miles Davis: A Symphonic Centennial Celebration', venue: 'Marcus Garvey Park', neighborhood: 'Harlem' },
+  { date: '2026-08-22', artist: 'Run It Back: The Art of the Sample Vol. II', venue: 'Marcus Garvey Park', neighborhood: 'Harlem' },
+  { date: '2026-08-23', artist: 'Angelique Kidjo / DJ Freshy K', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+  { date: '2026-08-28', artist: 'Charlie Parker Jazz Festival: Jazz at Lincoln Center Orchestra with Marquis Hill', venue: 'Marcus Garvey Park', neighborhood: 'Harlem' },
+  { date: '2026-08-29', artist: 'Charlie Parker Jazz Festival: Joshua Redman / Nat Adderley Jr.', venue: 'Marcus Garvey Park', neighborhood: 'Harlem' },
+  { date: '2026-08-30', artist: 'Charlie Parker Jazz Festival: Ravi Coltrane / Kassa Overall / Vanisha Gould', venue: 'Tompkins Square Park', neighborhood: 'East Village' },
+  { date: '2026-09-02', artist: 'Verve 70th Anniversary: Christian McBride / Mei Semones play Getz/Gilberto', venue: 'Rumsey Playfield', neighborhood: 'Central Park' },
+]
+
+export function getSummerStageShows(): ImportRow[] {
+  return SHOWS.map(({ date, artist, venue, neighborhood }) => ({
+    artist_name: artist,
+    venue,
+    date,
+    time: null,
+    neighborhood,
+    city: 'NYC',
+    genre: null,
+    price: 'Free',
+    admission_type: 'Walk-up free' as const,
+    indoor_outdoor: 'Outdoor' as const,
+    is_verified: true,
+    image_url: null,
+    source_name: SOURCE_NAME,
+    source_id: `summerstage-${date}-${artist.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}`,
+    source_url: SOURCE_URL,
+  }))
+}
