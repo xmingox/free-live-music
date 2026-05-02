@@ -67,6 +67,8 @@ export default function ModerationDashboard() {
       const body: Record<string, unknown> = { submissionId: id, action: 'approve' }
       if (manualCity) body.manualCity = manualCity
 
+      console.log('Approving with body:', body)
+
       const response = await fetch('/api/moderation/approve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
