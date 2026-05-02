@@ -15,9 +15,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { url, email, city, state } = body
 
-    if (!url || !email || !city || !state) {
+    if (!url || !email) {
       return NextResponse.json(
-        { message: 'Missing required fields' },
+        { message: 'Missing required fields: URL and email' },
         { status: 400 }
       )
     }
@@ -45,8 +45,8 @@ export async function POST(request: NextRequest) {
         {
           source_url: url,
           submitter_email: email,
-          submitted_city: city,
-          submitted_state: state,
+          submitted_city: city || null,
+          submitted_state: state || null,
           status: 'pending',
           submitted_at: new Date().toISOString(),
         },
