@@ -92,7 +92,6 @@ async function getConcertsByCity(cityCode: string): Promise<Concert[]> {
       .limit(50)
 
     if (error || !data?.length) {
-      // Fallback to mock data
       return MOCK_CONCERTS.filter(c => c.city === cityCode)
     }
     return data as Concert[]
@@ -149,7 +148,6 @@ export default async function CityPage({
     return <div className="text-center py-20">City data not found</div>
   }
 
-  // Fetch concerts
   const concerts = await getConcertsByCity(cityCode)
 
   return (
@@ -173,14 +171,12 @@ export default async function CityPage({
       <main className="max-w-6xl mx-auto px-4 py-12">
         {concerts && concerts.length > 0 ? (
           <>
-            {/* Concert Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
               {concerts.map((concert) => (
                 <ConcertCard key={concert.id} concert={concert} />
               ))}
             </div>
 
-            {/* Load More CTA */}
             {concerts.length >= 50 && (
               <div className="text-center py-8 border-t border-slate-200">
                 <p className="text-slate-600 mb-4">
@@ -209,7 +205,6 @@ export default async function CityPage({
       <section className="bg-slate-50 border-t border-slate-200 py-16">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12">
-            {/* Left Column */}
             <div>
               <h2 className="text-3xl font-bold text-slate-900 mb-4">
                 Free Live Music in {metro.city}
@@ -242,7 +237,6 @@ export default async function CityPage({
               </ul>
             </div>
 
-            {/* Right Column */}
             <div>
               <h2 className="text-3xl font-bold text-slate-900 mb-4">Why Use This Site?</h2>
               <ul className="space-y-4">

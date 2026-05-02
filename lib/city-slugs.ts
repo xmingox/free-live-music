@@ -4,42 +4,25 @@ import metros from './metros.json'
 
 export type Metro = typeof metros.metros[0]
 
-// Map URL slugs to city codes
-export const slugToCityCode: Record<string, string> = {
-  'los-angeles': 'LA',
-  'new-york-city': 'NYC',
-  'san-francisco': 'SF',
-  'chicago': 'CHI',
-  'austin': 'AUS',
-  'seattle': 'SEA',
-  'denver': 'DEN',
-  'portland': 'PDX',
-  'boston': 'BOS',
-  'washington-dc': 'DC',
-  'dallas': 'DAL',
-  'houston': 'HOU',
-  'philadelphia': 'PHI',
-  'atlanta': 'ATL',
-  'miami': 'MIA',
-  'nashville': 'NSH',
-  'new-orleans': 'NOLA',
-  'minneapolis': 'MIN',
-  'detroit': 'DET',
-  'kansas-city': 'KC',
-  'st-louis': 'STL',
-  'indianapolis': 'IND',
-  'cleveland': 'CLE',
-  'phoenix': 'PHX',
-  'las-vegas': 'LV',
-  'salt-lake-city': 'SLC',
-  'san-diego': 'SD',
-  'long-beach': 'LB',
-  'memphis': 'MEM',
+// Generate slug from city name (convert to kebab-case)
+function cityToSlug(cityName: string): string {
+  return cityName
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-') // spaces to hyphens
+    .replace(/[^\w-]/g, '') // remove special chars
+    .replace(/-+/g, '-') // collapse multiple hyphens
+    .replace(/^-|-$/g, '') // trim hyphens from edges
 }
 
-// Reverse map
+// Build slug → code mapping automatically from metros.json
+export const slugToCityCode: Record<string, string> = Object.fromEntries(
+  metros.metros.map(m => [cityToSlug(m.city), m.code])
+)
+
+// Reverse map: code → slug
 export const cityCodeToSlug: Record<string, string> = Object.fromEntries(
-  Object.entries(slugToCityCode).map(([slug, code]) => [code, slug])
+  metros.metros.map(m => [m.code, cityToSlug(m.city)])
 )
 
 // Get metro by code
@@ -57,9 +40,14 @@ export function getSlugFromCityCode(code: string): string | undefined {
   return cityCodeToSlug[code]
 }
 
-// Get all city codes
+// Get all city codes (in order from metros.json)
 export function getAllCityCodes(): string[] {
-  return Object.values(slugToCityCode)
+  return metros.metros.map(m => m.code)
+}
+
+// Get all metros (useful for sitemap generation)
+export function getAllMetros(): Metro[] {
+  return metros.metros as Metro[]
 }
 
 // Get metro object from slug
@@ -67,4 +55,10 @@ export function getMetroFromSlug(slug: string): Metro | undefined {
   const code = getCityCodeFromSlug(slug)
   if (!code) return undefined
   return getMetroByCode(code)
+}
+
+// Get top N metros by some criteria (e.g., for homepage nav)
+export function getTopMetros(count: number = 10): Metro[] {
+  // Return metros in order (assumes metros.json is ordered by importance)
+  return metros.metros.slice(0, count) as Metro[]
 }
