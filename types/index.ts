@@ -21,4 +21,4 @@ export interface Concert {
 }
 
 export type City = 'NYC' | 'LA' | 'SF' | 'CHI' | 'AUS' | 'SEA' | 'DC' | 'BOS' | 'DEN' | 'PDX'
-export type DateFilter = 'tonight' | 'weekend' | 'week' | 'all'
+export type DateFilter = 'tonight' | 'weekend' | 'week' | 'all' | 'custom'

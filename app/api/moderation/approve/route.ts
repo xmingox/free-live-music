@@ -19,8 +19,14 @@ interface ApprovalRequest {
 }
 
 // Get metro code from city name
-const getMetroCode = (cityName: string): City | null => {
-  const metro = metros.metros.find(m => m.city === cityName)
+const getMetroCodeFromCity = (cityName: string): City | null => {
+  const metro = metros.metros.find(m => m.city.toLowerCase() === cityName.toLowerCase())
+  return metro ? (metro.code as City) : null
+}
+
+// Get metro code from state (fallback)
+const getMetroCodeFromState = (state: string): City | null => {
+  const metro = metros.metros.find(m => m.state.toUpperCase() === state.toUpperCase())
   return metro ? (metro.code as City) : null
 }
 
@@ -101,29 +107,15 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Get metro code from submitted city
-      let city: City | undefined = getMetroCode(submission.submitted_city) as City
+      // Try to get metro code from submitted city
+      let city: City | undefined = getMetroCodeFromCity(submission.submitted_city) as City
 
-      // If not found, fallback to state-based mapping
+      // Fallback: try to get from state
       if (!city) {
-        const stateToMetroMap: Record<string, City> = {
-          'AL': 'ATL', 'AK': 'SEA', 'AZ': 'PHX', 'AR': 'AUS',
-          'CA': 'LA', 'CO': 'DEN', 'CT': 'BOS', 'DE': 'DC',
-          'FL': 'MIA', 'GA': 'ATL', 'HI': 'SF', 'ID': 'BSE',
-          'IL': 'CHI', 'IN': 'IND', 'IA': 'DES', 'KS': 'KC',
-          'KY': 'LOU', 'LA': 'NOLA', 'ME': 'BOS', 'MD': 'DC',
-          'MA': 'BOS', 'MI': 'DET', 'MN': 'MSP', 'MS': 'MEM',
-          'MO': 'STL', 'MT': 'BIL', 'NE': 'OMA', 'NV': 'LV',
-          'NH': 'BOS', 'NJ': 'NYC', 'NM': 'ALB', 'NY': 'NYC',
-          'NC': 'CHA', 'ND': 'DES', 'OH': 'CMH', 'OK': 'OKC',
-          'OR': 'PDX', 'PA': 'PHI', 'RI': 'BOS', 'SC': 'CHS',
-          'SD': 'DES', 'TN': 'NSH', 'TX': 'DAL', 'UT': 'SLC',
-          'VT': 'BOS', 'VA': 'RIC', 'WA': 'SEA', 'WV': 'DC',
-          'WI': 'MIL', 'WY': 'CHY', 'DC': 'DC', 'PR': 'NYC',
-        }
-        city = stateToMetroMap[submission.submitted_state] as City
+        city = getMetroCodeFromState(submission.submitted_state) as City
       }
 
+      // Final fallback: default to NYC
       if (!city) {
         city = 'NYC'
       }
