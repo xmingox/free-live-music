@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { CheckCircle, XCircle, Loader2, ExternalLink, RefreshCw } from 'lucide-react'
+import { useState, useEffect } from 'react'
 
 interface Submission {
   id: string
@@ -9,109 +8,126 @@ interface Submission {
   submitter_email: string
   submitted_city: string
   submitted_state: string
+  status: 'pending' | 'approved' | 'rejected'
   submitted_at: string
-  status: string
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric',
-    hour: 'numeric', minute: '2-digit',
-  })
-}
-
-export default function ModerationPage() {
+export default function ModerationDashboard() {
   const [password, setPassword] = useState('')
-  const [authed, setAuthed] = useState(false)
-  const [authError, setAuthError] = useState('')
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [loading, setLoading] = useState(false)
-  const [actionLoading, setActionLoading] = useState<string | null>(null)
+  const [approving, setApproving] = useState<string | null>(null)
 
-  const fetchSubmissions = useCallback(async (pw: string) => {
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault()
+    const correctPassword = process.env.NEXT_PUBLIC_MODERATION_PASSWORD || 'flm-mod-2026'
+    if (password === correctPassword) {
+      setIsAuthenticated(true)
+      setPassword('')
+      loadSubmissions()
+    } else {
+      alert('Incorrect password')
+    }
+  }
+
+  const loadSubmissions = async () => {
     setLoading(true)
     try {
-      const res = await fetch('/api/moderation', {
-        headers: { Authorization: `Bearer ${pw}` },
+      const response = await fetch('/api/moderation/get-submissions', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
       })
-      if (res.status === 401) {
-        setAuthError('Incorrect password')
-        setAuthed(false)
-        return false
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || 'Failed to fetch submissions')
       }
-      if (!res.ok) throw new Error('Failed to fetch')
-      const data = await res.json()
-      setSubmissions(data)
-      return true
-    } catch {
-      setAuthError('Something went wrong')
-      return false
+
+      const data = await response.json()
+      setSubmissions(data.submissions || [])
+    } catch (error) {
+      console.error('Error loading submissions:', error)
+      alert('Failed to load submissions')
     } finally {
       setLoading(false)
     }
-  }, [])
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setAuthError('')
-    const ok = await fetchSubmissions(password)
-    if (ok) setAuthed(true)
   }
 
-  const handleAction = async (id: string, status: 'approved' | 'rejected') => {
-    setActionLoading(id + status)
+  const handleApprove = async (id: string) => {
+    setApproving(id)
     try {
-      const res = await fetch('/api/moderation', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${password}`,
-        },
-        body: JSON.stringify({ id, status }),
+      const response = await fetch('/api/moderation/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ submissionId: id, action: 'approve' }),
       })
-      if (!res.ok) throw new Error('Failed to update')
-      setSubmissions((prev) => prev.filter((s) => s.id !== id))
-    } catch {
-      alert('Failed to update submission. Try again.')
+
+      const result = await response.json()
+      if (!response.ok) {
+        alert(`Error: ${result.message}`)
+        return
+      }
+
+      alert('Submission approved! Concert added.')
+      setSubmissions((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, status: 'approved' } : s))
+      )
+    } catch (error) {
+      console.error('Error approving:', error)
+      alert('Failed to approve submission')
     } finally {
-      setActionLoading(null)
+      setApproving(null)
     }
   }
 
-  if (!authed) {
+  const handleReject = async (id: string) => {
+    if (!confirm('Reject this submission?')) return
+
+    setApproving(id)
+    try {
+      const response = await fetch('/api/moderation/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ submissionId: id, action: 'reject' }),
+      })
+
+      if (!response.ok) {
+        const result = await response.json()
+        alert(`Error: ${result.message}`)
+        return
+      }
+
+      alert('Submission rejected.')
+      setSubmissions((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, status: 'rejected' } : s))
+      )
+    } catch (error) {
+      console.error('Error rejecting:', error)
+      alert('Failed to reject submission')
+    } finally {
+      setApproving(null)
+    }
+  }
+
+  if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-8 w-full max-w-sm">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center text-sm shadow-lg">
-              🎵
-            </div>
-            <h1 className="text-lg font-bold text-white">Moderation</h1>
-          </div>
+        <div className="bg-slate-900 p-8 rounded-lg max-w-sm w-full border border-slate-800">
+          <h1 className="text-2xl font-bold text-white mb-6">Moderation</h1>
           <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">
-                Password
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoFocus
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-              />
-            </div>
-            {authError && (
-              <p className="text-sm text-red-400">{authError}</p>
-            )}
+            <input
+              type="password"
+              placeholder="Enter moderation password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded text-white placeholder-slate-500"
+            />
             <button
               type="submit"
-              disabled={loading}
-              className="w-full bg-violet-600 hover:bg-violet-700 disabled:bg-slate-700 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center justify-center gap-2"
+              className="w-full px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded transition"
             >
-              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-              {loading ? 'Checking...' : 'Sign in'}
+              Login
             </button>
           </form>
         </div>
@@ -119,96 +135,126 @@ export default function ModerationPage() {
     )
   }
 
+  const pendingCount = submissions.filter((s) => s.status === 'pending').length
+
   return (
     <div className="min-h-screen bg-slate-950">
-      <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-bold text-white">Moderation Queue</h1>
-            <p className="text-sm text-slate-500">
-              {loading
-                ? 'Loading...'
-                : `${submissions.length} pending submission${submissions.length !== 1 ? 's' : ''}`}
+      <header className="border-b border-slate-800 bg-slate-900/50">
+        <div className="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-white">
+            Moderation Dashboard
+          </h1>
+          <div className="text-right">
+            <p className="text-slate-400 text-sm">
+              <span className="text-violet-400 font-semibold">{pendingCount}</span> pending
             </p>
+            <button
+              onClick={() => {
+                setIsAuthenticated(false)
+                setSubmissions([])
+              }}
+              className="mt-2 px-3 py-1 text-sm text-slate-400 hover:text-white transition"
+            >
+              Logout
+            </button>
           </div>
-          <button
-            onClick={() => fetchSubmissions(password)}
-            disabled={loading}
-            className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-300 text-sm rounded-lg transition"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
-          </button>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        {loading && submissions.length === 0 && (
-          <div className="flex items-center justify-center py-24">
-            <Loader2 className="w-6 h-6 animate-spin text-slate-500" />
-          </div>
-        )}
-
-        {!loading && submissions.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="text-5xl mb-4">✅</div>
-            <h2 className="text-xl font-semibold text-slate-300 mb-2">All clear</h2>
-            <p className="text-slate-500">No pending submissions.</p>
-          </div>
-        )}
-
-        <div className="space-y-4">
-          {submissions.map((sub) => (
-            <div
-              key={sub.id}
-              className="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col sm:flex-row sm:items-start gap-4"
-            >
-              <div className="flex-1 min-w-0 space-y-2">
-                <a
-                  href={sub.source_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-violet-400 hover:text-violet-300 font-medium text-sm transition break-all"
-                >
-                  <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
-                  {sub.source_url}
-                </a>
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-400">
-                  <span>{sub.submitted_city}, {sub.submitted_state}</span>
-                  <span className="text-slate-600">·</span>
-                  <span>{sub.submitter_email}</span>
-                  <span className="text-slate-600">·</span>
-                  <span>{formatDate(sub.submitted_at)}</span>
-                </div>
-              </div>
-
-              <div className="flex gap-2 flex-shrink-0">
-                <button
-                  onClick={() => handleAction(sub.id, 'approved')}
-                  disabled={actionLoading !== null}
-                  title="Approve"
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-900/50 hover:bg-emerald-800/60 disabled:opacity-40 border border-emerald-700/50 text-emerald-400 text-sm font-medium rounded-lg transition"
-                >
-                  {actionLoading === sub.id + 'approved'
-                    ? <Loader2 className="w-4 h-4 animate-spin" />
-                    : <CheckCircle className="w-4 h-4" />}
-                  Approve
-                </button>
-                <button
-                  onClick={() => handleAction(sub.id, 'rejected')}
-                  disabled={actionLoading !== null}
-                  title="Reject"
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-red-900/50 hover:bg-red-800/60 disabled:opacity-40 border border-red-700/50 text-red-400 text-sm font-medium rounded-lg transition"
-                >
-                  {actionLoading === sub.id + 'rejected'
-                    ? <Loader2 className="w-4 h-4 animate-spin" />
-                    : <XCircle className="w-4 h-4" />}
-                  Reject
-                </button>
-              </div>
-            </div>
-          ))}
+      <main className="max-w-6xl mx-auto px-4 py-8">
+        <div className="flex gap-4 mb-6">
+          <button
+            onClick={loadSubmissions}
+            disabled={loading}
+            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded transition disabled:opacity-50"
+          >
+            {loading ? 'Loading...' : 'Refresh'}
+          </button>
         </div>
+
+        {submissions.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-slate-400">No submissions yet.</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {submissions.map((submission) => (
+              <div
+                key={submission.id}
+                className={`p-4 border rounded-lg ${
+                  submission.status === 'pending'
+                    ? 'bg-slate-900 border-violet-600/50'
+                    : submission.status === 'approved'
+                      ? 'bg-slate-900/50 border-green-600/30'
+                      : 'bg-slate-900/30 border-red-600/30'
+                }`}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
+                      URL
+                    </p>
+                    <a
+                      href={submission.source_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300 break-all text-sm"
+                    >
+                      {submission.source_url}
+                    </a>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
+                      Contact
+                    </p>
+                    <p className="text-white text-sm">{submission.submitter_email}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
+                      Location
+                    </p>
+                    <p className="text-white text-sm">
+                      {submission.submitted_city}, {submission.submitted_state}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
+                      Submitted
+                    </p>
+                    <p className="text-white text-sm">
+                      {new Date(submission.submitted_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+
+                {submission.status === 'pending' && (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleApprove(submission.id)}
+                      disabled={approving === submission.id}
+                      className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded transition disabled:opacity-50"
+                    >
+                      {approving === submission.id ? 'Processing...' : '✅ Approve'}
+                    </button>
+                    <button
+                      onClick={() => handleReject(submission.id)}
+                      disabled={approving === submission.id}
+                      className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded transition disabled:opacity-50"
+                    >
+                      {approving === submission.id ? 'Processing...' : '❌ Reject'}
+                    </button>
+                  </div>
+                )}
+
+                {submission.status !== 'pending' && (
+                  <div className="text-xs text-slate-500">
+                    Status: <span className="capitalize">{submission.status}</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   )
