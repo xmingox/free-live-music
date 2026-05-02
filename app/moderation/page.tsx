@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import metros from '@/lib/metros.json'
 
 interface Submission {
   id: string
@@ -22,6 +23,7 @@ export default function ModerationDashboard() {
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [loading, setLoading] = useState(false)
   const [approving, setApproving] = useState<string | null>(null)
+  const [selectedCity, setSelectedCity] = useState<Record<string, string>>({})
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
@@ -61,10 +63,14 @@ export default function ModerationDashboard() {
   const handleApprove = async (id: string) => {
     setApproving(id)
     try {
+      const manualCity = selectedCity[id]
+      const body: Record<string, unknown> = { submissionId: id, action: 'approve' }
+      if (manualCity) body.manualCity = manualCity
+
       const response = await fetch('/api/moderation/approve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ submissionId: id, action: 'approve' }),
+        body: JSON.stringify(body),
       })
 
       const result = await response.json()
@@ -77,6 +83,11 @@ export default function ModerationDashboard() {
       setSubmissions((prev) =>
         prev.map((s) => (s.id === id ? { ...s, status: 'approved' } : s))
       )
+      setSelectedCity((prev) => {
+        const updated = { ...prev }
+        delete updated[id]
+        return updated
+      })
     } catch (error) {
       console.error('Error approving:', error)
       alert('Failed to approve submission')
@@ -116,24 +127,32 @@ export default function ModerationDashboard() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
-        <div className="bg-slate-900 p-8 rounded-lg max-w-sm w-full border border-slate-800">
-          <h1 className="text-2xl font-bold text-white mb-6">Moderation</h1>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <input
-              type="password"
-              placeholder="Enter moderation password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded text-white placeholder-slate-500"
-            />
-            <button
-              type="submit"
-              className="w-full px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded transition"
-            >
-              Login
-            </button>
-          </form>
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
+        <div className="w-full max-w-md">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
+            <h1 className="text-2xl font-bold text-white mb-6">Event Moderation</h1>
+            <form onSubmit={handleLogin}>
+              <div className="mb-4">
+                <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded text-white focus:outline-none focus:border-violet-600"
+                  placeholder="Enter password"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded transition"
+              >
+                Login
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     )
@@ -142,11 +161,11 @@ export default function ModerationDashboard() {
   const pendingCount = submissions.filter((s) => s.status === 'pending').length
 
   return (
-    <div className="min-h-screen bg-slate-950">
-      <header className="border-b border-slate-800 bg-slate-900/50">
-        <div className="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-white">
-            Moderation Dashboard
+    <div className="min-h-screen bg-slate-950 text-white">
+      <header className="bg-slate-900 border-b border-slate-800 px-4 py-4">
+        <div className="max-w-6xl mx-auto flex justify-between items-start">
+          <h1 className="text-3xl font-bold">
+            Moderation <span className="text-violet-400">Dashboard</span>
           </h1>
           <div className="text-right">
             <p className="text-slate-400 text-sm">
@@ -195,9 +214,7 @@ export default function ModerationDashboard() {
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
-                      URL
-                    </p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">URL</p>
                     <a
                       href={submission.source_url}
                       target="_blank"
@@ -208,15 +225,11 @@ export default function ModerationDashboard() {
                     </a>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
-                      Contact
-                    </p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Contact</p>
                     <p className="text-white text-sm">{submission.submitter_email}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
-                      Detected Location
-                    </p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Detected Location</p>
                     {submission.extracted_city || submission.extracted_venue ? (
                       <div className="text-sm">
                         {submission.extracted_venue && (
@@ -236,9 +249,7 @@ export default function ModerationDashboard() {
                     )}
                   </div>
                   <div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
-                      Submitted
-                    </p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Submitted</p>
                     <p className="text-white text-sm">
                       {new Date(submission.submitted_at).toLocaleDateString()}
                     </p>
@@ -246,22 +257,48 @@ export default function ModerationDashboard() {
                 </div>
 
                 {submission.status === 'pending' && (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleApprove(submission.id)}
-                      disabled={approving === submission.id}
-                      className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded transition disabled:opacity-50"
-                    >
-                      {approving === submission.id ? 'Processing...' : '✅ Approve'}
-                    </button>
-                    <button
-                      onClick={() => handleReject(submission.id)}
-                      disabled={approving === submission.id}
-                      className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded transition disabled:opacity-50"
-                    >
-                      {approving === submission.id ? 'Processing...' : '❌ Reject'}
-                    </button>
-                  </div>
+                  <>
+                    <div className="mb-4">
+                      <label htmlFor={`city-${submission.id}`} className="text-xs text-slate-500 uppercase tracking-wide mb-2 block">
+                        Override City (Optional)
+                      </label>
+                      <select
+                        id={`city-${submission.id}`}
+                        value={selectedCity[submission.id] || ''}
+                        onChange={(e) =>
+                          setSelectedCity((prev) => ({
+                            ...prev,
+                            [submission.id]: e.target.value,
+                          }))
+                        }
+                        className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded text-white focus:outline-none focus:border-violet-600"
+                      >
+                        <option value="">Auto-detect</option>
+                        {metros.metros.map((metro) => (
+                          <option key={metro.code} value={metro.city}>
+                            {metro.city}, {metro.state}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleApprove(submission.id)}
+                        disabled={approving === submission.id}
+                        className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded transition disabled:opacity-50"
+                      >
+                        {approving === submission.id ? 'Processing...' : '✅ Approve'}
+                      </button>
+                      <button
+                        onClick={() => handleReject(submission.id)}
+                        disabled={approving === submission.id}
+                        className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded transition disabled:opacity-50"
+                      >
+                        {approving === submission.id ? 'Processing...' : '❌ Reject'}
+                      </button>
+                    </div>
+                  </>
                 )}
 
                 {submission.status !== 'pending' && (
