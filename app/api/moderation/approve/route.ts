@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { extractEventDetails } from '@/lib/extract-event-details'
 import { Concert, City } from '@/types'
+import metros from '@/lib/metros.json'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -17,35 +18,10 @@ interface ApprovalRequest {
   action: 'approve' | 'reject'
 }
 
-// Valid metros
-const VALID_METROS: City[] = ['NYC', 'LA', 'SF', 'CHI', 'AUS', 'SEA', 'DC', 'BOS', 'DEN', 'PDX']
-
-// Map city names to metro codes
-const cityToMetro: Record<string, City> = {
-  'New York': 'NYC',
-  'Los Angeles': 'LA',
-  'San Francisco': 'SF',
-  'Chicago': 'CHI',
-  'Austin': 'AUS',
-  'Seattle': 'SEA',
-  'Washington': 'DC',
-  'Boston': 'BOS',
-  'Denver': 'DEN',
-  'Portland': 'PDX',
-}
-
-// Fallback: map state to nearest metro
-const stateToMetro: Record<string, City> = {
-  'ME': 'BOS', 'NH': 'BOS', 'VT': 'BOS', 'MA': 'BOS', 'RI': 'BOS', 'CT': 'BOS',
-  'NY': 'NYC', 'NJ': 'NYC', 'PA': 'NYC',
-  'DE': 'DC', 'MD': 'DC', 'VA': 'DC', 'WV': 'DC', 'DC': 'DC',
-  'NC': 'DC', 'SC': 'DC', 'GA': 'AUS', 'FL': 'AUS',
-  'AL': 'AUS', 'MS': 'AUS', 'LA': 'LA', 'AR': 'AUS', 'TN': 'AUS', 'KY': 'DC',
-  'OH': 'CHI', 'IN': 'CHI', 'IL': 'CHI', 'MI': 'CHI', 'WI': 'CHI',
-  'MN': 'CHI', 'IA': 'DEN', 'MO': 'DEN', 'KS': 'DEN', 'NE': 'DEN', 'OK': 'AUS',
-  'TX': 'AUS', 'MT': 'DEN', 'WY': 'DEN', 'CO': 'DEN', 'NM': 'AUS', 'UT': 'DEN',
-  'ID': 'SEA', 'WA': 'SEA', 'OR': 'PDX', 'NV': 'SF', 'CA': 'LA', 'AZ': 'AUS',
-  'HI': 'SF', 'AK': 'SEA', 'PR': 'NYC', 'GU': 'SF', 'VI': 'NYC', 'MP': 'SF', 'AS': 'SF',
+// Get metro code from city name
+const getMetroCode = (cityName: string): City | null => {
+  const metro = metros.metros.find(m => m.city === cityName)
+  return metro ? (metro.code as City) : null
 }
 
 export async function POST(request: NextRequest) {
@@ -94,6 +70,23 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'approve') {
+      // Check for duplicate URL in concerts table
+      const { data: existingConcert } = await supabase
+        .from('concerts')
+        .select('id, slug')
+        .eq('source_url', submission.source_url)
+        .single()
+
+      if (existingConcert) {
+        return NextResponse.json(
+          {
+            message: 'This event is already in the database',
+            existingConcertSlug: existingConcert.slug,
+          },
+          { status: 409 }
+        )
+      }
+
       // Extract event details from the URL
       const extracted = await extractEventDetails(submission.source_url)
 
@@ -108,26 +101,31 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Try to map submitted city to metro
-      let city: City | undefined = cityToMetro[submission.submitted_city]
+      // Get metro code from submitted city
+      let city: City | undefined = getMetroCode(submission.submitted_city) as City
 
-      // If not found, try state mapping as fallback
+      // If not found, fallback to state-based mapping
       if (!city) {
-        const stateKey = submission.submitted_state.toUpperCase()
-        city = stateToMetro[stateKey]
+        const stateToMetroMap: Record<string, City> = {
+          'AL': 'ATL', 'AK': 'SEA', 'AZ': 'PHX', 'AR': 'AUS',
+          'CA': 'LA', 'CO': 'DEN', 'CT': 'BOS', 'DE': 'DC',
+          'FL': 'MIA', 'GA': 'ATL', 'HI': 'SF', 'ID': 'BSE',
+          'IL': 'CHI', 'IN': 'IND', 'IA': 'DES', 'KS': 'KC',
+          'KY': 'LOU', 'LA': 'NOLA', 'ME': 'BOS', 'MD': 'DC',
+          'MA': 'BOS', 'MI': 'DET', 'MN': 'MSP', 'MS': 'MEM',
+          'MO': 'STL', 'MT': 'BIL', 'NE': 'OMA', 'NV': 'LV',
+          'NH': 'BOS', 'NJ': 'NYC', 'NM': 'ALB', 'NY': 'NYC',
+          'NC': 'CHA', 'ND': 'DES', 'OH': 'CMH', 'OK': 'OKC',
+          'OR': 'PDX', 'PA': 'PHI', 'RI': 'BOS', 'SC': 'CHS',
+          'SD': 'DES', 'TN': 'NSH', 'TX': 'DAL', 'UT': 'SLC',
+          'VT': 'BOS', 'VA': 'RIC', 'WA': 'SEA', 'WV': 'DC',
+          'WI': 'MIL', 'WY': 'CHY', 'DC': 'DC', 'PR': 'NYC',
+        }
+        city = stateToMetroMap[submission.submitted_state] as City
       }
 
-      // Final fallback
       if (!city) {
         city = 'NYC'
-      }
-
-      // Validate city is in our supported metros
-      if (!VALID_METROS.includes(city)) {
-        return NextResponse.json(
-          { message: `Unsupported metro: ${city}. We currently support: ${VALID_METROS.join(', ')}` },
-          { status: 400 }
-        )
       }
 
       // Create concert entry
@@ -163,12 +161,13 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Update submission with extracted data and concert_id
+      // Update submission with extracted data, concert_id, and published_at
       const { error: updateError } = await supabase
         .from('event_submissions')
         .update({
           status: 'approved',
           reviewed_at: new Date().toISOString(),
+          published_at: new Date().toISOString(),
           extracted_artist: extracted.artist,
           extracted_venue: extracted.venue,
           extracted_date: extracted.date,
@@ -187,7 +186,7 @@ export async function POST(request: NextRequest) {
       }
 
       return NextResponse.json({
-        message: 'Submission approved and concert added',
+        message: 'Submission approved and concert published',
         concert,
         extracted,
       })
