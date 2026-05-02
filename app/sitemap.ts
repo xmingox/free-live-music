@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { createClient } from '@supabase/supabase-js'
+import { getAllMetros, cityCodeToSlug } from '@/lib/city-slugs'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createClient(
@@ -13,19 +14,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .order('date', { ascending: true })
 
   const concertUrls: MetadataRoute.Sitemap = (concerts ?? []).map((c) => ({
-    url: `https://freelivemusic.co/concert/${c.slug}`,
+    url: `https://www.freelivemusic.co/concert/${c.slug}`,
     lastModified: c.created_at,
     changeFrequency: 'weekly',
     priority: 0.7,
   }))
 
+  const cityUrls: MetadataRoute.Sitemap = getAllMetros().map((metro) => ({
+    url: `https://www.freelivemusic.co/concerts/${cityCodeToSlug[metro.code]}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily',
+    priority: 0.8,
+  }))
+
   return [
     {
-      url: 'https://freelivemusic.co',
+      url: 'https://www.freelivemusic.co',
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
     },
+    ...cityUrls,
     ...concertUrls,
   ]
 }
