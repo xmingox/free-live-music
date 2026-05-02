@@ -107,18 +107,20 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Try to get metro code from submitted city
-      let city: City | undefined = getMetroCodeFromCity(submission.submitted_city) as City
+      // Try to get metro code: submitted city → extracted city → submitted state → extracted state → NYC
+      const cityName = submission.submitted_city || extracted.city
+      const stateName = submission.submitted_state || extracted.state
 
-      // Fallback: try to get from state
-      if (!city) {
-        city = getMetroCodeFromState(submission.submitted_state) as City
+      let city: City = 'NYC'
+      if (cityName && getMetroCodeFromCity(cityName)) {
+        city = getMetroCodeFromCity(cityName) as City
+      } else if (stateName && getMetroCodeFromState(stateName)) {
+        city = getMetroCodeFromState(stateName) as City
       }
 
-      // Final fallback: default to NYC
-      if (!city) {
-        city = 'NYC'
-      }
+      const neighborhood = cityName && stateName
+        ? `${cityName}, ${stateName}`
+        : cityName || stateName || 'Unknown'
 
       // Create concert entry
       const concertData = {
@@ -126,7 +128,7 @@ export async function POST(request: NextRequest) {
         venue: extracted.venue || 'Venue TBD',
         date: extracted.date,
         time: extracted.time,
-        neighborhood: `${submission.submitted_city}, ${submission.submitted_state}`,
+        neighborhood,
         city,
         genre: null,
         price: 'Free',
