@@ -16,24 +16,63 @@ const supabase = createClient(supabaseUrl, supabaseKey)
 interface ApprovalRequest {
   submissionId: string
   action: 'approve' | 'reject'
+  manualCity?: string
 }
 
-// Get metro code from city name
 const getMetroCodeFromCity = (cityName: string): City | null => {
   const metro = metros.metros.find(m => m.city.toLowerCase() === cityName.toLowerCase())
   return metro ? (metro.code as City) : null
 }
 
-// Get metro code from state (fallback)
 const getMetroCodeFromState = (state: string): City | null => {
   const metro = metros.metros.find(m => m.state.toUpperCase() === state.toUpperCase())
   return metro ? (metro.code as City) : null
 }
 
+const detectCityFromUrl = (url: string): string | null => {
+  const urlLower = url.toLowerCase()
+
+  const cityPatterns: Record<string, string> = {
+    // Special cases - check these first
+    'attpac.org': 'Dallas',
+    'flora-street': 'Dallas',
+
+    // Texas cities
+    'dallas': 'Dallas',
+    'austintexas': 'Austin',
+    'austin': 'Austin',
+    'houston': 'Houston',
+    'san-antonio': 'San Antonio',
+    'ft-worth': 'Fort Worth',
+    'dfw': 'Dallas',
+
+    // Other major cities
+    'newyork': 'New York',
+    'losangeles': 'Los Angeles',
+    'chicago': 'Chicago',
+    'sanfrancisco': 'San Francisco',
+    'sf': 'San Francisco',
+    'boston': 'Boston',
+    'denver': 'Denver',
+    'seattle': 'Seattle',
+    'portland': 'Portland',
+    'miami': 'Miami',
+    'atlanta': 'Atlanta',
+  }
+
+  for (const [pattern, city] of Object.entries(cityPatterns)) {
+    if (urlLower.includes(pattern)) {
+      return city
+    }
+  }
+
+  return null
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as ApprovalRequest
-    const { submissionId, action } = body
+    const { submissionId, action, manualCity } = body
 
     if (!submissionId || !action) {
       return NextResponse.json(
@@ -42,7 +81,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Fetch the submission
     const { data: submission, error: fetchError } = await supabase
       .from('event_submissions')
       .select('*')
@@ -76,7 +114,6 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'approve') {
-      // Check for duplicate URL in concerts table
       const { data: existingConcert } = await supabase
         .from('concerts')
         .select('id, slug')
@@ -93,10 +130,8 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Extract event details from the URL
       const extracted = await extractEventDetails(submission.source_url)
 
-      // Validate minimum required fields
       if (!extracted.artist || !extracted.date) {
         return NextResponse.json(
           {
@@ -107,19 +142,22 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Map extracted city/state to metro code, fallback to NYC
+      // Priority: manual > extracted > URL pattern > fallback
+      const detectedCity = extracted.city || detectCityFromUrl(submission.source_url)
+
       let city: City = 'NYC'
-      if (extracted.city && getMetroCodeFromCity(extracted.city)) {
-        city = getMetroCodeFromCity(extracted.city) as City
+      if (manualCity && getMetroCodeFromCity(manualCity)) {
+        city = getMetroCodeFromCity(manualCity) as City
+      } else if (detectedCity && getMetroCodeFromCity(detectedCity)) {
+        city = getMetroCodeFromCity(detectedCity) as City
       } else if (extracted.state && getMetroCodeFromState(extracted.state)) {
         city = getMetroCodeFromState(extracted.state) as City
       }
 
-      const neighborhood = extracted.city && extracted.state
-        ? `${extracted.city}, ${extracted.state}`
-        : extracted.city || extracted.state || 'Unknown'
+      const neighborhood = detectedCity && extracted.state
+        ? `${detectedCity}, ${extracted.state}`
+        : detectedCity || extracted.state || 'Unknown'
 
-      // Create concert entry
       const concertData = {
         artist_name: extracted.artist,
         venue: extracted.venue || 'Venue TBD',
@@ -152,7 +190,6 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Update submission with extracted data, concert_id, and published_at
       const { error: updateError } = await supabase
         .from('event_submissions')
         .update({
@@ -162,7 +199,7 @@ export async function POST(request: NextRequest) {
           extracted_artist: extracted.artist,
           extracted_venue: extracted.venue,
           extracted_venue_address: extracted.venueAddress,
-          extracted_city: extracted.city,
+          extracted_city: detectedCity || extracted.city,
           extracted_state: extracted.state,
           extracted_date: extracted.date,
           extracted_time: extracted.time,
