@@ -6,6 +6,10 @@
 interface ExtractedEvent {
   artist: string | null
   venue: string | null
+  venueName: string | null
+  venueAddress: string | null
+  city: string | null
+  state: string | null
   date: string | null // YYYY-MM-DD
   time: string | null
   imageUrl: string | null
@@ -19,6 +23,10 @@ export async function extractEventDetails(url: string): Promise<ExtractedEvent> 
   const result: ExtractedEvent = {
     artist: null,
     venue: null,
+    venueName: null,
+    venueAddress: null,
+    city: null,
+    state: null,
     date: null,
     time: null,
     imageUrl: null,
@@ -30,7 +38,7 @@ export async function extractEventDetails(url: string): Promise<ExtractedEvent> 
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       },
-      timeout: 5000,
+      signal: AbortSignal.timeout(5000),
     })
 
     if (!response.ok) return result
@@ -51,11 +59,15 @@ export async function extractEventDetails(url: string): Promise<ExtractedEvent> 
     if (!result.date) {
       const structuredData = extractStructuredData(html)
       if (structuredData) {
-        result.artist = result.artist || structuredData.name
-        result.venue = result.venue || structuredData.location
-        result.date = result.date || structuredData.date
-        result.time = result.time || structuredData.time
-        result.imageUrl = result.imageUrl || structuredData.image
+        result.artist = result.artist ?? structuredData.artist ?? null
+        result.venue = result.venue ?? structuredData.venue ?? null
+        result.venueName = result.venueName ?? structuredData.venueName ?? null
+        result.venueAddress = result.venueAddress ?? structuredData.venueAddress ?? null
+        result.city = result.city ?? structuredData.city ?? null
+        result.state = result.state ?? structuredData.state ?? null
+        result.date = result.date ?? structuredData.date ?? null
+        result.time = result.time ?? structuredData.time ?? null
+        result.imageUrl = result.imageUrl ?? structuredData.imageUrl ?? null
       }
     }
 
@@ -102,13 +114,13 @@ function extractDate(html: string): string | null {
     const months: Record<string, number> = {
       january: 0, february: 1, march: 2, april: 3, may: 4, june: 5,
       july: 6, august: 7, september: 8, october: 9, november: 10, december: 11,
-      jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+      jan: 0, feb: 1, mar: 2, apr: 3, jun: 5,
       jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
     }
 
     const monthIndex = months[monthStr.toLowerCase()]
     if (monthIndex !== undefined) {
-      const date = new Date(parseInt(year), monthIndex, parseInt(day))
+      const date = new Date(typeof year === 'string' ? parseInt(year) : year, monthIndex, parseInt(day))
       // Only accept future dates or recent past dates (within 30 days)
       const now = new Date()
       const daysDiff = (date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
@@ -159,7 +171,7 @@ function extractTime(html: string): string | null {
 function extractStructuredData(html: string): Partial<ExtractedEvent> | null {
   try {
     // Look for JSON-LD event schema
-    const jsonLdMatch = html.match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>(.*?)<\/script>/is)
+    const jsonLdMatch = html.match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i)
     if (jsonLdMatch) {
       const jsonStr = jsonLdMatch[1]
       const json = JSON.parse(jsonStr)
@@ -168,13 +180,32 @@ function extractStructuredData(html: string): Partial<ExtractedEvent> | null {
       const event = json['@type'] === 'Event' ? json : (Array.isArray(json) ? json.find((j: any) => j['@type'] === 'Event') : null)
 
       if (event) {
+        const loc = event.location
+        let venueName: string | null = null
+        let venueAddress: string | null = null
+        let city: string | null = null
+        let state: string | null = null
+
+        if (typeof loc === 'string') {
+          venueName = loc
+        } else if (loc && typeof loc === 'object') {
+          venueName = loc.name ?? null
+          venueAddress = loc.address?.streetAddress ?? null
+          city = loc.address?.addressLocality ?? null
+          state = loc.address?.addressRegion ?? null
+        }
+
         return {
-          artist: event.name,
-          venue: event.location?.name || event.location,
+          artist: event.name ?? null,
+          venue: venueName,
+          venueName,
+          venueAddress,
+          city,
+          state,
           date: event.startDate ? event.startDate.split('T')[0] : null,
           time: event.startDate ? event.startDate.split('T')[1]?.substring(0, 5) : null,
-          imageUrl: event.image,
-          description: event.description,
+          imageUrl: event.image ?? null,
+          description: event.description ?? null,
         }
       }
     }
