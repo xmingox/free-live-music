@@ -1,3 +1,5 @@
+'use client'
+
 import { Concert } from '@/types'
 
 const genreColors: Record<string, string> = {
