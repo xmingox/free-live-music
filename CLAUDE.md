@@ -28,7 +28,7 @@ A Next.js 15 site listing free live music concerts across the US. Users browse b
 
 ### Components
 - `components/ConcertCard.tsx` — concert card UI
-- `components/SubmitEventModal.tsx` — community submission modal; state → city cascading selects driven by `lib/metros.json`
+- `components/SubmitEventModal.tsx` — community submission modal; URL + email only (location auto-detected from URL on approval)
 - `components/DateFilter.tsx` — Tonight / Weekend / Next 7 Days / All Shows / Custom Dates filter bar
 - `components/CityToggle.tsx` — legacy component (superseded by state/metro dropdowns in concerts-client)
 
@@ -54,6 +54,9 @@ GRANT SELECT, INSERT ON public.event_submissions TO service_role;
 GRANT SELECT, INSERT ON public.concerts TO service_role;
 ALTER TABLE event_submissions ADD COLUMN IF NOT EXISTS reviewed_at timestamptz;
 ALTER TABLE event_submissions ADD COLUMN IF NOT EXISTS published_at timestamptz;
+ALTER TABLE event_submissions ADD COLUMN IF NOT EXISTS extracted_venue_address text;
+ALTER TABLE event_submissions ADD COLUMN IF NOT EXISTS extracted_city text;
+ALTER TABLE event_submissions ADD COLUMN IF NOT EXISTS extracted_state text;
 ```
 
 ## Environment variables
@@ -82,6 +85,16 @@ ALTER TABLE event_submissions ADD COLUMN IF NOT EXISTS published_at timestamptz;
 6. On duplicate URL → returns 409
 
 ## Metro mapping logic (approval route)
-1. Try exact city name match (case-insensitive) against `metros.json`
-2. Fallback: first metro in the submitted state from `metros.json`
+1. Try exact city name match (case-insensitive) from `extracted.city` against `metros.json`
+2. Fallback: first metro matching `extracted.state` from `metros.json`
 3. Final fallback: `'NYC'`
+
+## Step 5: End-to-End Testing (PENDING — May 2, 2026 evening)
+Test with real event URLs to verify the complete submission → moderation → publish flow:
+
+1. **Eventbrite URL** — submit, check dashboard shows extracted venue/location, approve, verify concert created with correct metro
+2. **Songkick URL** — same flow
+3. **Unknown platform** — verify extraction fails gracefully (no crash, still approvable)
+4. **Data integrity** — verify artist, date, venue, metro are all correct after approval
+
+**Success criteria:** extraction works for Eventbrite + Songkick, unknown platforms fail gracefully, admin sees all extracted data, approved events get correct metro, no 500 errors.
