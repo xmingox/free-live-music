@@ -107,20 +107,17 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Try to get metro code: submitted city → extracted city → submitted state → extracted state → NYC
-      const cityName = submission.submitted_city || extracted.city
-      const stateName = submission.submitted_state || extracted.state
-
+      // Map extracted city/state to metro code, fallback to NYC
       let city: City = 'NYC'
-      if (cityName && getMetroCodeFromCity(cityName)) {
-        city = getMetroCodeFromCity(cityName) as City
-      } else if (stateName && getMetroCodeFromState(stateName)) {
-        city = getMetroCodeFromState(stateName) as City
+      if (extracted.city && getMetroCodeFromCity(extracted.city)) {
+        city = getMetroCodeFromCity(extracted.city) as City
+      } else if (extracted.state && getMetroCodeFromState(extracted.state)) {
+        city = getMetroCodeFromState(extracted.state) as City
       }
 
-      const neighborhood = cityName && stateName
-        ? `${cityName}, ${stateName}`
-        : cityName || stateName || 'Unknown'
+      const neighborhood = extracted.city && extracted.state
+        ? `${extracted.city}, ${extracted.state}`
+        : extracted.city || extracted.state || 'Unknown'
 
       // Create concert entry
       const concertData = {
