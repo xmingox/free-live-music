@@ -11,6 +11,8 @@ import {
   cityCodeToSlug,
 } from '@/lib/city-slugs'
 
+export const revalidate = 3600 // Revalidate every hour
+
 // Generate static params for all cities
 export async function generateStaticParams() {
   return getAllCityCodes()
