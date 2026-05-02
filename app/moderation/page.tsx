@@ -6,10 +6,14 @@ interface Submission {
   id: string
   source_url: string
   submitter_email: string
-  submitted_city: string
-  submitted_state: string
   status: 'pending' | 'approved' | 'rejected'
   submitted_at: string
+  extracted_artist: string | null
+  extracted_venue: string | null
+  extracted_venue_address: string | null
+  extracted_city: string | null
+  extracted_state: string | null
+  extracted_date: string | null
 }
 
 export default function ModerationDashboard() {
@@ -211,11 +215,25 @@ export default function ModerationDashboard() {
                   </div>
                   <div>
                     <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
-                      Location
+                      Detected Location
                     </p>
-                    <p className="text-white text-sm">
-                      {submission.submitted_city}, {submission.submitted_state}
-                    </p>
+                    {submission.extracted_city || submission.extracted_venue ? (
+                      <div className="text-sm">
+                        {submission.extracted_venue && (
+                          <p className="text-white">{submission.extracted_venue}</p>
+                        )}
+                        {submission.extracted_venue_address && (
+                          <p className="text-slate-400">{submission.extracted_venue_address}</p>
+                        )}
+                        {(submission.extracted_city || submission.extracted_state) && (
+                          <p className="text-slate-400">
+                            {[submission.extracted_city, submission.extracted_state].filter(Boolean).join(', ')}
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-slate-500 text-sm italic">Auto-detected on approve</p>
+                    )}
                   </div>
                   <div>
                     <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">
