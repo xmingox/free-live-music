@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Concert, City, DateFilter } from '@/types'
 import { SubmitEventModal } from '@/components/SubmitEventModal'
@@ -39,7 +39,6 @@ function filterByDate(concerts: Concert[], filter: DateFilter, dateFrom?: string
   return concerts.filter((concert) => {
     const concertDate = new Date(concert.date + 'T00:00:00')
 
-    // Custom date range
     if (filter === 'custom' && dateFrom && dateTo) {
       const from = new Date(dateFrom)
       const to = new Date(dateTo)
@@ -49,19 +48,20 @@ function filterByDate(concerts: Concert[], filter: DateFilter, dateFrom?: string
     switch (filter) {
       case 'tonight':
         return concertDate.toDateString() === today.toDateString()
-
       case 'weekend': {
-        const day = concertDate.getDay()
-        const isFriSatSun = day === 5 || day === 6 || day === 0
-        const diffDays = (concertDate.getTime() - today.getTime()) / 86400000
-        return isFriSatSun && diffDays >= 0 && diffDays <= 10
+        const dayOfWeek = concertDate.getDay()
+        const daysUntilFriday = (5 - today.getDay() + 7) % 7
+        const fridayDate = new Date(today)
+        fridayDate.setDate(fridayDate.getDate() + (daysUntilFriday === 0 ? 0 : daysUntilFriday))
+        const sundayDate = new Date(fridayDate)
+        sundayDate.setDate(sundayDate.getDate() + 2)
+        return concertDate >= fridayDate && concertDate <= sundayDate
       }
-
-      case 'week': {
-        const diffDays = (concertDate.getTime() - today.getTime()) / 86400000
-        return diffDays >= 0 && diffDays <= 7
-      }
-
+      case 'week':
+        const weekFromNow = new Date(today)
+        weekFromNow.setDate(weekFromNow.getDate() + 7)
+        return concertDate >= today && concertDate <= weekFromNow
+      case 'all':
       default:
         return concertDate >= today
     }
@@ -71,7 +71,6 @@ function filterByDate(concerts: Concert[], filter: DateFilter, dateFrom?: string
 export default function ConcertsClient({ initialConcerts }: { initialConcerts: Concert[] }) {
   const searchParams = useSearchParams()
   const router = useRouter()
-
   const [city, setCity] = useState<City>(() => parseCity(searchParams.get('city')))
   const [state, setState] = useState<string>(() => {
     const metro = metros.metros.find(m => m.code === city)
@@ -85,7 +84,6 @@ export default function ConcertsClient({ initialConcerts }: { initialConcerts: C
   const states = getAllStates()
   const metrosForState = getMetrosForState(state)
 
-  // Update URL when filters change
   useEffect(() => {
     const params = new URLSearchParams()
     params.set('city', city)
@@ -97,7 +95,6 @@ export default function ConcertsClient({ initialConcerts }: { initialConcerts: C
 
   const handleStateChange = (newState: string) => {
     setState(newState)
-    // Auto-select first metro in the state
     const metrosInState = getMetrosForState(newState)
     if (metrosInState.length > 0) {
       setCity(metrosInState[0].code as City)
@@ -114,13 +111,14 @@ export default function ConcertsClient({ initialConcerts }: { initialConcerts: C
   }, [])
 
   const filtered = useMemo(() => {
-    const byCity = initialConcerts.filter((c) => c.city === city)
+    const metro = metros.metros.find(m => m.code === city)
+    const cityNames = metro ? [metro.city, ...(metro.aliases || [])] : [city]
+    const byCity = initialConcerts.filter((c) => cityNames.includes(c.city))
     return filterByDate(byCity, dateFilter, dateFrom, dateTo)
   }, [initialConcerts, city, dateFilter, dateFrom, dateTo])
 
   return (
     <div className="min-h-screen bg-slate-950">
-      {/* Header */}
       <header className="relative overflow-hidden border-b border-slate-800">
         <div className="absolute inset-0 bg-gradient-to-br from-violet-950/80 via-slate-950 to-pink-950/50" />
         <div className="relative max-w-7xl mx-auto px-4 py-10 sm:py-14">
@@ -139,31 +137,23 @@ export default function ConcertsClient({ initialConcerts }: { initialConcerts: C
                   Free Live Music
                 </span>
               </h1>
-              <p className="text-slate-400 text-base sm:text-lg">
-                The best free shows across the US
-              </p>
+              <p className="text-slate-400 text-lg">The best free shows across the US</p>
             </div>
             <button
               onClick={() => setIsSubmitModalOpen(true)}
-              className="px-4 py-2 bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white text-sm font-semibold rounded-lg transition whitespace-nowrap flex-shrink-0"
+              className="px-4 py-2 bg-gradient-to-r from-violet-600 to-pink-600 rounded-lg font-semibold hover:from-violet-500 hover:to-pink-500 transition-all"
             >
               Share Event
             </button>
           </div>
-        </div>
-      </header>
 
-      {/* Controls */}
-      <div className="sticky top-0 z-10 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-end gap-3">
-          {/* State & City Dropdowns */}
-          <div className="flex gap-2 items-end">
-            <div className="w-20">
-              <label className="block text-xs font-semibold text-slate-400 mb-1 uppercase">State</label>
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase">STATE</label>
               <select
                 value={state}
                 onChange={(e) => handleStateChange(e.target.value)}
-                className="w-full px-2 py-2 bg-slate-800 border border-slate-700 rounded text-white focus:outline-none focus:border-violet-500 text-sm"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded text-white focus:outline-none focus:border-violet-500 text-sm"
               >
                 {states.map((s) => (
                   <option key={s} value={s}>
@@ -172,8 +162,9 @@ export default function ConcertsClient({ initialConcerts }: { initialConcerts: C
                 ))}
               </select>
             </div>
-            <div className="w-40">
-              <label className="block text-xs font-semibold text-slate-400 mb-1 uppercase">City</label>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase">CITY</label>
               <select
                 value={city}
                 onChange={(e) => handleCityChange(e.target.value as City)}
@@ -188,14 +179,12 @@ export default function ConcertsClient({ initialConcerts }: { initialConcerts: C
             </div>
           </div>
 
-          {/* Date Filters - Right aligned */}
-          <div className="sm:ml-auto">
+          <div className="sm:ml-auto mt-4">
             <DateFilterBar value={dateFilter} onChange={handleDateFilterChange} />
           </div>
 
-          {/* Custom Date Range Inputs */}
           {dateFilter === 'custom' && (
-            <div className="flex gap-2 sm:w-auto">
+            <div className="flex gap-2 mt-4">
               <input
                 type="date"
                 value={dateFrom}
@@ -211,15 +200,13 @@ export default function ConcertsClient({ initialConcerts }: { initialConcerts: C
             </div>
           )}
         </div>
-      </div>
+      </header>
 
-      {/* Main content */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        {/* Results count */}
-        <p className="text-sm text-slate-500 mb-6">
-          {filtered.length === 0
-            ? 'No shows found'
-            : `${filtered.length} ${filtered.length === 1 ? 'show' : 'shows'} in ${metros.metros.find(m => m.code === city)?.city || city}`}
+      <main className="max-w-7xl mx-auto px-4 py-12">
+        <p className="text-slate-400 mb-6">
+          {filtered.length > 0
+            ? `${filtered.length} ${filtered.length === 1 ? 'show' : 'shows'} in ${metros.metros.find(m => m.code === city)?.city || city}`
+            : `No free concerts listed in ${metros.metros.find(m => m.code === city)?.city || city} for this time window.`}
         </p>
 
         {filtered.length > 0 ? (
@@ -259,8 +246,7 @@ function EmptyState({ city, filter }: { city: City; filter: DateFilter }) {
       <div className="text-5xl mb-4">🎸</div>
       <h3 className="text-xl font-semibold text-slate-300 mb-2">No shows {filterLabels[filter]}</h3>
       <p className="text-slate-500 max-w-sm">
-        No free concerts listed in {cityName} for this time
-        window. Try selecting a different date range or city.
+        No free concerts listed in {cityName} for this time window. Try selecting a different date range or city.
       </p>
     </div>
   )
