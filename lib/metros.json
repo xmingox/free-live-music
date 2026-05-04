@@ -1,181 +1,1279 @@
 {
   "metros": [
-    {"code": "NYC", "city": "New York", "state": "NY", "region": "Northeast"},
-    {"code": "LA", "city": "Los Angeles", "state": "CA", "region": "West"},
-    {"code": "CHI", "city": "Chicago", "state": "IL", "region": "Midwest"},
-    {"code": "DAL", "city": "Dallas", "state": "TX", "region": "South"},
-    {"code": "HOU", "city": "Houston", "state": "TX", "region": "South"},
-    {"code": "PHI", "city": "Philadelphia", "state": "PA", "region": "Northeast"},
-    {"code": "ATL", "city": "Atlanta", "state": "GA", "region": "South"},
-    {"code": "MIA", "city": "Miami", "state": "FL", "region": "South"},
-    {"code": "SF", "city": "San Francisco", "state": "CA", "region": "West"},
-    {"code": "BOS", "city": "Boston", "state": "MA", "region": "Northeast"},
-    {"code": "DC", "city": "Washington", "state": "DC", "region": "Northeast"},
-    {"code": "SEA", "city": "Seattle", "state": "WA", "region": "West"},
-    {"code": "PDX", "city": "Portland", "state": "OR", "region": "West"},
-    {"code": "DEN", "city": "Denver", "state": "CO", "region": "Mountain"},
-    {"code": "AUS", "city": "Austin", "state": "TX", "region": "South"},
-    {"code": "NSH", "city": "Nashville", "state": "TN", "region": "South"},
-    {"code": "MEM", "city": "Memphis", "state": "TN", "region": "South"},
-    {"code": "NOLA", "city": "New Orleans", "state": "LA", "region": "South"},
-    {"code": "MIN", "city": "Minneapolis", "state": "MN", "region": "Midwest"},
-    {"code": "DET", "city": "Detroit", "state": "MI", "region": "Midwest"},
-    {"code": "KC", "city": "Kansas City", "state": "MO", "region": "Midwest"},
-    {"code": "STL", "city": "St. Louis", "state": "MO", "region": "Midwest"},
-    {"code": "IND", "city": "Indianapolis", "state": "IN", "region": "Midwest"},
-    {"code": "CLE", "city": "Cleveland", "state": "OH", "region": "Midwest"},
-    {"code": "PHX", "city": "Phoenix", "state": "AZ", "region": "Southwest"},
-    {"code": "LV", "city": "Las Vegas", "state": "NV", "region": "Southwest"},
-    {"code": "SLC", "city": "Salt Lake City", "state": "UT", "region": "Mountain"},
-    {"code": "ALB", "city": "Albuquerque", "state": "NM", "region": "Southwest"},
-    {"code": "SAC", "city": "Sacramento", "state": "CA", "region": "West"},
-    {"code": "SD", "city": "San Diego", "state": "CA", "region": "West"},
-    {"code": "OAK", "city": "Oakland", "state": "CA", "region": "West"},
-    {"code": "SJ", "city": "San Jose", "state": "CA", "region": "West"},
-    {"code": "LB", "city": "Long Beach", "state": "CA", "region": "West"},
-    {"code": "ANA", "city": "Anaheim", "state": "CA", "region": "West"},
-    {"code": "FRE", "city": "Fresno", "state": "CA", "region": "West"},
-    {"code": "BCK", "city": "Bakersfield", "state": "CA", "region": "West"},
-    {"code": "RIV", "city": "Riverside", "state": "CA", "region": "West"},
-    {"code": "STK", "city": "Stockton", "state": "CA", "region": "West"},
-    {"code": "OXN", "city": "Oxnard", "state": "CA", "region": "West"},
-    {"code": "VIS", "city": "Visalia", "state": "CA", "region": "West"},
-    {"code": "PIT", "city": "Pittsburgh", "state": "PA", "region": "Northeast"},
-    {"code": "BAL", "city": "Baltimore", "state": "MD", "region": "Northeast"},
-    {"code": "BUF", "city": "Buffalo", "state": "NY", "region": "Northeast"},
-    {"code": "PRV", "city": "Providence", "state": "RI", "region": "Northeast"},
-    {"code": "HRT", "city": "Hartford", "state": "CT", "region": "Northeast"},
-    {"code": "ALBY", "city": "Albany", "state": "NY", "region": "Northeast"},
-    {"code": "SYR", "city": "Syracuse", "state": "NY", "region": "Northeast"},
-    {"code": "ROC", "city": "Rochester", "state": "NY", "region": "Northeast"},
-    {"code": "RIC", "city": "Richmond", "state": "VA", "region": "Southeast"},
-    {"code": "CHA", "city": "Charlotte", "state": "NC", "region": "Southeast"},
-    {"code": "RDU", "city": "Raleigh", "state": "NC", "region": "Southeast"},
-    {"code": "GRE", "city": "Greensboro", "state": "NC", "region": "Southeast"},
-    {"code": "CHS", "city": "Charleston", "state": "SC", "region": "Southeast"},
-    {"code": "COL", "city": "Columbia", "state": "SC", "region": "Southeast"},
-    {"code": "SAV", "city": "Savannah", "state": "GA", "region": "Southeast"},
-    {"code": "AUG", "city": "Augusta", "state": "GA", "region": "Southeast"},
-    {"code": "JAX", "city": "Jacksonville", "state": "FL", "region": "Southeast"},
-    {"code": "TB", "city": "Tampa", "state": "FL", "region": "Southeast"},
-    {"code": "ORL", "city": "Orlando", "state": "FL", "region": "Southeast"},
-    {"code": "FTL", "city": "Fort Lauderdale", "state": "FL", "region": "Southeast"},
-    {"code": "WPB", "city": "West Palm Beach", "state": "FL", "region": "Southeast"},
-    {"code": "MCO", "city": "Daytona Beach", "state": "FL", "region": "Southeast"},
-    {"code": "PEN", "city": "Pensacola", "state": "FL", "region": "Southeast"},
-    {"code": "LOU", "city": "Louisville", "state": "KY", "region": "South"},
-    {"code": "LEX", "city": "Lexington", "state": "KY", "region": "South"},
-    {"code": "BHM", "city": "Birmingham", "state": "AL", "region": "South"},
-    {"code": "MOB", "city": "Mobile", "state": "AL", "region": "South"},
-    {"code": "JAC", "city": "Jackson", "state": "MS", "region": "South"},
-    {"code": "BR", "city": "Baton Rouge", "state": "LA", "region": "South"},
-    {"code": "LAF", "city": "Lafayette", "state": "LA", "region": "South"},
-    {"code": "SHR", "city": "Shreveport", "state": "LA", "region": "South"},
-    {"code": "SAT", "city": "San Antonio", "state": "TX", "region": "South"},
-    {"code": "FTW", "city": "Fort Worth", "state": "TX", "region": "South"},
-    {"code": "OKC", "city": "Oklahoma City", "state": "OK", "region": "South"},
-    {"code": "TUL", "city": "Tulsa", "state": "OK", "region": "South"},
-    {"code": "ARK", "city": "Little Rock", "state": "AR", "region": "South"},
-    {"code": "CHT", "city": "Chattanooga", "state": "TN", "region": "South"},
-    {"code": "KNX", "city": "Knoxville", "state": "TN", "region": "South"},
-    {"code": "TRI", "city": "Tri-Cities", "state": "TN", "region": "South"},
-    {"code": "DES", "city": "Des Moines", "state": "IA", "region": "Midwest"},
-    {"code": "CED", "city": "Cedar Rapids", "state": "IA", "region": "Midwest"},
-    {"code": "MSP", "city": "Minneapolis-St. Paul", "state": "MN", "region": "Midwest"},
-    {"code": "DUL", "city": "Duluth", "state": "MN", "region": "Midwest"},
-    {"code": "MIL", "city": "Milwaukee", "state": "WI", "region": "Midwest"},
-    {"code": "MAD", "city": "Madison", "state": "WI", "region": "Midwest"},
-    {"code": "GRB", "city": "Green Bay", "state": "WI", "region": "Midwest"},
-    {"code": "GR", "city": "Grand Rapids", "state": "MI", "region": "Midwest"},
-    {"code": "ANN", "city": "Ann Arbor", "state": "MI", "region": "Midwest"},
-    {"code": "FLI", "city": "Flint", "state": "MI", "region": "Midwest"},
-    {"code": "LAN", "city": "Lansing", "state": "MI", "region": "Midwest"},
-    {"code": "CMH", "city": "Columbus", "state": "OH", "region": "Midwest"},
-    {"code": "CIN", "city": "Cincinnati", "state": "OH", "region": "Midwest"},
-    {"code": "DAY", "city": "Dayton", "state": "OH", "region": "Midwest"},
-    {"code": "TOL", "city": "Toledo", "state": "OH", "region": "Midwest"},
-    {"code": "AKR", "city": "Akron", "state": "OH", "region": "Midwest"},
-    {"code": "CAN", "city": "Canton", "state": "OH", "region": "Midwest"},
-    {"code": "LIM", "city": "Lima", "state": "OH", "region": "Midwest"},
-    {"code": "INV", "city": "Inverness", "state": "IL", "region": "Midwest"},
-    {"code": "RCK", "city": "Rockford", "state": "IL", "region": "Midwest"},
-    {"code": "PEO", "city": "Peoria", "state": "IL", "region": "Midwest"},
-    {"code": "SPRI", "city": "Springfield", "state": "IL", "region": "Midwest"},
-    {"code": "EV", "city": "Evansville", "state": "IN", "region": "Midwest"},
-    {"code": "FWY", "city": "Fort Wayne", "state": "IN", "region": "Midwest"},
-    {"code": "SBN", "city": "South Bend", "state": "IN", "region": "Midwest"},
-    {"code": "LBY", "city": "Lafayette", "state": "IN", "region": "Midwest"},
-    {"code": "TER", "city": "Terre Haute", "state": "IN", "region": "Midwest"},
-    {"code": "JEF", "city": "Jefferson City", "state": "MO", "region": "Midwest"},
-    {"code": "SPRM", "city": "Springfield", "state": "MO", "region": "Midwest"},
-    {"code": "JOP", "city": "Joplin", "state": "MO", "region": "Midwest"},
-    {"code": "KCK", "city": "Kansas City", "state": "KS", "region": "Midwest"},
-    {"code": "TOP", "city": "Topeka", "state": "KS", "region": "Midwest"},
-    {"code": "WIC", "city": "Wichita", "state": "KS", "region": "Midwest"},
-    {"code": "OMA", "city": "Omaha", "state": "NE", "region": "Midwest"},
-    {"code": "LIN", "city": "Lincoln", "state": "NE", "region": "Midwest"},
-    {"code": "GRD", "city": "Grand Island", "state": "NE", "region": "Midwest"},
-    {"code": "RNO", "city": "Reno", "state": "NV", "region": "West"},
-    {"code": "CRS", "city": "Carson City", "state": "NV", "region": "West"},
-    {"code": "HEN", "city": "Henderson", "state": "NV", "region": "West"},
-    {"code": "BSE", "city": "Boise", "state": "ID", "region": "Mountain"},
-    {"code": "POC", "city": "Pocatello", "state": "ID", "region": "Mountain"},
-    {"code": "MSL", "city": "Missoula", "state": "MT", "region": "Mountain"},
-    {"code": "BIL", "city": "Billings", "state": "MT", "region": "Mountain"},
-    {"code": "GRT", "city": "Great Falls", "state": "MT", "region": "Mountain"},
-    {"code": "CHY", "city": "Cheyenne", "state": "WY", "region": "Mountain"},
-    {"code": "CSP", "city": "Casper", "state": "WY", "region": "Mountain"},
-    {"code": "LAR", "city": "Laramie", "state": "WY", "region": "Mountain"},
-    {"code": "BOZ", "city": "Bozeman", "state": "MT", "region": "Mountain"},
-    {"code": "COS", "city": "Colorado Springs", "state": "CO", "region": "Mountain"},
-    {"code": "PUE", "city": "Pueblo", "state": "CO", "region": "Mountain"},
-    {"code": "GJT", "city": "Grand Junction", "state": "CO", "region": "Mountain"},
-    {"code": "FTC", "city": "Fort Collins", "state": "CO", "region": "Mountain"},
-    {"code": "OGD", "city": "Ogden", "state": "UT", "region": "Mountain"},
-    {"code": "PRO", "city": "Provo", "state": "UT", "region": "Mountain"},
-    {"code": "STG", "city": "St. George", "state": "UT", "region": "Mountain"},
-    {"code": "LOG", "city": "Logan", "state": "UT", "region": "Mountain"},
-    {"code": "LAS", "city": "Las Cruces", "state": "NM", "region": "Southwest"},
-    {"code": "ROA", "city": "Roswell", "state": "NM", "region": "Southwest"},
-    {"code": "HOB", "city": "Hobbs", "state": "NM", "region": "Southwest"},
-    {"code": "GLB", "city": "Glendale", "state": "AZ", "region": "Southwest"},
-    {"code": "MES", "city": "Mesa", "state": "AZ", "region": "Southwest"},
-    {"code": "CHN", "city": "Chandler", "state": "AZ", "region": "Southwest"},
-    {"code": "SCO", "city": "Scottsdale", "state": "AZ", "region": "Southwest"},
-    {"code": "TEM", "city": "Tempe", "state": "AZ", "region": "Southwest"},
-    {"code": "PES", "city": "Peoria", "state": "AZ", "region": "Southwest"},
-    {"code": "TUC", "city": "Tucson", "state": "AZ", "region": "Southwest"},
-    {"code": "YUM", "city": "Yuma", "state": "AZ", "region": "Southwest"},
-    {"code": "MON", "city": "Monterey", "state": "CA", "region": "West"},
-    {"code": "SCR", "city": "Santa Cruz", "state": "CA", "region": "West"},
-    {"code": "SLO", "city": "San Luis Obispo", "state": "CA", "region": "West"},
-    {"code": "SBA", "city": "Santa Barbara", "state": "CA", "region": "West"},
-    {"code": "VEN", "city": "Ventura", "state": "CA", "region": "West"},
-    {"code": "SAN", "city": "Santa Ana", "state": "CA", "region": "West"},
-    {"code": "SBD", "city": "San Bernardino", "state": "CA", "region": "West"},
-    {"code": "THO", "city": "Thousand Oaks", "state": "CA", "region": "West"},
-    {"code": "SIM", "city": "Simi Valley", "state": "CA", "region": "West"},
-    {"code": "CAM", "city": "Camarillo", "state": "CA", "region": "West"},
-    {"code": "MER", "city": "Merced", "state": "CA", "region": "West"},
-    {"code": "EVR", "city": "Everett", "state": "WA", "region": "West"},
-    {"code": "TAC", "city": "Tacoma", "state": "WA", "region": "West"},
-    {"code": "OLY", "city": "Olympia", "state": "WA", "region": "West"},
-    {"code": "VAN", "city": "Vancouver", "state": "WA", "region": "West"},
-    {"code": "SPO", "city": "Spokane", "state": "WA", "region": "West"},
-    {"code": "YAK", "city": "Yakima", "state": "WA", "region": "West"},
-    {"code": "BEL", "city": "Bellingham", "state": "WA", "region": "West"},
-    {"code": "EUG", "city": "Eugene", "state": "OR", "region": "West"},
-    {"code": "SAL", "city": "Salem", "state": "OR", "region": "West"},
-    {"code": "GRS", "city": "Gresham", "state": "OR", "region": "West"},
-    {"code": "BEN", "city": "Bend", "state": "OR", "region": "West"},
-    {"code": "MED", "city": "Medford", "state": "OR", "region": "West"},
-    {"code": "ASH", "city": "Ashland", "state": "OR", "region": "West"},
-    {"code": "KLA", "city": "Klamath Falls", "state": "OR", "region": "West"},
-    {"code": "BOU", "city": "Boulder", "state": "CO", "region": "Mountain"},
-    {"code": "AUR", "city": "Aurora", "state": "CO", "region": "Mountain"},
-    {"code": "LAK", "city": "Lakewood", "state": "CO", "region": "Mountain"},
-    {"code": "DUH", "city": "Dubuque", "state": "IA", "region": "Midwest"},
-    {"code": "DVM", "city": "Davenport", "state": "IA", "region": "Midwest"},
-    {"code": "WAT", "city": "Waterloo", "state": "IA", "region": "Midwest"}
+    {
+      "code": "NYC",
+      "city": "New York",
+      "state": "NY",
+      "region": "Northeast",
+      "aliases": []
+    },
+    {
+      "code": "LA",
+      "city": "Los Angeles",
+      "state": "CA",
+      "region": "West",
+      "aliases": [
+        "Anaheim",
+        "Long Beach",
+        "Santa Ana",
+        "Glendale",
+        "Burbank",
+        "Pasadena",
+        "Santa Monica",
+        "Venice"
+      ]
+    },
+    {
+      "code": "CHI",
+      "city": "Chicago",
+      "state": "IL",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "DAL",
+      "city": "Dallas",
+      "state": "TX",
+      "region": "South",
+      "aliases": [
+        "Fort Worth"
+      ]
+    },
+    {
+      "code": "HOU",
+      "city": "Houston",
+      "state": "TX",
+      "region": "South",
+      "aliases": [
+        "San Antonio"
+      ]
+    },
+    {
+      "code": "PHI",
+      "city": "Philadelphia",
+      "state": "PA",
+      "region": "Northeast",
+      "aliases": []
+    },
+    {
+      "code": "ATL",
+      "city": "Atlanta",
+      "state": "GA",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "MIA",
+      "city": "Miami",
+      "state": "FL",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "SF",
+      "city": "San Francisco",
+      "state": "CA",
+      "region": "West",
+      "aliases": [
+        "Oakland",
+        "Berkeley",
+        "San Jose",
+        "Santa Cruz",
+        "San Luis Obispo",
+        "Santa Barbara",
+        "Sacramento",
+        "Stockton",
+        "Bakersfield",
+        "Riverside",
+        "Fresno",
+        "Irvine"
+      ]
+    },
+    {
+      "code": "BOS",
+      "city": "Boston",
+      "state": "MA",
+      "region": "Northeast",
+      "aliases": []
+    },
+    {
+      "code": "DC",
+      "city": "Washington",
+      "state": "DC",
+      "region": "Northeast",
+      "aliases": []
+    },
+    {
+      "code": "SEA",
+      "city": "Seattle",
+      "state": "WA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "PDX",
+      "city": "Portland",
+      "state": "OR",
+      "region": "West",
+      "aliases": [
+        "Eugene",
+        "Bend"
+      ]
+    },
+    {
+      "code": "DEN",
+      "city": "Denver",
+      "state": "CO",
+      "region": "Mountain",
+      "aliases": [
+        "Boulder",
+        "Fort Collins"
+      ]
+    },
+    {
+      "code": "AUS",
+      "city": "Austin",
+      "state": "TX",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "NSH",
+      "city": "Nashville",
+      "state": "TN",
+      "region": "South",
+      "aliases": [
+        "Memphis"
+      ]
+    },
+    {
+      "code": "MEM",
+      "city": "Memphis",
+      "state": "TN",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "NOLA",
+      "city": "New Orleans",
+      "state": "LA",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "MIN",
+      "city": "Minneapolis",
+      "state": "MN",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "DET",
+      "city": "Detroit",
+      "state": "MI",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "KC",
+      "city": "Kansas City",
+      "state": "MO",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "STL",
+      "city": "St. Louis",
+      "state": "MO",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "IND",
+      "city": "Indianapolis",
+      "state": "IN",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "CLE",
+      "city": "Cleveland",
+      "state": "OH",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "PHX",
+      "city": "Phoenix",
+      "state": "AZ",
+      "region": "Southwest",
+      "aliases": []
+    },
+    {
+      "code": "LV",
+      "city": "Las Vegas",
+      "state": "NV",
+      "region": "Southwest",
+      "aliases": []
+    },
+    {
+      "code": "SLC",
+      "city": "Salt Lake City",
+      "state": "UT",
+      "region": "Mountain",
+      "aliases": [
+        "Moab"
+      ]
+    },
+    {
+      "code": "ALB",
+      "city": "Albuquerque",
+      "state": "NM",
+      "region": "Southwest",
+      "aliases": []
+    },
+    {
+      "code": "SAC",
+      "city": "Sacramento",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "SD",
+      "city": "San Diego",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "OAK",
+      "city": "Oakland",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "SJ",
+      "city": "San Jose",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "LB",
+      "city": "Long Beach",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "ANA",
+      "city": "Anaheim",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "FRE",
+      "city": "Fresno",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "BCK",
+      "city": "Bakersfield",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "RIV",
+      "city": "Riverside",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "STK",
+      "city": "Stockton",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "OXN",
+      "city": "Oxnard",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "VIS",
+      "city": "Visalia",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "PIT",
+      "city": "Pittsburgh",
+      "state": "PA",
+      "region": "Northeast",
+      "aliases": []
+    },
+    {
+      "code": "BAL",
+      "city": "Baltimore",
+      "state": "MD",
+      "region": "Northeast",
+      "aliases": []
+    },
+    {
+      "code": "BUF",
+      "city": "Buffalo",
+      "state": "NY",
+      "region": "Northeast",
+      "aliases": []
+    },
+    {
+      "code": "PRV",
+      "city": "Providence",
+      "state": "RI",
+      "region": "Northeast",
+      "aliases": []
+    },
+    {
+      "code": "HRT",
+      "city": "Hartford",
+      "state": "CT",
+      "region": "Northeast",
+      "aliases": []
+    },
+    {
+      "code": "ALBY",
+      "city": "Albany",
+      "state": "NY",
+      "region": "Northeast",
+      "aliases": []
+    },
+    {
+      "code": "SYR",
+      "city": "Syracuse",
+      "state": "NY",
+      "region": "Northeast",
+      "aliases": []
+    },
+    {
+      "code": "ROC",
+      "city": "Rochester",
+      "state": "NY",
+      "region": "Northeast",
+      "aliases": []
+    },
+    {
+      "code": "RIC",
+      "city": "Richmond",
+      "state": "VA",
+      "region": "Southeast",
+      "aliases": []
+    },
+    {
+      "code": "CHA",
+      "city": "Charlotte",
+      "state": "NC",
+      "region": "Southeast",
+      "aliases": []
+    },
+    {
+      "code": "RDU",
+      "city": "Raleigh",
+      "state": "NC",
+      "region": "Southeast",
+      "aliases": []
+    },
+    {
+      "code": "GRE",
+      "city": "Greensboro",
+      "state": "NC",
+      "region": "Southeast",
+      "aliases": []
+    },
+    {
+      "code": "CHS",
+      "city": "Charleston",
+      "state": "SC",
+      "region": "Southeast",
+      "aliases": []
+    },
+    {
+      "code": "COL",
+      "city": "Columbia",
+      "state": "SC",
+      "region": "Southeast",
+      "aliases": []
+    },
+    {
+      "code": "SAV",
+      "city": "Savannah",
+      "state": "GA",
+      "region": "Southeast",
+      "aliases": []
+    },
+    {
+      "code": "AUG",
+      "city": "Augusta",
+      "state": "GA",
+      "region": "Southeast",
+      "aliases": []
+    },
+    {
+      "code": "JAX",
+      "city": "Jacksonville",
+      "state": "FL",
+      "region": "Southeast",
+      "aliases": []
+    },
+    {
+      "code": "TB",
+      "city": "Tampa",
+      "state": "FL",
+      "region": "Southeast",
+      "aliases": []
+    },
+    {
+      "code": "ORL",
+      "city": "Orlando",
+      "state": "FL",
+      "region": "Southeast",
+      "aliases": []
+    },
+    {
+      "code": "FTL",
+      "city": "Fort Lauderdale",
+      "state": "FL",
+      "region": "Southeast",
+      "aliases": []
+    },
+    {
+      "code": "WPB",
+      "city": "West Palm Beach",
+      "state": "FL",
+      "region": "Southeast",
+      "aliases": []
+    },
+    {
+      "code": "MCO",
+      "city": "Daytona Beach",
+      "state": "FL",
+      "region": "Southeast",
+      "aliases": []
+    },
+    {
+      "code": "PEN",
+      "city": "Pensacola",
+      "state": "FL",
+      "region": "Southeast",
+      "aliases": []
+    },
+    {
+      "code": "LOU",
+      "city": "Louisville",
+      "state": "KY",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "LEX",
+      "city": "Lexington",
+      "state": "KY",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "BHM",
+      "city": "Birmingham",
+      "state": "AL",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "MOB",
+      "city": "Mobile",
+      "state": "AL",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "JAC",
+      "city": "Jackson",
+      "state": "MS",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "BR",
+      "city": "Baton Rouge",
+      "state": "LA",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "LAF",
+      "city": "Lafayette",
+      "state": "LA",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "SHR",
+      "city": "Shreveport",
+      "state": "LA",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "SAT",
+      "city": "San Antonio",
+      "state": "TX",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "FTW",
+      "city": "Fort Worth",
+      "state": "TX",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "OKC",
+      "city": "Oklahoma City",
+      "state": "OK",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "TUL",
+      "city": "Tulsa",
+      "state": "OK",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "ARK",
+      "city": "Little Rock",
+      "state": "AR",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "CHT",
+      "city": "Chattanooga",
+      "state": "TN",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "KNX",
+      "city": "Knoxville",
+      "state": "TN",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "TRI",
+      "city": "Tri-Cities",
+      "state": "TN",
+      "region": "South",
+      "aliases": []
+    },
+    {
+      "code": "DES",
+      "city": "Des Moines",
+      "state": "IA",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "CED",
+      "city": "Cedar Rapids",
+      "state": "IA",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "MSP",
+      "city": "Minneapolis-St. Paul",
+      "state": "MN",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "DUL",
+      "city": "Duluth",
+      "state": "MN",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "MIL",
+      "city": "Milwaukee",
+      "state": "WI",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "MAD",
+      "city": "Madison",
+      "state": "WI",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "GRB",
+      "city": "Green Bay",
+      "state": "WI",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "GR",
+      "city": "Grand Rapids",
+      "state": "MI",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "ANN",
+      "city": "Ann Arbor",
+      "state": "MI",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "FLI",
+      "city": "Flint",
+      "state": "MI",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "LAN",
+      "city": "Lansing",
+      "state": "MI",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "CMH",
+      "city": "Columbus",
+      "state": "OH",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "CIN",
+      "city": "Cincinnati",
+      "state": "OH",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "DAY",
+      "city": "Dayton",
+      "state": "OH",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "TOL",
+      "city": "Toledo",
+      "state": "OH",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "AKR",
+      "city": "Akron",
+      "state": "OH",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "CAN",
+      "city": "Canton",
+      "state": "OH",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "LIM",
+      "city": "Lima",
+      "state": "OH",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "INV",
+      "city": "Inverness",
+      "state": "IL",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "RCK",
+      "city": "Rockford",
+      "state": "IL",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "PEO",
+      "city": "Peoria",
+      "state": "IL",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "SPRI",
+      "city": "Springfield",
+      "state": "IL",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "EV",
+      "city": "Evansville",
+      "state": "IN",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "FWY",
+      "city": "Fort Wayne",
+      "state": "IN",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "SBN",
+      "city": "South Bend",
+      "state": "IN",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "LBY",
+      "city": "Lafayette",
+      "state": "IN",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "TER",
+      "city": "Terre Haute",
+      "state": "IN",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "JEF",
+      "city": "Jefferson City",
+      "state": "MO",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "SPRM",
+      "city": "Springfield",
+      "state": "MO",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "JOP",
+      "city": "Joplin",
+      "state": "MO",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "KCK",
+      "city": "Kansas City",
+      "state": "KS",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "TOP",
+      "city": "Topeka",
+      "state": "KS",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "WIC",
+      "city": "Wichita",
+      "state": "KS",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "OMA",
+      "city": "Omaha",
+      "state": "NE",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "LIN",
+      "city": "Lincoln",
+      "state": "NE",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "GRD",
+      "city": "Grand Island",
+      "state": "NE",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "RNO",
+      "city": "Reno",
+      "state": "NV",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "CRS",
+      "city": "Carson City",
+      "state": "NV",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "HEN",
+      "city": "Henderson",
+      "state": "NV",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "BSE",
+      "city": "Boise",
+      "state": "ID",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "POC",
+      "city": "Pocatello",
+      "state": "ID",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "MSL",
+      "city": "Missoula",
+      "state": "MT",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "BIL",
+      "city": "Billings",
+      "state": "MT",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "GRT",
+      "city": "Great Falls",
+      "state": "MT",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "CHY",
+      "city": "Cheyenne",
+      "state": "WY",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "CSP",
+      "city": "Casper",
+      "state": "WY",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "LAR",
+      "city": "Laramie",
+      "state": "WY",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "BOZ",
+      "city": "Bozeman",
+      "state": "MT",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "COS",
+      "city": "Colorado Springs",
+      "state": "CO",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "PUE",
+      "city": "Pueblo",
+      "state": "CO",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "GJT",
+      "city": "Grand Junction",
+      "state": "CO",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "FTC",
+      "city": "Fort Collins",
+      "state": "CO",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "OGD",
+      "city": "Ogden",
+      "state": "UT",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "PRO",
+      "city": "Provo",
+      "state": "UT",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "STG",
+      "city": "St. George",
+      "state": "UT",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "LOG",
+      "city": "Logan",
+      "state": "UT",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "LAS",
+      "city": "Las Cruces",
+      "state": "NM",
+      "region": "Southwest",
+      "aliases": []
+    },
+    {
+      "code": "ROA",
+      "city": "Roswell",
+      "state": "NM",
+      "region": "Southwest",
+      "aliases": []
+    },
+    {
+      "code": "HOB",
+      "city": "Hobbs",
+      "state": "NM",
+      "region": "Southwest",
+      "aliases": []
+    },
+    {
+      "code": "GLB",
+      "city": "Glendale",
+      "state": "AZ",
+      "region": "Southwest",
+      "aliases": []
+    },
+    {
+      "code": "MES",
+      "city": "Mesa",
+      "state": "AZ",
+      "region": "Southwest",
+      "aliases": []
+    },
+    {
+      "code": "CHN",
+      "city": "Chandler",
+      "state": "AZ",
+      "region": "Southwest",
+      "aliases": []
+    },
+    {
+      "code": "SCO",
+      "city": "Scottsdale",
+      "state": "AZ",
+      "region": "Southwest",
+      "aliases": []
+    },
+    {
+      "code": "TEM",
+      "city": "Tempe",
+      "state": "AZ",
+      "region": "Southwest",
+      "aliases": []
+    },
+    {
+      "code": "PES",
+      "city": "Peoria",
+      "state": "AZ",
+      "region": "Southwest",
+      "aliases": []
+    },
+    {
+      "code": "TUC",
+      "city": "Tucson",
+      "state": "AZ",
+      "region": "Southwest",
+      "aliases": []
+    },
+    {
+      "code": "YUM",
+      "city": "Yuma",
+      "state": "AZ",
+      "region": "Southwest",
+      "aliases": []
+    },
+    {
+      "code": "MON",
+      "city": "Monterey",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "SCR",
+      "city": "Santa Cruz",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "SLO",
+      "city": "San Luis Obispo",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "SBA",
+      "city": "Santa Barbara",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "VEN",
+      "city": "Ventura",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "SAN",
+      "city": "Santa Ana",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "SBD",
+      "city": "San Bernardino",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "THO",
+      "city": "Thousand Oaks",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "SIM",
+      "city": "Simi Valley",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "CAM",
+      "city": "Camarillo",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "MER",
+      "city": "Merced",
+      "state": "CA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "EVR",
+      "city": "Everett",
+      "state": "WA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "TAC",
+      "city": "Tacoma",
+      "state": "WA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "OLY",
+      "city": "Olympia",
+      "state": "WA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "VAN",
+      "city": "Vancouver",
+      "state": "WA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "SPO",
+      "city": "Spokane",
+      "state": "WA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "YAK",
+      "city": "Yakima",
+      "state": "WA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "BEL",
+      "city": "Bellingham",
+      "state": "WA",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "EUG",
+      "city": "Eugene",
+      "state": "OR",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "SAL",
+      "city": "Salem",
+      "state": "OR",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "GRS",
+      "city": "Gresham",
+      "state": "OR",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "BEN",
+      "city": "Bend",
+      "state": "OR",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "MED",
+      "city": "Medford",
+      "state": "OR",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "ASH",
+      "city": "Ashland",
+      "state": "OR",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "KLA",
+      "city": "Klamath Falls",
+      "state": "OR",
+      "region": "West",
+      "aliases": []
+    },
+    {
+      "code": "BOU",
+      "city": "Boulder",
+      "state": "CO",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "AUR",
+      "city": "Aurora",
+      "state": "CO",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "LAK",
+      "city": "Lakewood",
+      "state": "CO",
+      "region": "Mountain",
+      "aliases": []
+    },
+    {
+      "code": "DUH",
+      "city": "Dubuque",
+      "state": "IA",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "DVM",
+      "city": "Davenport",
+      "state": "IA",
+      "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "WAT",
+      "city": "Waterloo",
+      "state": "IA",
+      "region": "Midwest",
+      "aliases": []
+    }
   ]
 }
