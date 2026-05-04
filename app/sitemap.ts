@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next'
 import { createClient } from '@supabase/supabase-js'
-import { getAllMetros, cityCodeToSlug } from '@/lib/city-slugs'
+import { getAllMetros, cityCodeToSlug, aliasSlugMap } from '@/lib/city-slugs'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createClient(
@@ -27,6 +27,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
+  // Include alias city pages that have >= 5 upcoming events
+  const today = new Date().toISOString().split('T')[0]
+  const aliasCityNames = Object.values(aliasSlugMap).map((a) => a.cityName)
+  const aliasUrls: MetadataRoute.Sitemap = []
+
+  if (aliasCityNames.length > 0) {
+    const { data: aliasConcerts } = await supabase
+      .from('concerts')
+      .select('city')
+      .in('city', aliasCityNames)
+      .gte('date', today)
+
+    const cityCounts: Record<string, number> = {}
+    for (const concert of aliasConcerts ?? []) {
+      cityCounts[concert.city] = (cityCounts[concert.city] || 0) + 1
+    }
+
+    for (const [slug, aliasCity] of Object.entries(aliasSlugMap)) {
+      if ((cityCounts[aliasCity.cityName] || 0) >= 5) {
+        aliasUrls.push({
+          url: `https://www.freelivemusic.co/concerts/city/${slug}`,
+          lastModified: new Date(),
+          changeFrequency: 'daily',
+          priority: 0.6,
+        })
+      }
+    }
+  }
+
   return [
     {
       url: 'https://www.freelivemusic.co',
@@ -35,6 +64,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     ...cityUrls,
+    ...aliasUrls,
     ...concertUrls,
   ]
 }

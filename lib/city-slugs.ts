@@ -5,7 +5,7 @@ import metros from './metros.json'
 export type Metro = typeof metros.metros[0]
 
 // Generate slug from city name (convert to kebab-case)
-function cityToSlug(cityName: string): string {
+export function cityToSlug(cityName: string): string {
   return cityName
     .toLowerCase()
     .trim()
@@ -61,4 +61,33 @@ export function getMetroFromSlug(slug: string): Metro | undefined {
 export function getTopMetros(count: number = 10): Metro[] {
   // Return metros in order (assumes metros.json is ordered by importance)
   return metros.metros.slice(0, count) as Metro[]
+}
+
+export type AliasCity = {
+  slug: string
+  cityName: string
+  parentMetroCode: string
+  parentMetro: Metro
+}
+export const aliasSlugMap: Record<string, AliasCity> = Object.fromEntries(
+  metros.metros.flatMap(m =>
+    (m.aliases || []).map((alias: string) => [
+      cityToSlug(alias),
+      { slug: cityToSlug(alias), cityName: alias, parentMetroCode: m.code, parentMetro: m as Metro }
+    ])
+  )
+)
+export function getAliasCityFromSlug(slug: string): AliasCity | undefined {
+  return aliasSlugMap[slug.toLowerCase()]
+}
+export function getAllAliasSlugs(): string[] {
+  return Object.keys(aliasSlugMap)
+}
+export function isMetroSlug(slug: string): boolean {
+  return !!getCityCodeFromSlug(slug)
+}
+export function getParentMetro(slug: string): Metro | undefined {
+  const metroCode = getCityCodeFromSlug(slug)
+  if (metroCode) return getMetroByCode(metroCode)
+  return getAliasCityFromSlug(slug)?.parentMetro
 }

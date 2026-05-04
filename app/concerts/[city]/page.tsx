@@ -9,6 +9,8 @@ import {
   getMetroByCode,
   getAllCityCodes,
   cityCodeToSlug,
+  cityToSlug,
+  getAliasCityFromSlug,
 } from '@/lib/city-slugs'
 
 export const revalidate = 3600 // Revalidate every hour
@@ -73,10 +75,13 @@ export async function generateMetadata({
   }
 }
 
-async function getConcertsByCity(cityCode: string): Promise<Concert[]> {
+async function getConcertsByCity(metro: ReturnType<typeof getMetroByCode>): Promise<Concert[]> {
+  if (!metro) return []
+  const cityNames = [metro.city, ...(metro.aliases || [])]
+
   // Return mock data if no Supabase env vars
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    return MOCK_CONCERTS.filter(c => c.city === cityCode)
+    return MOCK_CONCERTS.filter(c => c.city === metro.code)
   }
 
   try {
@@ -88,18 +93,18 @@ async function getConcertsByCity(cityCode: string): Promise<Concert[]> {
     const { data, error } = await supabase
       .from('concerts')
       .select('*')
-      .eq('city', cityCode)
+      .in('city', cityNames)
       .gte('date', today)
       .order('date', { ascending: true })
-      .limit(50)
+      .limit(200)
 
     if (error || !data?.length) {
-      return MOCK_CONCERTS.filter(c => c.city === cityCode)
+      return MOCK_CONCERTS.filter(c => c.city === metro.code)
     }
     return data as Concert[]
   } catch (error) {
-    console.error(`Error fetching concerts for ${cityCode}:`, error)
-    return MOCK_CONCERTS.filter(c => c.city === cityCode)
+    console.error(`Error fetching concerts for ${metro.city}:`, error)
+    return MOCK_CONCERTS.filter(c => c.city === metro.code)
   }
 }
 
@@ -150,7 +155,7 @@ export default async function CityPage({
     return <div className="text-center py-20">City data not found</div>
   }
 
-  const concerts = await getConcertsByCity(cityCode)
+  const concerts = await getConcertsByCity(metro)
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
@@ -294,6 +299,23 @@ export default async function CityPage({
                 })}
             </div>
           </div>
+
+          {metro.aliases && metro.aliases.length > 0 && (
+            <div className="mt-8 pt-8 border-t border-slate-300">
+              <h3 className="text-xl font-bold text-slate-900 mb-4">Browse by City in the {metro.city} Area</h3>
+              <div className="flex flex-wrap gap-3">
+                {metro.aliases.map((alias) => (
+                  <Link
+                    key={alias}
+                    href={`/concerts/city/${cityToSlug(alias)}`}
+                    className="text-blue-600 hover:text-blue-700 hover:underline text-sm"
+                  >
+                    {alias}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </div>
