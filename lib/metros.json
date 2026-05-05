@@ -29,14 +29,14 @@
       "city": "Chicago",
       "state": "IL",
       "region": "Midwest",
-      "aliases": []
+      "aliases": ["CHI"]
     },
     {
       "code": "DAL",
       "city": "Dallas",
       "state": "TX",
       "region": "South",
-      "aliases": []
+      "aliases": ["DAL"]
     },
     {
       "code": "HOU",
@@ -59,7 +59,7 @@
       "city": "Atlanta",
       "state": "GA",
       "region": "South",
-      "aliases": []
+      "aliases": ["ATL"]
     },
     {
       "code": "MIA",
@@ -74,6 +74,7 @@
       "state": "CA",
       "region": "West",
       "aliases": [
+        "SF",
         "Oakland",
         "Berkeley",
         "San Jose",
@@ -93,21 +94,21 @@
       "city": "Boston",
       "state": "MA",
       "region": "Northeast",
-      "aliases": []
+      "aliases": ["BOS"]
     },
     {
       "code": "DC",
       "city": "Washington",
       "state": "DC",
       "region": "Northeast",
-      "aliases": []
+      "aliases": ["DC", "Washington DC"]
     },
     {
       "code": "SEA",
       "city": "Seattle",
       "state": "WA",
       "region": "West",
-      "aliases": []
+      "aliases": ["SEA"]
     },
     {
       "code": "PDX",
@@ -115,6 +116,7 @@
       "state": "OR",
       "region": "West",
       "aliases": [
+        "PDX",
         "Eugene",
         "Bend"
       ]
@@ -125,6 +127,7 @@
       "state": "CO",
       "region": "Mountain",
       "aliases": [
+        "DEN",
         "Boulder",
         "Fort Collins"
       ]
@@ -134,14 +137,14 @@
       "city": "Austin",
       "state": "TX",
       "region": "South",
-      "aliases": []
+      "aliases": ["AUS"]
     },
     {
       "code": "NSH",
       "city": "Nashville",
       "state": "TN",
       "region": "South",
-      "aliases": []
+      "aliases": ["NSH"]
     },
     {
       "code": "MEM",
