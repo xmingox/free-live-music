@@ -5,7 +5,7 @@
       "city": "New York",
       "state": "NY",
       "region": "Northeast",
-      "aliases": []
+      "aliases": ["NYC", "New York City"]
     },
     {
       "code": "LA",
@@ -13,6 +13,7 @@
       "state": "CA",
       "region": "West",
       "aliases": [
+        "LA",
         "Anaheim",
         "Long Beach",
         "Santa Ana",
