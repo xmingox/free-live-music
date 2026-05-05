@@ -156,12 +156,23 @@ async function main() {
   
   console.log("\n📝 Generated SQL:\n");
   console.log("-- Eventbrite Free Music Import");
-  console.log("INSERT INTO concerts (artist_name, venue, date, time, city, neighborhood, genre, price, indoor_outdoor, source_url, source_name, is_verified) VALUES");
+  console.log("INSERT INTO concerts (artist_name, venue, date, time, city, neighborhood, genre, price, indoor_outdoor, source_url, source_name, source_id, is_verified) VALUES");
   
-  const sqlLines = allEvents.map((e, i) => {
-    const isLast = i === allEvents.length - 1;
+  // Deduplicate by URL — same event can appear in results for multiple nearby cities
+  const seen = new Set();
+  const deduped = allEvents.filter((e) => {
+    if (!e.url || seen.has(e.url)) return false;
+    seen.add(e.url);
+    return true;
+  });
+
+  const sqlLines = deduped.map((e, i) => {
+    const isLast = i === deduped.length - 1;
     const title = e.title.replace(/'/g, "''").substring(0, 100);
-    return `('${title}', 'TBD', '2026-05-01', '19:00', '${e.city}', '', 'Music', 'Free', 'Indoor', '${e.url}', 'Eventbrite', false)${isLast ? ";" : ","}`;
+    // Extract Eventbrite event ID from URL for dedup constraint
+    const ebId = e.url.match(/tickets-(\d+)/)?.[1] ?? null;
+    const sourceId = ebId ? `'eb-${ebId}'` : 'NULL';
+    return `('${title}', 'TBD', '2026-05-01', '19:00', '${e.city}', '', 'Music', 'Free', 'Indoor', '${e.url}', 'Eventbrite', ${sourceId}, false)${isLast ? ";" : ","}`;
   });
   
   console.log(sqlLines.join("\n"));
