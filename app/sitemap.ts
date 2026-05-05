@@ -11,13 +11,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { data: concerts } = await supabase
     .from('concerts')
     .select('slug, date, created_at')
+    .eq('is_verified', true)
     .order('date', { ascending: true })
 
   const concertUrls: MetadataRoute.Sitemap = (concerts ?? []).map((c) => ({
     url: `https://www.freelivemusic.co/concert/${c.slug}`,
     lastModified: c.created_at,
     changeFrequency: 'weekly',
-    priority: 0.7,
+    priority: 0.6,
   }))
 
   const cityUrls: MetadataRoute.Sitemap = getAllMetros().map((metro) => ({
