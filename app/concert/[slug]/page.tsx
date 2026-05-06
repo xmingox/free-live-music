@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation'
 import { Concert } from '@/types'
 import Link from 'next/link'
 
-export const dynamic = 'force-dynamic'
+// ISR: re-render at most once per hour instead of on every request
+export const revalidate = 3600
 
 const cityNames: Record<string, string> = {
   NYC: 'New York City',
@@ -40,13 +41,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!data) return { title: 'Concert Not Found' }
 
   const city = cityNames[data.city] ?? data.city
+  const canonicalUrl = `https://www.freelivemusic.co/concert/${slug}`
   return {
     title: `${data.artist_name} — Free Concert in ${city} | Free Live Music`,
     description: `${data.artist_name} performs free at ${data.venue} in ${data.neighborhood}, ${city} on ${formatDate(data.date)}. Free admission.`,
+    alternates: { canonical: canonicalUrl },
     openGraph: {
       title: `${data.artist_name} — Free Concert in ${city}`,
       description: `Free show at ${data.venue} on ${formatDate(data.date)}`,
-      url: `https://freelivemusic.co/concert/${(await params).slug}`,
+      url: canonicalUrl,
+      siteName: 'Free Live Music',
+      type: 'website',
     },
   }
 }
@@ -66,7 +71,9 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
   if (!concert) notFound()
 
   const city = cityNames[concert.city] ?? concert.city
-  const jsonLd = {
+  const canonicalUrl = `https://www.freelivemusic.co/concert/${slug}`
+
+  const eventJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Event',
     name: concert.artist_name,
@@ -86,31 +93,78 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
       price: '0',
       priceCurrency: 'USD',
       availability: 'https://schema.org/InStock',
-      url: concert.source_url ?? `https://freelivemusic.co/concert/${slug}`,
+      url: concert.source_url ?? canonicalUrl,
     },
     organizer: {
       '@type': 'Organization',
       name: concert.source_name ?? 'Free Live Music',
-      url: concert.source_url ?? 'https://freelivemusic.co',
+      url: concert.source_url ?? 'https://www.freelivemusic.co',
     },
+  }
+
+  // BreadcrumbList helps Google display breadcrumbs in search results
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Free Live Music',
+        item: 'https://www.freelivemusic.co',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: `Free Concerts in ${city}`,
+        item: `https://www.freelivemusic.co/?city=${concert.city}`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: concert.artist_name,
+        item: canonicalUrl,
+      },
+    ],
   }
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(eventJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
       {/* Header */}
       <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-10">
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-            </svg>
-            Back to all shows
-          </Link>
+        <div className="max-w-3xl mx-auto px-4 py-4">
+          {/* Breadcrumb nav — visible to users and crawlers */}
+          <nav aria-label="Breadcrumb">
+            <ol className="flex items-center gap-1 text-sm text-slate-400 flex-wrap">
+              <li>
+                <Link href="/" className="hover:text-white transition-colors">
+                  Free Live Music
+                </Link>
+              </li>
+              <li aria-hidden="true" className="text-slate-600">/</li>
+              <li>
+                <Link
+                  href={`/?city=${concert.city}`}
+                  className="hover:text-white transition-colors"
+                >
+                  {city}
+                </Link>
+              </li>
+              <li aria-hidden="true" className="text-slate-600">/</li>
+              <li className="text-slate-200 truncate max-w-[180px]" aria-current="page">
+                {concert.artist_name}
+              </li>
+            </ol>
+          </nav>
         </div>
       </header>
 
