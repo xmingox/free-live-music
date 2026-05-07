@@ -15,26 +15,37 @@ export async function getConcerts(metroCode?: string): Promise<Concert[]> {
     )
     
     const today = new Date().toISOString().split('T')[0]
-    
-    let query = supabase
-      .from('concerts')
-      .select('*')
-      .gte('date', today)
-      .order('date', { ascending: true })
-      .limit(5000)
 
+    let cityFilter: string[] | undefined
     if (metroCode) {
       const metro = metros.metros.find(m => m.code === metroCode)
-      if (metro) {
-        const cities = [metro.city, ...(metro.aliases || [])]
-        query = query.in('city', cities)
-      }
+      if (metro) cityFilter = [metro.city, ...(metro.aliases || [])]
     }
 
-    const { data, error } = await query
+    const pageSize = 1000
+    let offset = 0
+    const all: Concert[] = []
 
-    if (error || !data?.length) return MOCK_CONCERTS
-    return data as Concert[]
+    while (true) {
+      let query = supabase
+        .from('concerts')
+        .select('*')
+        .gte('date', today)
+        .order('date', { ascending: true })
+        .range(offset, offset + pageSize - 1)
+
+      if (cityFilter) query = query.in('city', cityFilter)
+
+      const { data, error } = await query
+      if (error) break
+      if (!data?.length) break
+      all.push(...(data as Concert[]))
+      if (data.length < pageSize) break
+      offset += pageSize
+    }
+
+    if (!all.length) return MOCK_CONCERTS
+    return all
   } catch {
     return MOCK_CONCERTS
   }
