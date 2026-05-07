@@ -21,7 +21,8 @@ export async function getConcerts(metroCode?: string): Promise<Concert[]> {
       .select('*')
       .gte('date', today)
       .order('date', { ascending: true })
-    
+      .limit(5000)
+
     if (metroCode) {
       const metro = metros.metros.find(m => m.code === metroCode)
       if (metro) {
