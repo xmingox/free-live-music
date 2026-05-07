@@ -230,7 +230,7 @@
       "city": "Albuquerque",
       "state": "NM",
       "region": "Southwest",
-      "aliases": []
+      "aliases": ["ABQ"]
     },
     {
       "code": "SAC",
@@ -384,14 +384,14 @@
       "city": "Charlotte",
       "state": "NC",
       "region": "Southeast",
-      "aliases": []
+      "aliases": ["CHR"]
     },
     {
       "code": "RDU",
       "city": "Raleigh",
       "state": "NC",
       "region": "Southeast",
-      "aliases": []
+      "aliases": ["RAH"]
     },
     {
       "code": "GRE",
@@ -548,6 +548,13 @@
       "aliases": []
     },
     {
+      "code": "ELP",
+      "city": "El Paso",
+      "state": "TX",
+      "region": "South",
+      "aliases": []
+    },
+    {
       "code": "OKC",
       "city": "Oklahoma City",
       "state": "OK",
@@ -559,7 +566,7 @@
       "city": "Tulsa",
       "state": "OK",
       "region": "South",
-      "aliases": []
+      "aliases": ["TLS"]
     },
     {
       "code": "ARK",
@@ -1049,7 +1056,7 @@
       "city": "Tucson",
       "state": "AZ",
       "region": "Southwest",
-      "aliases": []
+      "aliases": ["TUS"]
     },
     {
       "code": "YUM",
@@ -1273,6 +1280,13 @@
       "city": "Waterloo",
       "state": "IA",
       "region": "Midwest",
+      "aliases": []
+    },
+    {
+      "code": "HNL",
+      "city": "Honolulu",
+      "state": "HI",
+      "region": "West",
       "aliases": []
     }
   ]
