@@ -314,3 +314,37 @@ When adding new cities, always check:
 - [ ] 3-letter code is in the `aliases` array (not just the `code` field)
 - [ ] City code is in the `City` type in `types/index.ts`
 - [ ] Events are stored with a code that matches an alias or `metro.city`
+
+---
+
+## Session Summary — May 7, 2026 (Part 2)
+
+### St. Louis (STL) Events Added
+Inserted 30 verified events across 6 series:
+- **Whitaker Music Festival** — Missouri Botanical Garden, Wednesdays May 27–Jul 29, 7:00pm (10 events)
+- **Mondays at the Music Stand** — Tower Grove Park, Jul 14–Sep 22, 6:00pm (6 events)
+- **Gateway Festival Orchestra** — Jun 18, Jul 12, 19, 26 (4 events)
+- **Blues at the Arch** — Gateway Arch National Park, Aug 14–16, 12:00pm (3 events)
+- **St. Louis Symphony Orchestra** — Art Hill Forest Park, Sep 16, 7:00pm (1 event)
+- **Making Music Concert Series** — Kirkwood Park, Jun 14–Aug 23, 7:30pm (6 events)
+
+### Bugs Fixed
+
+#### 1. NaN time display on concert detail pages
+**File:** `app/concert/[slug]/page.tsx`
+**Cause:** `formatTime()` split `"5:30pm"` on `:` and called `Number("30pm")` → NaN. Affected every concert detail page since all times are stored in 12-hour format.
+**Fix:** If time string already contains `am` or `pm`, return it directly. Only run 24-hour conversion as fallback.
+**Lesson:** The DB stores time in 12-hour format (`7:30pm`). Don't try to re-parse it — display as-is.
+
+#### 2. STL events not showing on frontend
+**Cause:** `metros.json` had empty `aliases: []` for STL, so client-side filter `cityNames.includes(c.city)` never matched events stored as `city = 'STL'`.
+**Fix:** Added `"STL"` to aliases array in metros.json.
+**Lesson:** Every time a new city is added, its 3-letter code must be in the `aliases` array — not just the `code` field.
+
+### Checklist for Adding New Cities (Updated)
+- [ ] Metro entry exists in `lib/metros.json`
+- [ ] 3-letter code is in the `aliases` array
+- [ ] City code is in the `City` type in `types/index.ts`
+- [ ] Events stored with code matching an alias or `metro.city`
+- [ ] Verify on `/concerts/{city-slug}` page (direct DB query, no ISR issue)
+- [ ] Check concert detail pages for NaN in time display
