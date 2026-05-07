@@ -370,4 +370,17 @@ Inserted 30 verified events across 6 series:
 - **Gateway Festival Orchestra** (4) — multiple venues (Ritenour HS, WashU Brookings Quad, 560 Music Center) — Jun 18–Jul 26 — source: gatewayfestivalorchestra.org
 
 **Lesson:** Always source event dates from the venue's own 2026 page, not from a "best of summer" article that may be from the prior year.
+
+### Jacksonville (JAX) — 17 events inserted
+- **Jacksonville Jazz Festival** (3) — Ford on Bay, Downtown — May 22–24 — source: jacksonvillejazzfest.com (headliners: Parliament Funkadelic, Andra Day, Nile Rodgers & CHIC)
+- **Riverside Arts Market** (12) — 715 Riverside Ave, Riverside — Saturdays 10:00am, May–Aug — source: visitjacksonville.com
+- **Florida Fin Fest** (2) — Seawalk Pavilion, Jacksonville Beach — Sep 11–12 — source: flfinfest.com
+
+### Omaha (OMA) — 29 events inserted
+9 series: RITMO Music Fest, Orchestra Omaha Outdoor Pops, Rock The C!, Beats & Bites Stage (6), Music in Dundee (5), Omaha Freedom Festival, Music at Miller Park (2 named performers), Nebraska Wind Symphony, 4th of July Beach Party, Live on the Lawn (2), Jazz on the Green (4), Playing with Fire (3), Summer Sounds at Highlander
+
+### Birmingham (BHM) — 27 events total (16 new Pepper Place + 11 existing fixed)
+**Data fixes applied to existing 11 events:** corrected slugs to standard format (artist-bhm-YYYY-MM-DD), fixed Magic City Pop-Up Plaza venue to "Railroad Park, 17th Street Plaza", fixed ASO neighborhood from "Railroad Park" to "Southside", added source_url to all events.
+- **Pepper Place Saturday Market** (16) — The Market at Pepper Place, Southside — Saturdays 7:00am, May–Aug — source: pepperplacemarket.com
+- **Lesson:** Always audit existing city events before adding new ones — slug format, venue, neighborhood, and source_url all need to match the standard.
 - [ ] Check concert detail pages for NaN in time display
