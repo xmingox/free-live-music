@@ -347,4 +347,27 @@ Inserted 30 verified events across 6 series:
 - [ ] City code is in the `City` type in `types/index.ts`
 - [ ] Events stored with code matching an alias or `metro.city`
 - [ ] Verify on `/concerts/{city-slug}` page (direct DB query, no ISR issue)
+
+---
+
+## Session Summary — May 7, 2026
+
+### Baltimore (BAL) — 15 events inserted
+**Sources:** All confirmed from official 2026 venue/org sites (no year-adjusted guessing)
+- **Artscape** (2) — 100 Holliday St, Downtown — May 23–24, 11:00am — source: artscape.org
+- **Patterson Park Summer Concert Series** (5) — Below the Observatory — Jun 7–Aug 9, 6:00pm — source: pattersonpark.com
+- **WTMD First Thursday** (4) — Canton Waterfront Park — Jun 4–Sep 3, 5:30pm — source: wtmd.org
+- **Summer Sounds at Belvedere Square** (4) — Belvedere Square Market — Jun 19–Sep 18, 6:00pm — source: belvederesquare.com
+
+**Code changes:** Added `BAL` to metros.json aliases and to City type in types/index.ts. Also added missing `STL` to City type.
+
+### St. Louis (STL) — 17 events inserted (replaced 30 unverified events)
+**Why replaced:** Previous 30 events were sourced from a May 2025 STL Mag article; dates were adjusted to 2026 equivalents but unverified. At least "Mondays at the Music Stand" had confirmed wrong dates (Jul 14, 2026 = Tuesday, not Monday).
+
+**New sources:** All confirmed directly from 2026 venue/org sites
+- **Whitaker Music Festival** (10) — Cohen Amphitheater, Missouri Botanical Garden, Tower Grove — Wednesdays May 27–Jul 29, 7:00pm — source: missouribotanicalgarden.org (full lineup with named artists)
+- **Blues at the Arch** (3) — Gateway Arch National Park, Downtown — Aug 14–16, time TBA — source: archpark.org
+- **Gateway Festival Orchestra** (4) — multiple venues (Ritenour HS, WashU Brookings Quad, 560 Music Center) — Jun 18–Jul 26 — source: gatewayfestivalorchestra.org
+
+**Lesson:** Always source event dates from the venue's own 2026 page, not from a "best of summer" article that may be from the prior year.
 - [ ] Check concert detail pages for NaN in time display
