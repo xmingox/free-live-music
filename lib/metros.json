@@ -321,7 +321,7 @@
       "city": "Pittsburgh",
       "state": "PA",
       "region": "Northeast",
-      "aliases": []
+      "aliases": ["PIT"]
     },
     {
       "code": "BAL",
@@ -482,7 +482,7 @@
       "city": "Louisville",
       "state": "KY",
       "region": "South",
-      "aliases": []
+      "aliases": ["LOU"]
     },
     {
       "code": "LEX",
@@ -496,7 +496,7 @@
       "city": "Birmingham",
       "state": "AL",
       "region": "South",
-      "aliases": []
+      "aliases": ["BHM"]
     },
     {
       "code": "MOB",
@@ -538,28 +538,28 @@
       "city": "San Antonio",
       "state": "TX",
       "region": "South",
-      "aliases": []
+      "aliases": ["SAT"]
     },
     {
       "code": "FTW",
       "city": "Fort Worth",
       "state": "TX",
       "region": "South",
-      "aliases": []
+      "aliases": ["FTW"]
     },
     {
       "code": "ELP",
       "city": "El Paso",
       "state": "TX",
       "region": "South",
-      "aliases": []
+      "aliases": ["ELP"]
     },
     {
       "code": "OKC",
       "city": "Oklahoma City",
       "state": "OK",
       "region": "South",
-      "aliases": []
+      "aliases": ["OKC"]
     },
     {
       "code": "TUL",
@@ -1287,7 +1287,7 @@
       "city": "Honolulu",
       "state": "HI",
       "region": "West",
-      "aliases": []
+      "aliases": ["HNL"]
     }
   ]
 }
