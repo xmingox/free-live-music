@@ -130,3 +130,151 @@ Done ✅: DB setup, Eventbrite import (829 events), Next.js 15.3.1, metro alias 
 In Progress 🔄: Deduplication bug, sitemap concert pages, SEO architecture
 
 Planned ⏳: Search Console submission, dynamic meta tags, genre/date filtering, event page improvements, user submissions, push notifications, more data sources (LA Parks, Hollywood Bowl, Grand Performances, KCRW)
+
+---
+
+#### Critical Requirements:
+- **time:** Must be 12-hour format (7:30pm, 10:00am) — NOT 19:30 or 19:30:00
+- **date:** Must be >= today (frontend filters past events)
+- **price:** Always "Free"
+- **city:** Must match frontend city codes exactly
+- **is_verified:** true for manually added events
+
+## Data Pipeline
+
+### Adding Free Concert Data (6 Steps)
+
+1. **Research:** WebSearch for `"[CITY] free concert 2026"`
+2. **Identify Series:** Find recurring concerts with specific dates
+3. **Extract Data:** Get artist_name, venue, date, time, genre
+4. **Normalize:** Fix time format (→ 7:30pm), date format (→ YYYY-MM-DD)
+5. **SQL INSERT:** Add to concerts table
+6. **Redeploy:** Click "Redeploy" on Vercel to clear ISR cache
+
+### Verification Query
+```sql
+SELECT city, COUNT(*) as total_events, COUNT(DISTINCT artist_name) as unique_series
+FROM concerts WHERE city = 'FTW' GROUP BY city;
+```
+
+## Known Issues & Solutions
+
+### Issue: Events not showing after database insert
+**Cause:** ISR cache (1-hour TTL on city pages)
+**Solution:** Redeploy on Vercel dashboard to clear cache immediately
+
+### Issue: Events in database but not on frontend
+Check:
+- Time format: Must be "7:30pm" (not "19:30")
+- Date: Must be future date
+- City code: Must match exactly (FTW, not FORT WORTH)
+- is_verified: Should be true
+
+Debug with:
+```sql
+SELECT * FROM concerts WHERE city = 'FTW' LIMIT 5;
+SELECT DISTINCT time FROM concerts WHERE city = 'FTW';
+```
+
+## City Codes Reference
+
+FTW=Fort Worth, LOU=Louisville, ELP=El Paso, BHM=Birmingham, ABQ=Albuquerque, TUS=Tucson, TLS=Tulsa, PIT=Pittsburgh, RAH=Raleigh, OKC=Oklahoma City, SAT=San Antonio, HNL=Honolulu, CHR=Charlotte
+
+## Setup on New Machine
+
+```bash
+git clone https://github.com/xmingox/free-live-music.git
+cd free-live-music
+npm install
+vercel link
+vercel env pull .env.local
+npm run dev
+```
+
+## Common Tasks
+
+### Add events for a new city
+1. WebSearch: "[CITY] free concert 2026"
+2. Find 3-5 series with dates
+3. Extract artist_name, venue, date, time
+4. Normalize times (→ 7:30pm format)
+5. INSERT into concerts
+6. Verify with GROUP BY query
+7. Redeploy on Vercel
+
+### View zero-event cities
+```sql
+SELECT city FROM city_year_sequences 
+WHERE city NOT IN (SELECT DISTINCT city FROM concerts);
+```
+
+## Recent Work (May 2026)
+
+Added 125 events across 10 zero-event cities: Fort Worth (16), Louisville (14), El Paso (17), Birmingham (11), Albuquerque (10), Tucson (8), Tulsa (11), Pittsburgh (12), Raleigh (12), Oklahoma City (14).
+
+Fixed: City code standardization (FTW, LOU, etc.) and time format normalization (12-hour format).
+
+---
+Last Updated: May 6, 2026
+
+## Deployment Workflow
+
+### Code Changes
+```bash
+git add .
+git commit -m "Your message"
+git push origin main
+# Vercel auto-deploys after push
+```
+
+### Data Changes (Database)
+```bash
+1. Go to https://vercel.com/dashboard
+2. Find free-live-music project
+3. Click "Redeploy" button
+4. Wait ~30-60 seconds
+5. Refresh site in new private window
+```
+
+## Notes for Claude Code & Cowork
+
+This CLAUDE.md file is auto-loaded in future sessions to provide:
+- Project context and architecture
+- Database schema reference
+- Data pipeline steps
+- Common debugging queries
+- Setup instructions for new machines
+- Known issues and solutions
+
+**Next session:** Just ask about adding events, debugging issues, or improving the site—I'll have full context!
+
+## Recent Work (May 2026)
+
+**Completed:**
+- Added 125 free concert listings across 10 major zero-event cities
+- Standardized city codes (FTW, LOU, ELP, BHM, ABQ, TUS, TLS, PIT, RAH, OKC)
+- Normalized all time formats to 12-hour (7:30pm format)
+- Verified all events have is_verified=true and future dates
+
+**Cities Added:**
+- Fort Worth: 16 events
+- Louisville: 14 events
+- El Paso: 17 events
+- Birmingham: 11 events
+- Albuquerque: 10 events
+- Tucson: 8 events
+- Tulsa: 11 events
+- Pittsburgh: 12 events
+- Raleigh: 12 events
+- Oklahoma City: 14 events
+
+**Fixed:**
+- City code standardization (full names → 3-letter codes)
+- Time format conversion (24-hour → 12-hour with am/pm)
+- ISR cache clear procedure (via Vercel redeploy)
+
+---
+
+Last Updated: May 6, 2026
+Maintained By: xmingox
+Current Status: Ready for production with 125+ events across 10 cities
