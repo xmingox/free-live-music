@@ -384,3 +384,14 @@ Inserted 30 verified events across 6 series:
 - **Pepper Place Saturday Market** (16) — The Market at Pepper Place, Southside — Saturdays 7:00am, May–Aug — source: pepperplacemarket.com
 - **Lesson:** Always audit existing city events before adding new ones — slug format, venue, neighborhood, and source_url all need to match the standard.
 - [ ] Check concert detail pages for NaN in time display
+
+### San Diego (SD) — 72 events inserted
+4 series, all from official venue/city sources:
+- **Twilight in the Park** (33) — Balboa Park, Balboa Park neighborhood — Tue/Wed/Thu Jun 16–Aug 27, time not listed on official site (stored as NULL) — source: balboapark.org/twilight-concerts (full named-performer schedule)
+- **Coronado Promenade Concerts** (17) — Spreckels Park, Coronado — Sundays May 24–Sep 6, 6:00pm (May 24 first act 4:30pm, Aug 23 first act 4:30pm) — source: coronadoconcert.com
+- **Santee Summer Concerts** (9) — Town Center Community Park East, Santee — Thursdays Jun 11–Aug 13 (no Jul 2), 6:30pm — source: cityofsanteeca.gov
+- **Music on Main** (13) — Prescott Promenade, El Cajon — Fridays Jun 5–Aug 28, 6:00pm — source: downtownelcajon.com
+
+**Code changes:** Added `SD` to metros.json aliases and to City type in types/index.ts.
+**Twilight conflict resolved:** Sources initially disagreed on Tue/Wed/Fri vs Tue/Wed/Thu — confirmed Tue/Wed/Thu from official balboapark.org schedule.
+**Skipped:** La Mesa Sundays at Six (2026 performers not yet announced), Sonidos del Barrio (2026 dates not yet announced).
