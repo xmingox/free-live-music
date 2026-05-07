@@ -25,10 +25,13 @@ function formatDate(dateStr: string): string {
 }
 
 function formatTime(time: string): string {
+  if (time.toLowerCase().includes('am') || time.toLowerCase().includes('pm')) {
+    return time
+  }
   const [h, m] = time.split(':').map(Number)
-  const ampm = h >= 12 ? 'PM' : 'AM'
+  const ampm = h >= 12 ? 'pm' : 'am'
   const hour = h % 12 || 12
-  return `${hour}:${m.toString().padStart(2, '0')} ${ampm}`
+  return `${hour}:${m.toString().padStart(2, '0')}${ampm}`
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
