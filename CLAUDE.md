@@ -394,4 +394,29 @@ Inserted 30 verified events across 6 series:
 
 **Code changes:** Added `SD` to metros.json aliases and to City type in types/index.ts.
 **Twilight conflict resolved:** Sources initially disagreed on Tue/Wed/Fri vs Tue/Wed/Thu — confirmed Tue/Wed/Thu from official balboapark.org schedule.
+
+### Santa Barbara (SBA) — 4 placeholder events inserted
+- **Concerts in the Park** (4) — Alameda Park, Downtown — Sundays Jun 7, Jun 21, Jul 12, Aug 2 — source: santabarbaraca.gov
+- **Note:** Performers not announced until June 2026. Used series name as artist_name. Come back in June to update with actual performers.
+**Code changes:** Added `SBA` to metros.json aliases and to City type in types/index.ts.
+
+### Orange County / Anaheim (ANA) — 73 events inserted (two passes)
+**First pass (43 events):**
+- **Twilight Concert Series** (13) — Irvine Great Park Amphitheater — Fri/Sat Jun 27–Aug 29, 7:00pm — source: cityofirvine.org
+- **Concerts in the Park** (9) — Bill Barber Park, Irvine — Thursdays Jul 9–Sep 4 (no Aug 6), 7:00pm — source: cityofirvine.org
+- **Summer Concert Series** (4) — Huntington Central Park, HB — Sundays 5:00pm — source: surfcityusa.com
+- **Concerts in the Park** (5) — Fullerton — Thursdays Jun 5–Jul 3, 6:30pm — source: fullertonca.gov
+- **Summer Concert Series** (5) — Yorba Linda — Thursdays Jun 5–Jul 3, 7:00pm — source: yorbalindaca.gov
+- **Concerts in the Park** (7) — Mile Square Regional Park, Fountain Valley — Saturdays Jun 7–Jul 19, 7:00pm — source: fountainvalleyca.gov
+
+**Second pass (30 events):**
+- **Summer Concerts** (7) — Cypress Civic Center, Cypress — Fridays Jun 6–Jul 18, 6:00pm — source: cypressca.gov
+- **Concerts in the Park** (5) — City Hall Park, Brea — Wednesdays Jun 4–Jul 2, 6:30pm — source: cityofbrea.net
+- **Summer Concert Series** (6) — Boisseranc Park, Buena Park — Wednesdays Jun 4–Jul 9, 7:00pm — source: buenapark.com
+- **Concerts at the Park** (5) — Hart Park Bandshell, Orange — Wednesdays Jun 4–Jul 2, 6:30pm — source: cityoforange.org
+- **Concerts in the Park** (4) — Grand Park, Aliso Viejo — Sundays Jun 7–Jun 28, time TBD — source: cityofalisoviejoca.gov
+- **Concerts in the Park** (3) — Crown Valley Community Park, Laguna Niguel — Fridays May 15, Jul 10, Jul 24, time TBD — source: lagunaniguelhca.org
+
+**Code changes:** Added `ANA` to metros.json aliases and to City type in types/index.ts.
+**Pagination fix:** Rewrote getConcerts() in lib/data.ts to paginate using .range() (1000 rows/page) — fixes Supabase server-side max_rows cap that was silently truncating results for all cities.
 **Skipped:** La Mesa Sundays at Six (2026 performers not yet announced), Sonidos del Barrio (2026 dates not yet announced).
