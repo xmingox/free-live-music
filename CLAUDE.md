@@ -278,3 +278,39 @@ This CLAUDE.md file is auto-loaded in future sessions to provide:
 Last Updated: May 6, 2026
 Maintained By: xmingox
 Current Status: Ready for production with 125+ events across 10 cities
+
+---
+
+## Session Summary — May 7, 2026
+
+### Fixes Applied
+
+1. **SEO improvements** (`app/page.tsx`, `app/concert/[slug]/page.tsx`, `next.config.ts`)
+   - Replaced `force-dynamic` with `revalidate = 3600` (ISR) on home and concert pages
+   - Added `BreadcrumbList` JSON-LD + visible `<nav>` breadcrumb to concert pages
+   - Added canonical URLs and OpenGraph/Twitter metadata to home and concert pages
+   - `next.config.ts`: disabled `X-Powered-By`, enforced `trailingSlash: false`, added `X-Robots-Tag: index, follow`
+
+2. **New cities added to metros.json** (`lib/metros.json`)
+   - Added ELP (El Paso, TX) and HNL (Honolulu, HI)
+   - Added 3-letter code as alias for all new cities (FTW, LOU, ELP, BHM, PIT, OKC, SAT, HNL) so events stored with those codes are matched by the frontend filter
+   - Fixed 5 mismatched codes via aliases: ABQ→ALB, TUS→TUC, TLS→TUL, RAH→RDU, CHR→CHA
+
+3. **City type updated** (`types/index.ts`)
+   - Added all 13 new city codes to the `Concert.city` and `City` type unions
+
+4. **Supabase 1000-row cap fixed** (`lib/data.ts`)
+   - Added `.limit(5000)` to `getConcerts()` — default Supabase cap of 1000 was cutting off newer cities
+   - Root cause: 1,684 future verified events exist; FTW/LOU/etc. events were beyond the first 1000
+
+### How to Verify
+- City page (direct query, no ISR issue): `https://www.freelivemusic.co/concerts/fort-worth`
+- Home page (ISR cached, refreshes hourly): `https://www.freelivemusic.co/?city=FTW&date=all`
+- SQL check: `SELECT city, COUNT(*) FROM concerts WHERE date >= CURRENT_DATE GROUP BY city ORDER BY count DESC;`
+
+### Lesson Learned
+When adding new cities, always check:
+- [ ] Metro entry exists in `lib/metros.json`
+- [ ] 3-letter code is in the `aliases` array (not just the `code` field)
+- [ ] City code is in the `City` type in `types/index.ts`
+- [ ] Events are stored with a code that matches an alias or `metro.city`
