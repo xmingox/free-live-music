@@ -7,7 +7,7 @@ export interface Concert {
   date: string
   time: string | null
   neighborhood: string
-  city: 'NYC' | 'LA' | 'SF' | 'CHI' | 'AUS' | 'SEA' | 'DC' | 'BOS' | 'DEN' | 'PDX' | 'FTW' | 'LOU' | 'ELP' | 'BHM' | 'ABQ' | 'TUS' | 'TLS' | 'PIT' | 'RAH' | 'OKC' | 'SAT' | 'HNL' | 'CHR' | 'STL' | 'BAL'
+  city: 'NYC' | 'LA' | 'SF' | 'CHI' | 'AUS' | 'SEA' | 'DC' | 'BOS' | 'DEN' | 'PDX' | 'FTW' | 'LOU' | 'ELP' | 'BHM' | 'ABQ' | 'TUS' | 'TLS' | 'PIT' | 'RAH' | 'OKC' | 'SAT' | 'HNL' | 'CHR' | 'STL' | 'BAL' | 'JAX'
   genre: string | null
   price: string
   admission_type: 'Walk-up free' | 'Free RSVP'
@@ -20,5 +20,5 @@ export interface Concert {
   created_at: string
 }
 
-export type City = 'NYC' | 'LA' | 'SF' | 'CHI' | 'AUS' | 'SEA' | 'DC' | 'BOS' | 'DEN' | 'PDX' | 'FTW' | 'LOU' | 'ELP' | 'BHM' | 'ABQ' | 'TUS' | 'TLS' | 'PIT' | 'RAH' | 'OKC' | 'SAT' | 'HNL' | 'CHR' | 'STL' | 'BAL'
+export type City = 'NYC' | 'LA' | 'SF' | 'CHI' | 'AUS' | 'SEA' | 'DC' | 'BOS' | 'DEN' | 'PDX' | 'FTW' | 'LOU' | 'ELP' | 'BHM' | 'ABQ' | 'TUS' | 'TLS' | 'PIT' | 'RAH' | 'OKC' | 'SAT' | 'HNL' | 'CHR' | 'STL' | 'BAL' | 'JAX'
 export type DateFilter = 'tonight' | 'weekend' | 'week' | 'all' | 'custom'
