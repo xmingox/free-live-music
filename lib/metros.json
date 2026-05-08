@@ -629,7 +629,9 @@
       "city": "Little Rock",
       "state": "AR",
       "region": "South",
-      "aliases": []
+      "aliases": [
+        "ARK"
+      ]
     },
     {
       "code": "CHT",
