@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: '/api/',
     },
-    sitemap: 'https://freelivemusic.co/sitemap.xml',
+    sitemap: 'https://www.freelivemusic.co/sitemap.xml',
   }
 }

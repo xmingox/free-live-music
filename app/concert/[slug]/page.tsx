@@ -3,6 +3,17 @@ import { notFound } from 'next/navigation'
 import { Concert } from '@/types'
 import Link from 'next/link'
 
+function parseTimeToIso(time: string): string {
+  const m = time.match(/^(\d+):(\d+)\s*(am|pm)$/i)
+  if (!m) return '00:00:00'
+  let h = parseInt(m[1])
+  const min = m[2]
+  const period = m[3].toLowerCase()
+  if (period === 'pm' && h !== 12) h += 12
+  if (period === 'am' && h === 12) h = 0
+  return `${String(h).padStart(2, '0')}:${min}:00`
+}
+
 // ISR: re-render at most once per hour instead of on every request
 export const revalidate = 3600
 
@@ -80,7 +91,7 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
     '@context': 'https://schema.org',
     '@type': 'Event',
     name: concert.artist_name,
-    startDate: concert.time ? `${concert.date}T${concert.time}:00` : concert.date,
+    startDate: concert.time ? `${concert.date}T${parseTimeToIso(concert.time)}` : concert.date,
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     location: {

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { Concert } from '@/types'
 
 const genreColors: Record<string, string> = {
@@ -44,10 +45,21 @@ function isToday(dateStr: string): boolean {
   return date.toDateString() === today.toDateString()
 }
 
+function parseTimeToIso(time: string): string {
+  const m = time.match(/^(\d+):(\d+)\s*(am|pm)$/i)
+  if (!m) return '00:00:00'
+  let h = parseInt(m[1])
+  const min = m[2]
+  const period = m[3].toLowerCase()
+  if (period === 'pm' && h !== 12) h += 12
+  if (period === 'am' && h === 12) h = 0
+  return `${String(h).padStart(2, '0')}:${min}:00`
+}
+
 function buildJsonLd(concert: Concert) {
   const cityName = cityNames[concert.city] ?? concert.city
   const startDate = concert.time
-    ? `${concert.date}T${concert.time}:00`
+    ? `${concert.date}T${parseTimeToIso(concert.time)}`
     : concert.date
 
   return {
@@ -88,7 +100,7 @@ export default function ConcertCard({ concert }: { concert: Concert }) {
   const hasFooter = !!(concert.source_name || concert.source_url)
 
   return (
-    <div className="group relative flex flex-col bg-slate-800/60 border border-slate-700/60 rounded-2xl overflow-hidden hover:border-slate-600 hover:bg-slate-800 transition-all duration-200 hover:shadow-xl hover:shadow-black/30">
+    <Link href={`/concert/${concert.slug}`} className="group relative flex flex-col bg-slate-800/60 border border-slate-700/60 rounded-2xl overflow-hidden hover:border-slate-600 hover:bg-slate-800 transition-all duration-200 hover:shadow-xl hover:shadow-black/30">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJsonLd(concert)) }}
@@ -183,6 +195,6 @@ export default function ConcertCard({ concert }: { concert: Concert }) {
           </div>
         )}
       </div>
-    </div>
+    </Link>
   )
 }

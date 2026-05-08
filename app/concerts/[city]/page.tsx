@@ -57,7 +57,7 @@ export async function generateMetadata({
       title,
       description,
       type: 'website',
-      url: `https://freelivemusic.co/concerts/${city}`,
+      url: `https://www.freelivemusic.co/concerts/${city}`,
       siteName: 'Free Live Music',
     },
     twitter: {
@@ -66,7 +66,7 @@ export async function generateMetadata({
       description,
     },
     alternates: {
-      canonical: `https://freelivemusic.co/concerts/${city}`,
+      canonical: `https://www.freelivemusic.co/concerts/${city}`,
     },
     robots: {
       index: true,
