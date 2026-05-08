@@ -92,7 +92,6 @@
         "Berkeley",
         "San Jose",
         "Santa Barbara",
-        "Sacramento",
         "Stockton",
         "Bakersfield",
         "Riverside",
@@ -829,6 +828,36 @@
         "Santa Cruz",
         "Capitola",
         "Watsonville"
+      ]
+    },
+    {
+      "code": "ASH",
+      "city": "Asheville",
+      "state": "NC",
+      "region": "Southeast",
+      "aliases": [
+        "ASH",
+        "Asheville"
+      ]
+    },
+    {
+      "code": "SAC",
+      "city": "Sacramento",
+      "state": "CA",
+      "region": "West",
+      "aliases": [
+        "SAC",
+        "Sacramento"
+      ]
+    },
+    {
+      "code": "SFE",
+      "city": "Santa Fe",
+      "state": "NM",
+      "region": "Southwest",
+      "aliases": [
+        "SFE",
+        "Santa Fe"
       ]
     }
   ]
