@@ -247,7 +247,9 @@
       "city": "Phoenix",
       "state": "AZ",
       "region": "Southwest",
-      "aliases": []
+      "aliases": [
+        "PHX"
+      ]
     },
     {
       "code": "LV",
@@ -264,6 +266,7 @@
       "state": "UT",
       "region": "Mountain",
       "aliases": [
+        "SLC",
         "Moab"
       ]
     },
@@ -336,35 +339,45 @@
       "city": "Providence",
       "state": "RI",
       "region": "Northeast",
-      "aliases": []
+      "aliases": [
+        "PRV"
+      ]
     },
     {
       "code": "HRT",
       "city": "Hartford",
       "state": "CT",
       "region": "Northeast",
-      "aliases": []
+      "aliases": [
+        "HRT"
+      ]
     },
     {
       "code": "SYR",
       "city": "Syracuse",
       "state": "NY",
       "region": "Northeast",
-      "aliases": []
+      "aliases": [
+        "SYR"
+      ]
     },
     {
       "code": "ROC",
       "city": "Rochester",
       "state": "NY",
       "region": "Northeast",
-      "aliases": []
+      "aliases": [
+        "ROC"
+      ]
     },
     {
       "code": "RIC",
       "city": "Richmond",
       "state": "VA",
       "region": "Southeast",
-      "aliases": []
+      "aliases": [
+        "RIC"
+      ]
     },
     {
       "code": "CHA",
@@ -390,7 +403,9 @@
       "city": "Greensboro",
       "state": "NC",
       "region": "Southeast",
-      "aliases": []
+      "aliases": [
+        "GRE"
+      ]
     },
     {
       "code": "CHS",
@@ -406,7 +421,9 @@
       "city": "Savannah",
       "state": "GA",
       "region": "Southeast",
-      "aliases": []
+      "aliases": [
+        "SAV"
+      ]
     },
     {
       "code": "JAX",
@@ -431,21 +448,27 @@
       "city": "Orlando",
       "state": "FL",
       "region": "Southeast",
-      "aliases": []
+      "aliases": [
+        "ORL"
+      ]
     },
     {
       "code": "FTL",
       "city": "Fort Lauderdale",
       "state": "FL",
       "region": "Southeast",
-      "aliases": []
+      "aliases": [
+        "FTL"
+      ]
     },
     {
       "code": "WPB",
       "city": "West Palm Beach",
       "state": "FL",
       "region": "Southeast",
-      "aliases": []
+      "aliases": [
+        "WPB"
+      ]
     },
     {
       "code": "LOU",
@@ -461,7 +484,9 @@
       "city": "Lexington",
       "state": "KY",
       "region": "South",
-      "aliases": []
+      "aliases": [
+        "LEX"
+      ]
     },
     {
       "code": "BHM",
@@ -477,7 +502,9 @@
       "city": "Baton Rouge",
       "state": "LA",
       "region": "South",
-      "aliases": []
+      "aliases": [
+        "BR"
+      ]
     },
     {
       "code": "SAT",
@@ -539,21 +566,27 @@
       "city": "Chattanooga",
       "state": "TN",
       "region": "South",
-      "aliases": []
+      "aliases": [
+        "CHT"
+      ]
     },
     {
       "code": "KNX",
       "city": "Knoxville",
       "state": "TN",
       "region": "South",
-      "aliases": []
+      "aliases": [
+        "KNX"
+      ]
     },
     {
       "code": "DES",
       "city": "Des Moines",
       "state": "IA",
       "region": "Midwest",
-      "aliases": []
+      "aliases": [
+        "DES"
+      ]
     },
     {
       "code": "MIL",
@@ -569,21 +602,27 @@
       "city": "Madison",
       "state": "WI",
       "region": "Midwest",
-      "aliases": []
+      "aliases": [
+        "MAD"
+      ]
     },
     {
       "code": "GR",
       "city": "Grand Rapids",
       "state": "MI",
       "region": "Midwest",
-      "aliases": []
+      "aliases": [
+        "GR"
+      ]
     },
     {
       "code": "ANN",
       "city": "Ann Arbor",
       "state": "MI",
       "region": "Midwest",
-      "aliases": []
+      "aliases": [
+        "ANN"
+      ]
     },
     {
       "code": "CMH",
@@ -599,35 +638,45 @@
       "city": "Cincinnati",
       "state": "OH",
       "region": "Midwest",
-      "aliases": []
+      "aliases": [
+        "CIN"
+      ]
     },
     {
       "code": "DAY",
       "city": "Dayton",
       "state": "OH",
       "region": "Midwest",
-      "aliases": []
+      "aliases": [
+        "DAY"
+      ]
     },
     {
       "code": "TOL",
       "city": "Toledo",
       "state": "OH",
       "region": "Midwest",
-      "aliases": []
+      "aliases": [
+        "TOL"
+      ]
     },
     {
       "code": "AKR",
       "city": "Akron",
       "state": "OH",
       "region": "Midwest",
-      "aliases": []
+      "aliases": [
+        "AKR"
+      ]
     },
     {
       "code": "WIC",
       "city": "Wichita",
       "state": "KS",
       "region": "Midwest",
-      "aliases": []
+      "aliases": [
+        "WIC"
+      ]
     },
     {
       "code": "OMA",
@@ -643,35 +692,45 @@
       "city": "Reno",
       "state": "NV",
       "region": "West",
-      "aliases": []
+      "aliases": [
+        "RNO"
+      ]
     },
     {
       "code": "BSE",
       "city": "Boise",
       "state": "ID",
       "region": "Mountain",
-      "aliases": []
+      "aliases": [
+        "BSE"
+      ]
     },
     {
       "code": "BOZ",
       "city": "Bozeman",
       "state": "MT",
       "region": "Mountain",
-      "aliases": []
+      "aliases": [
+        "BOZ"
+      ]
     },
     {
       "code": "COS",
       "city": "Colorado Springs",
       "state": "CO",
       "region": "Mountain",
-      "aliases": []
+      "aliases": [
+        "COS"
+      ]
     },
     {
       "code": "FTC",
       "city": "Fort Collins",
       "state": "CO",
       "region": "Mountain",
-      "aliases": []
+      "aliases": [
+        "FTC"
+      ]
     },
     {
       "code": "TUC",
@@ -697,28 +756,36 @@
       "city": "Tacoma",
       "state": "WA",
       "region": "West",
-      "aliases": []
+      "aliases": [
+        "TAC"
+      ]
     },
     {
       "code": "SPO",
       "city": "Spokane",
       "state": "WA",
       "region": "West",
-      "aliases": []
+      "aliases": [
+        "SPO"
+      ]
     },
     {
       "code": "EUG",
       "city": "Eugene",
       "state": "OR",
       "region": "West",
-      "aliases": []
+      "aliases": [
+        "EUG"
+      ]
     },
     {
       "code": "BEN",
       "city": "Bend",
       "state": "OR",
       "region": "West",
-      "aliases": []
+      "aliases": [
+        "BEN"
+      ]
     },
     {
       "code": "HNL",
