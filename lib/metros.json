@@ -1010,6 +1010,38 @@
         "Bigfork",
         "Columbia Falls"
       ]
+    },
+    {
+      "code": "ANC",
+      "city": "Anchorage",
+      "state": "AK",
+      "region": "West",
+      "aliases": [
+        "ANC",
+        "Anchorage"
+      ]
+    },
+    {
+      "code": "SIT",
+      "city": "Sitka",
+      "state": "AK",
+      "region": "West",
+      "aliases": [
+        "SIT",
+        "Sitka"
+      ]
+    },
+    {
+      "code": "MAT",
+      "city": "Wasilla",
+      "state": "AK",
+      "region": "West",
+      "aliases": [
+        "MAT",
+        "Wasilla",
+        "Palmer",
+        "Mat-Su"
+      ]
     }
   ]
 }
