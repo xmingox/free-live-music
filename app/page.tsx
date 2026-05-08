@@ -27,10 +27,10 @@ export const metadata: Metadata = {
 }
 
 export default async function Home() {
-  const concerts = await getConcerts()
+  const concerts = await getConcerts('NYC')
   return (
     <Suspense>
-      <ConcertsClient initialConcerts={concerts} />
+      <ConcertsClient initialConcerts={concerts} defaultCity="NYC" />
     </Suspense>
   )
 }

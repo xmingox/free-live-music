@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Concert, City, DateFilter } from '@/types'
 import { SubmitEventModal } from '@/components/SubmitEventModal'
@@ -70,7 +70,13 @@ function filterByDate(concerts: Concert[], filter: DateFilter, dateFrom?: string
 
 const PAGE_SIZE = 24
 
-export default function ConcertsClient({ initialConcerts }: { initialConcerts: Concert[] }) {
+export default function ConcertsClient({
+  initialConcerts,
+  defaultCity,
+}: {
+  initialConcerts: Concert[]
+  defaultCity: City
+}) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [city, setCity] = useState<City>(() => parseCity(searchParams.get('city')))
@@ -84,6 +90,13 @@ export default function ConcertsClient({ initialConcerts }: { initialConcerts: C
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false)
 
+  // Per-city concert cache so switching back doesn't re-fetch
+  const cache = useRef<Partial<Record<City, Concert[]>>>({ [defaultCity]: initialConcerts })
+  const [concerts, setConcerts] = useState<Concert[]>(
+    city === defaultCity ? initialConcerts : []
+  )
+  const [isFetching, setIsFetching] = useState(city !== defaultCity)
+
   const states = getAllStates()
   const metrosForState = getMetrosForState(state)
 
@@ -95,6 +108,24 @@ export default function ConcertsClient({ initialConcerts }: { initialConcerts: C
     if (dateTo) params.set('dateTo', dateTo)
     router.push(`?${params.toString()}`)
   }, [city, dateFilter, dateFrom, dateTo, router])
+
+  useEffect(() => {
+    if (cache.current[city]) {
+      setConcerts(cache.current[city]!)
+      setIsFetching(false)
+      return
+    }
+    setIsFetching(true)
+    setConcerts([])
+    fetch(`/api/concerts?city=${city}`)
+      .then(r => r.json())
+      .then((data: Concert[]) => {
+        cache.current[city] = data
+        setConcerts(data)
+        setIsFetching(false)
+      })
+      .catch(() => setIsFetching(false))
+  }, [city])
 
   const handleStateChange = (newState: string) => {
     setState(newState)
@@ -119,11 +150,8 @@ export default function ConcertsClient({ initialConcerts }: { initialConcerts: C
   }, [])
 
   const filtered = useMemo(() => {
-    const metro = metros.metros.find(m => m.code === city)
-    const cityNames = metro ? [metro.city, ...(metro.aliases || [])] : [city]
-    const byCity = initialConcerts.filter((c) => cityNames.includes(c.city))
-    return filterByDate(byCity, dateFilter, dateFrom, dateTo)
-  }, [initialConcerts, city, dateFilter, dateFrom, dateTo])
+    return filterByDate(concerts, dateFilter, dateFrom, dateTo)
+  }, [concerts, dateFilter, dateFrom, dateTo])
 
   return (
     <div className="min-h-screen bg-slate-950">
@@ -212,12 +240,20 @@ export default function ConcertsClient({ initialConcerts }: { initialConcerts: C
 
       <main className="max-w-7xl mx-auto px-4 py-12">
         <p className="text-slate-400 mb-6">
-          {filtered.length > 0
+          {isFetching
+            ? `Loading shows in ${metros.metros.find(m => m.code === city)?.city || city}…`
+            : filtered.length > 0
             ? `${filtered.length} ${filtered.length === 1 ? 'show' : 'shows'} in ${metros.metros.find(m => m.code === city)?.city || city}`
             : `No free concerts listed in ${metros.metros.find(m => m.code === city)?.city || city} for this time window.`}
         </p>
 
-        {filtered.length > 0 ? (
+        {isFetching ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-48 rounded-xl bg-slate-800 animate-pulse" />
+            ))}
+          </div>
+        ) : filtered.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {filtered.slice(0, visibleCount).map((concert) => (
