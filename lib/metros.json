@@ -977,6 +977,16 @@
         "Norfolk",
         "Chesapeake"
       ]
+    },
+    {
+      "code": "TLH",
+      "city": "Tallahassee",
+      "state": "FL",
+      "region": "Southeast",
+      "aliases": [
+        "TLH",
+        "Tallahassee"
+      ]
     }
   ]
 }
