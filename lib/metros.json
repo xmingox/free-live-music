@@ -51,7 +51,7 @@
       "state": "TX",
       "region": "South",
       "aliases": [
-        "San Antonio"
+        "HOU"
       ]
     },
     {
@@ -199,7 +199,7 @@
       "city": "Kansas City",
       "state": "MO",
       "region": "Midwest",
-      "aliases": []
+      "aliases": ["KC"]
     },
     {
       "code": "STL",
@@ -215,14 +215,14 @@
       "city": "Indianapolis",
       "state": "IN",
       "region": "Midwest",
-      "aliases": []
+      "aliases": ["IND"]
     },
     {
       "code": "CLE",
       "city": "Cleveland",
       "state": "OH",
       "region": "Midwest",
-      "aliases": []
+      "aliases": ["CLE"]
     },
     {
       "code": "PHX",
@@ -255,6 +255,7 @@
       "state": "NM",
       "region": "Southwest",
       "aliases": [
+        "ALB",
         "ABQ"
       ]
     },
@@ -371,7 +372,7 @@
       "city": "Buffalo",
       "state": "NY",
       "region": "Northeast",
-      "aliases": []
+      "aliases": ["BUF"]
     },
     {
       "code": "PRV",
@@ -421,6 +422,7 @@
       "state": "NC",
       "region": "Southeast",
       "aliases": [
+        "CHA",
         "CHR"
       ]
     },
@@ -429,9 +431,7 @@
       "city": "Raleigh",
       "state": "NC",
       "region": "Southeast",
-      "aliases": [
-        "RAH"
-      ]
+      "aliases": ["RDU"]
     },
     {
       "code": "GRE",
@@ -445,7 +445,7 @@
       "city": "Charleston",
       "state": "SC",
       "region": "Southeast",
-      "aliases": []
+      "aliases": ["CHS"]
     },
     {
       "code": "COL",
@@ -621,6 +621,7 @@
       "state": "OK",
       "region": "South",
       "aliases": [
+        "TUL",
         "TLS"
       ]
     },
@@ -687,7 +688,7 @@
       "city": "Milwaukee",
       "state": "WI",
       "region": "Midwest",
-      "aliases": []
+      "aliases": ["MIL"]
     },
     {
       "code": "MAD",
@@ -736,7 +737,7 @@
       "city": "Columbus",
       "state": "OH",
       "region": "Midwest",
-      "aliases": []
+      "aliases": ["CMH"]
     },
     {
       "code": "CIN",
@@ -1117,6 +1118,7 @@
       "state": "AZ",
       "region": "Southwest",
       "aliases": [
+        "TUC",
         "TUS"
       ]
     },
