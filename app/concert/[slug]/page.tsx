@@ -270,7 +270,9 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
             </div>
             <div>
               <p className="text-sm text-slate-400 mb-0.5">Venue</p>
-              <p className="font-semibold text-white">{concert.venue}</p>
+              {concert.venue && concert.venue !== 'TBD' && (
+                <p className="font-semibold text-white">{concert.venue}</p>
+              )}
               <p className="text-slate-300 text-sm">{concert.neighborhood} · {city}</p>
             </div>
           </div>
