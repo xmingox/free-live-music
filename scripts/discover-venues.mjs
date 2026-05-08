@@ -1,9 +1,10 @@
 // scripts/discover-venues.mjs
-// Usage: node scripts/discover-venues.mjs <CITY_CODE> [--insert]
+// Usage: node scripts/discover-venues.mjs <CITY_CODE> [--insert] [--all-types]
 //
 // Discovers potential new venues with live music for a given city via Google Places.
 // Dry-run by default — shows candidates ranked by rating.
 // Pass --insert to write them into the venues table.
+// Pass --all-types to also surface parks and amphitheaters (mostly ticketed — use carefully).
 
 import { readFileSync } from 'fs'
 import { join, dirname } from 'path'
@@ -32,9 +33,10 @@ if (!PLACES_API_KEY)                { console.error('Missing GOOGLE_PLACES_API_K
 
 const cityCode   = process.argv[2]?.toUpperCase()
 const autoInsert = process.argv.includes('--insert')
+const allTypes   = process.argv.includes('--all-types')
 
 if (!cityCode) {
-  console.error('Usage: node scripts/discover-venues.mjs <CITY_CODE> [--insert]')
+  console.error('Usage: node scripts/discover-venues.mjs <CITY_CODE> [--insert] [--all-types]')
   console.error('Example: node scripts/discover-venues.mjs LA')
   process.exit(1)
 }
@@ -92,8 +94,15 @@ const TYPE_PRIORITY = [
   ['community_center',        'community_center'],
 ]
 
-// Types we don't want in discovery results
+// Types never worth discovering
 const SKIP_TYPES = new Set(['school', 'museum', 'library', 'church', 'farmers_market'])
+
+// Default: only surface venues that typically host FREE music (bars, breweries, restaurants, malls).
+// amphitheater / park are mostly ticketed concert venues — opt-in with --all-types.
+const FREE_VENUE_TYPES = new Set(['bar', 'brewery', 'restaurant', 'mall', 'other'])
+
+// Name keywords that almost always mean a ticketed commercial venue — skip regardless of type.
+const TICKETED_NAME_RE = /\b(theater|theatre|palladium|ballroom|auditorium|arena|improv|comedy\s*club|opera\s*house|concert\s*hall)\b/i
 
 function mapType(googleTypes = []) {
   for (const [googleType, ourType] of TYPE_PRIORITY) {
@@ -178,7 +187,16 @@ async function main() {
         if (!name || existingNames.has(name.toLowerCase())) continue
 
         const venueType = mapType(place.types ?? [])
+
+        // Always skip certain types
         if (SKIP_TYPES.has(venueType)) continue
+
+        // Skip obvious ticketed venues by name keyword
+        if (TICKETED_NAME_RE.test(name)) continue
+
+        // By default only keep bar/brewery/restaurant/mall/other.
+        // Amphitheaters and parks are mostly ticketed — require --all-types to surface them.
+        if (!allTypes && !FREE_VENUE_TYPES.has(venueType)) continue
 
         candidates.push({
           google_place_id:  place.id,
@@ -232,7 +250,9 @@ async function main() {
 
   if (!autoInsert) {
     console.log(`Review the list above, then insert with:`)
-    console.log(`  node scripts/discover-venues.mjs ${cityCode} --insert\n`)
+    console.log(`  node scripts/discover-venues.mjs ${cityCode} --insert`)
+    console.log(`\nTo also surface parks/amphitheaters (mostly ticketed — review carefully):`)
+    console.log(`  node scripts/discover-venues.mjs ${cityCode} --all-types\n`)
     return
   }
 
