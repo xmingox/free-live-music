@@ -68,6 +68,8 @@ function filterByDate(concerts: Concert[], filter: DateFilter, dateFrom?: string
   })
 }
 
+const PAGE_SIZE = 24
+
 export default function ConcertsClient({ initialConcerts }: { initialConcerts: Concert[] }) {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -79,6 +81,7 @@ export default function ConcertsClient({ initialConcerts }: { initialConcerts: C
   const [dateFilter, setDateFilter] = useState<DateFilter>(() => parseDateFilter(searchParams.get('date')))
   const [dateFrom, setDateFrom] = useState<string>(searchParams.get('dateFrom') || '')
   const [dateTo, setDateTo] = useState<string>(searchParams.get('dateTo') || '')
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false)
 
   const states = getAllStates()
@@ -95,15 +98,20 @@ export default function ConcertsClient({ initialConcerts }: { initialConcerts: C
 
   const handleStateChange = (newState: string) => {
     setState(newState)
+    setVisibleCount(PAGE_SIZE)
     const metrosInState = getMetrosForState(newState)
     if (metrosInState.length > 0) {
       setCity(metrosInState[0].code as City)
     }
   }
 
-  const handleCityChange = useCallback((newCity: City) => setCity(newCity), [])
+  const handleCityChange = useCallback((newCity: City) => {
+    setCity(newCity)
+    setVisibleCount(PAGE_SIZE)
+  }, [])
   const handleDateFilterChange = useCallback((newFilter: DateFilter) => {
     setDateFilter(newFilter)
+    setVisibleCount(PAGE_SIZE)
     if (newFilter !== 'custom') {
       setDateFrom('')
       setDateTo('')
@@ -210,11 +218,23 @@ export default function ConcertsClient({ initialConcerts }: { initialConcerts: C
         </p>
 
         {filtered.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filtered.map((concert) => (
-              <ConcertCard key={concert.id} concert={concert} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filtered.slice(0, visibleCount).map((concert) => (
+                <ConcertCard key={concert.id} concert={concert} />
+              ))}
+            </div>
+            {visibleCount < filtered.length && (
+              <div className="mt-8 text-center">
+                <button
+                  onClick={() => setVisibleCount(v => v + PAGE_SIZE)}
+                  className="px-6 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 font-medium transition-colors"
+                >
+                  Show more ({filtered.length - visibleCount} remaining)
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <EmptyState city={city} filter={dateFilter} />
         )}
