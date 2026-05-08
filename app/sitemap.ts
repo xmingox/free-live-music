@@ -13,6 +13,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .select('slug, date, created_at')
     .order('date', { ascending: true })
 
+  const { data: venues } = await supabase
+    .from('venues')
+    .select('slug, city, updated_at')
+
   const concertUrls: MetadataRoute.Sitemap = (concerts ?? []).map((c) => ({
     url: `https://www.freelivemusic.co/concert/${c.slug}`,
     lastModified: c.created_at,
@@ -56,6 +60,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
+  const venueListUrls: MetadataRoute.Sitemap = getAllMetros().map((metro) => ({
+    url: `https://www.freelivemusic.co/venues/${cityCodeToSlug[metro.code]}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  }))
+
+  const venueDetailUrls: MetadataRoute.Sitemap = (venues ?? []).map((v) => ({
+    url: `https://www.freelivemusic.co/venues/${cityCodeToSlug[v.city] ?? v.city.toLowerCase()}/${v.slug}`,
+    lastModified: v.updated_at,
+    changeFrequency: 'weekly',
+    priority: 0.6,
+  }))
+
   return [
     {
       url: 'https://www.freelivemusic.co',
@@ -64,7 +82,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     ...cityUrls,
+    ...venueListUrls,
     ...aliasUrls,
     ...concertUrls,
+    ...venueDetailUrls,
   ]
 }

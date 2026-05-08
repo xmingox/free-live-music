@@ -21,6 +21,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'Naumburg Orchestral Concerts',
     source_id: 'naum-2026-001',
     source_url: 'https://www.naumburg.org',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -42,6 +45,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'Bryant Park',
     source_id: 'bp-2026-042',
     source_url: 'https://bryantpark.org/programs',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -63,6 +69,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'SummerStage',
     source_id: 'ss-2026-019',
     source_url: 'https://cityparksfoundation.org/summerstage',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -84,6 +93,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'Lincoln Center',
     source_id: 'lc-2026-055',
     source_url: 'https://www.lincolncenter.org/series/out-of-doors',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -105,6 +117,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'Celebrate Brooklyn!',
     source_id: 'cb-2026-007',
     source_url: 'https://bricartsmedia.org/celebrate-brooklyn',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -126,6 +141,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'Brooklyn Bridge Park',
     source_id: 'bbp-2026-033',
     source_url: 'https://brooklynbridgepark.org/events',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -147,6 +165,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'Fort Tryon Park Trust',
     source_id: 'ftp-2026-011',
     source_url: 'https://forttryon.org',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -168,6 +189,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'NYC Parks',
     source_id: 'nycparks-26-0812',
     source_url: 'https://www.nycgovparks.org/events',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -189,6 +213,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'NYC Parks',
     source_id: 'nycparks-26-0891',
     source_url: 'https://www.nycgovparks.org/events',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -210,6 +237,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'NYC Parks',
     source_id: 'nycparks-26-0922',
     source_url: 'https://www.nycgovparks.org/events',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   // ── LA ─────────────────────────────────────────────────────────────────
@@ -232,6 +262,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'The Getty',
     source_id: 'getty-2026-018',
     source_url: 'https://www.getty.edu/visit/events',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -253,6 +286,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'Grand Performances',
     source_id: 'gp-2026-004',
     source_url: 'https://grandperformances.org',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -274,6 +310,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'LA Parks',
     source_id: 'laparks-26-0221',
     source_url: 'https://www.laparks.org',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -295,6 +334,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'LACMA',
     source_id: 'lacma-2026-083',
     source_url: 'https://www.lacma.org/programs/free-jazz-sundays',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -316,6 +358,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'Santa Monica Pier',
     source_id: 'smp-2026-015',
     source_url: 'https://santamonicapier.org/events',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -337,6 +382,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'The Hammer Museum',
     source_id: 'hammer-2026-029',
     source_url: 'https://hammer.ucla.edu/programs',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -358,6 +406,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'Levitt Foundation',
     source_id: 'levitt-2026-041',
     source_url: 'https://levittla.org',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -379,6 +430,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'Grand Performances',
     source_id: 'gp-2026-017',
     source_url: 'https://grandperformances.org',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -400,6 +454,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'The Getty',
     source_id: 'getty-2026-031',
     source_url: 'https://www.getty.edu/visit/events',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
   {
@@ -421,6 +478,9 @@ export const MOCK_CONCERTS: Concert[] = [
     source_name: 'Levitt Foundation',
     source_id: 'levitt-2026-058',
     source_url: 'https://levittla.org',
+    venue_id: null,
+    series_id: null,
+    is_cancelled: false,
     created_at: '2026-01-01',
   },
 ]
