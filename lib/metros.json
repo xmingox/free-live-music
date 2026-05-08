@@ -859,6 +859,50 @@
         "SFE",
         "Santa Fe"
       ]
+    },
+    {
+      "code": "CHV",
+      "city": "Charlottesville",
+      "state": "VA",
+      "region": "Southeast",
+      "aliases": [
+        "CHV",
+        "Charlottesville"
+      ]
+    },
+    {
+      "code": "NAP",
+      "city": "Napa",
+      "state": "CA",
+      "region": "West",
+      "aliases": [
+        "NAP",
+        "Napa",
+        "Yountville",
+        "Sonoma",
+        "St. Helena",
+        "Calistoga"
+      ]
+    },
+    {
+      "code": "FLG",
+      "city": "Flagstaff",
+      "state": "AZ",
+      "region": "Southwest",
+      "aliases": [
+        "FLG",
+        "Flagstaff"
+      ]
+    },
+    {
+      "code": "BTV",
+      "city": "Burlington",
+      "state": "VT",
+      "region": "Northeast",
+      "aliases": [
+        "BTV",
+        "Burlington"
+      ]
     }
   ]
 }
