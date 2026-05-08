@@ -7,7 +7,7 @@ export interface Concert {
   date: string
   time: string | null
   neighborhood: string
-  city: 'NYC' | 'LA' | 'SF' | 'CHI' | 'AUS' | 'SEA' | 'DC' | 'BOS' | 'DEN' | 'PDX' | 'FTW' | 'LOU' | 'ELP' | 'BHM' | 'ABQ' | 'ALB' | 'TUS' | 'TUC' | 'TLS' | 'TUL' | 'PIT' | 'RAH' | 'OKC' | 'SAT' | 'HNL' | 'CHR' | 'CHA' | 'STL' | 'BAL' | 'JAX' | 'OMA' | 'LB' | 'SD' | 'SBA' | 'ANA' | 'LV' | 'ARK' | 'NSH' | 'PHI' | 'MIA' | 'ATL' | 'MIN' | 'NOLA' | 'MEM' | 'DET' | 'TB' | 'DAL' | 'IND' | 'CMH' | 'CLE' | 'RDU' | 'BUF' | 'MIL' | 'CHS' | 'HOU' | 'KC' | 'ORL' | 'KNX' | 'AKR' | 'ROC' | 'SYR' | 'LEX' | 'HRT' | 'BOZ' | 'SAV' | 'CHT' | 'BR' | 'RIC' | 'PHX' | 'CIN'
+  city: 'NYC' | 'LA' | 'SF' | 'CHI' | 'AUS' | 'SEA' | 'DC' | 'BOS' | 'DEN' | 'PDX' | 'FTW' | 'LOU' | 'ELP' | 'BHM' | 'ABQ' | 'ALB' | 'TUS' | 'TUC' | 'TLS' | 'TUL' | 'PIT' | 'RAH' | 'OKC' | 'SAT' | 'HNL' | 'CHR' | 'CHA' | 'STL' | 'BAL' | 'JAX' | 'OMA' | 'LB' | 'SD' | 'SBA' | 'ANA' | 'LV' | 'ARK' | 'NSH' | 'PHI' | 'MIA' | 'ATL' | 'MIN' | 'NOLA' | 'MEM' | 'DET' | 'TB' | 'DAL' | 'IND' | 'CMH' | 'CLE' | 'RDU' | 'BUF' | 'MIL' | 'CHS' | 'HOU' | 'KC' | 'ORL' | 'KNX' | 'AKR' | 'ROC' | 'SYR' | 'LEX' | 'HRT' | 'BOZ' | 'SAV' | 'CHT' | 'BR' | 'RIC' | 'PHX' | 'CIN' | 'PRV' | 'GRE' | 'RNO' | 'DAY' | 'TOL'
   genre: string | null
   price: string
   admission_type: 'Walk-up free' | 'Free RSVP'
@@ -20,5 +20,5 @@ export interface Concert {
   created_at: string
 }
 
-export type City = 'NYC' | 'LA' | 'SF' | 'CHI' | 'AUS' | 'SEA' | 'DC' | 'BOS' | 'DEN' | 'PDX' | 'FTW' | 'LOU' | 'ELP' | 'BHM' | 'ABQ' | 'ALB' | 'TUS' | 'TUC' | 'TLS' | 'TUL' | 'PIT' | 'RAH' | 'OKC' | 'SAT' | 'HNL' | 'CHR' | 'CHA' | 'STL' | 'BAL' | 'JAX' | 'OMA' | 'LB' | 'SD' | 'SBA' | 'ANA' | 'LV' | 'ARK' | 'NSH' | 'PHI' | 'MIA' | 'ATL' | 'MIN' | 'NOLA' | 'MEM' | 'DET' | 'TB' | 'DAL' | 'IND' | 'CMH' | 'CLE' | 'RDU' | 'BUF' | 'MIL' | 'CHS' | 'HOU' | 'KC' | 'ORL' | 'KNX' | 'AKR' | 'ROC' | 'SYR' | 'LEX' | 'HRT' | 'BOZ' | 'SAV' | 'CHT' | 'BR' | 'RIC' | 'PHX' | 'CIN'
+export type City = 'NYC' | 'LA' | 'SF' | 'CHI' | 'AUS' | 'SEA' | 'DC' | 'BOS' | 'DEN' | 'PDX' | 'FTW' | 'LOU' | 'ELP' | 'BHM' | 'ABQ' | 'ALB' | 'TUS' | 'TUC' | 'TLS' | 'TUL' | 'PIT' | 'RAH' | 'OKC' | 'SAT' | 'HNL' | 'CHR' | 'CHA' | 'STL' | 'BAL' | 'JAX' | 'OMA' | 'LB' | 'SD' | 'SBA' | 'ANA' | 'LV' | 'ARK' | 'NSH' | 'PHI' | 'MIA' | 'ATL' | 'MIN' | 'NOLA' | 'MEM' | 'DET' | 'TB' | 'DAL' | 'IND' | 'CMH' | 'CLE' | 'RDU' | 'BUF' | 'MIL' | 'CHS' | 'HOU' | 'KC' | 'ORL' | 'KNX' | 'AKR' | 'ROC' | 'SYR' | 'LEX' | 'HRT' | 'BOZ' | 'SAV' | 'CHT' | 'BR' | 'RIC' | 'PHX' | 'CIN' | 'PRV' | 'GRE' | 'RNO' | 'DAY' | 'TOL'
 export type DateFilter = 'tonight' | 'weekend' | 'week' | 'all' | 'custom'
