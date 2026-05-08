@@ -7,6 +7,7 @@ import { Metadata } from 'next'
 import { getCityCodeFromSlug, getMetroByCode, getAllMetros, cityCodeToSlug } from '@/lib/city-slugs'
 import { Venue } from '@/types'
 import VenueListClient from './venue-list-client'
+import SiteNav from '@/components/SiteNav'
 
 export function generateStaticParams() {
   return getAllMetros().map((metro) => ({ city: cityCodeToSlug[metro.code] }))
@@ -120,15 +121,14 @@ export default async function VenueListPage(
     <div className="min-h-screen bg-slate-950 text-white">
       <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 py-4">
-          <nav aria-label="Breadcrumb">
-            <ol className="flex items-center gap-1 text-sm text-slate-400 flex-wrap">
-              <li><Link href="/" className="hover:text-white transition-colors">Free Live Music</Link></li>
-              <li aria-hidden="true" className="text-slate-600">/</li>
-              <li><Link href={`/?city=${metroCode}`} className="hover:text-white transition-colors">{metro.city}</Link></li>
-              <li aria-hidden="true" className="text-slate-600">/</li>
-              <li className="text-slate-200" aria-current="page">Venues</li>
-            </ol>
-          </nav>
+          <SiteNav
+            venuesHref={`/venues/${citySlug}`}
+            breadcrumbs={[
+              { label: 'Free Live Music', href: '/' },
+              { label: metro.city, href: `/?city=${metroCode}` },
+              { label: 'Venues' },
+            ]}
+          />
         </div>
       </header>
 

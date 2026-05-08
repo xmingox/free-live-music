@@ -180,6 +180,27 @@ export default function ConcertsClient({
     <div className="min-h-screen bg-slate-950">
       <header className="relative overflow-hidden border-b border-slate-800">
         <div className="absolute inset-0 bg-gradient-to-br from-violet-950/80 via-slate-950 to-pink-950/50" />
+        {/* Site nav */}
+        <div className="relative border-b border-slate-800/60 bg-slate-950/40">
+          <div className="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between">
+            <Link href="/" className="text-sm font-extrabold text-white tracking-tight">
+              Free Live Music
+            </Link>
+            <div className="flex items-center gap-1">
+              <span className="px-3 py-1.5 text-xs font-medium text-violet-400 bg-violet-500/10 rounded-lg">
+                Concerts
+              </span>
+              {cityCodeToSlug[city] && (
+                <Link
+                  href={`/venues/${cityCodeToSlug[city]}`}
+                  className="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+                >
+                  Venues
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
         <div className="relative max-w-7xl mx-auto px-4 py-10 sm:py-14">
           <div className="flex items-start justify-between gap-4">
             <div>

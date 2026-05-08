@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { Concert } from '@/types'
 import Link from 'next/link'
 import { cityCodeToSlug } from '@/lib/city-slugs'
+import SiteNav from '@/components/SiteNav'
 
 function parseTimeToIso(time: string): string {
   const m = time.match(/^(\d+):(\d+)\s*(am|pm)$/i)
@@ -203,29 +204,14 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
       {/* Header */}
       <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-4">
-          {/* Breadcrumb nav — visible to users and crawlers */}
-          <nav aria-label="Breadcrumb">
-            <ol className="flex items-center gap-1 text-sm text-slate-400 flex-wrap">
-              <li>
-                <Link href="/" className="hover:text-white transition-colors">
-                  Free Live Music
-                </Link>
-              </li>
-              <li aria-hidden="true" className="text-slate-600">/</li>
-              <li>
-                <Link
-                  href={`/?city=${concert.city}`}
-                  className="hover:text-white transition-colors"
-                >
-                  {city}
-                </Link>
-              </li>
-              <li aria-hidden="true" className="text-slate-600">/</li>
-              <li className="text-slate-200 truncate max-w-[180px]" aria-current="page">
-                {concert.artist_name}
-              </li>
-            </ol>
-          </nav>
+          <SiteNav
+            venuesHref={cityCodeToSlug[concert.city] ? `/venues/${cityCodeToSlug[concert.city]}` : '/venues/new-york'}
+            breadcrumbs={[
+              { label: 'Free Live Music', href: '/' },
+              { label: city, href: `/?city=${concert.city}` },
+              { label: concert.artist_name },
+            ]}
+          />
         </div>
       </header>
 

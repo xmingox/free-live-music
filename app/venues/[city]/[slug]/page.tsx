@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Metadata } from 'next'
 import { Venue, Concert } from '@/types'
 import { getCityCodeFromSlug, getMetroByCode, cityCodeToSlug } from '@/lib/city-slugs'
+import SiteNav from '@/components/SiteNav'
 
 export async function generateStaticParams() {
   const supabase = createClient(
@@ -158,17 +159,15 @@ export default async function VenuePage(
 
       <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-4">
-          <nav aria-label="Breadcrumb">
-            <ol className="flex items-center gap-1 text-sm text-slate-400 flex-wrap">
-              <li><Link href="/" className="hover:text-white transition-colors">Free Live Music</Link></li>
-              <li aria-hidden="true" className="text-slate-600">/</li>
-              <li><Link href={`/?city=${metroCode}`} className="hover:text-white transition-colors">{metro.city}</Link></li>
-              <li aria-hidden="true" className="text-slate-600">/</li>
-              <li><Link href={`/venues/${citySlug}`} className="hover:text-white transition-colors">Venues</Link></li>
-              <li aria-hidden="true" className="text-slate-600">/</li>
-              <li className="text-slate-200 truncate max-w-[160px]" aria-current="page">{v.name}</li>
-            </ol>
-          </nav>
+          <SiteNav
+            venuesHref={`/venues/${citySlug}`}
+            breadcrumbs={[
+              { label: 'Free Live Music', href: '/' },
+              { label: metro.city, href: `/?city=${metroCode}` },
+              { label: 'Venues', href: `/venues/${citySlug}` },
+              { label: v.name },
+            ]}
+          />
         </div>
       </header>
 
