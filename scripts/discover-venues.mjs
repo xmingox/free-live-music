@@ -1,10 +1,11 @@
 // scripts/discover-venues.mjs
-// Usage: node scripts/discover-venues.mjs <CITY_CODE> [--insert] [--all-types]
+// Usage: node scripts/discover-venues.mjs <CITY_CODE> [--insert] [--all-types] [--min-rating=N]
 //
 // Discovers potential new venues with live music for a given city via Google Places.
 // Dry-run by default — shows candidates ranked by rating.
 // Pass --insert to write them into the venues table.
 // Pass --all-types to also surface parks and amphitheaters (mostly ticketed — use carefully).
+// Pass --min-rating=4.2 to hide venues below that Google rating (good for noisy cities).
 
 import { readFileSync } from 'fs'
 import { join, dirname } from 'path'
@@ -34,10 +35,11 @@ if (!PLACES_API_KEY)                { console.error('Missing GOOGLE_PLACES_API_K
 const cityCode   = process.argv[2]?.toUpperCase()
 const autoInsert = process.argv.includes('--insert')
 const allTypes   = process.argv.includes('--all-types')
+const minRating  = parseFloat(process.argv.find(a => a.startsWith('--min-rating='))?.split('=')[1] ?? '0') || 0
 
 if (!cityCode) {
-  console.error('Usage: node scripts/discover-venues.mjs <CITY_CODE> [--insert] [--all-types]')
-  console.error('Example: node scripts/discover-venues.mjs LA')
+  console.error('Usage: node scripts/discover-venues.mjs <CITY_CODE> [--insert] [--all-types] [--min-rating=N]')
+  console.error('Example: node scripts/discover-venues.mjs LA --min-rating=4.2')
   process.exit(1)
 }
 
@@ -222,22 +224,29 @@ async function main() {
     await sleep(500)
   }
 
-  console.log(`\n${'─'.repeat(65)}`)
-  console.log(`🎯 ${candidates.length} potential new venues found\n`)
+  // Apply min-rating filter if requested
+  const filtered = minRating
+    ? candidates.filter(c => (c.rating ?? 0) >= minRating)
+    : candidates
 
-  if (candidates.length === 0) {
+  const dropped = candidates.length - filtered.length
+
+  console.log(`\n${'─'.repeat(65)}`)
+  console.log(`🎯 ${filtered.length} potential new venues found${dropped ? ` (${dropped} below ${minRating}★ hidden)` : ''}\n`)
+
+  if (filtered.length === 0) {
     console.log('Nothing new to add.')
     return
   }
 
   // Sort: highest-rated first
-  candidates.sort((a, b) =>
+  filtered.sort((a, b) =>
     (b.rating ?? 0) - (a.rating ?? 0) ||
     (b.rating_count ?? 0) - (a.rating_count ?? 0)
   )
 
   // Print report
-  candidates.forEach((c, i) => {
+  filtered.forEach((c, i) => {
     const stars = c.rating
       ? `⭐ ${c.rating} (${(c.rating_count ?? 0).toLocaleString()} reviews)`
       : '(no rating)'
@@ -257,10 +266,10 @@ async function main() {
   }
 
   // Insert
-  console.log(`\nInserting ${candidates.length} venues into Supabase...\n`)
+  console.log(`\nInserting ${filtered.length} venues into Supabase...\n`)
   let inserted = 0, skipped = 0, errors = 0
 
-  for (const c of candidates) {
+  for (const c of filtered) {
     const slug = `${slugify(c.name)}-${cityCode.toLowerCase()}`
     const row  = {
       slug,
