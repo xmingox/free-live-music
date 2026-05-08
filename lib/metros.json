@@ -987,6 +987,16 @@
         "TLH",
         "Tallahassee"
       ]
+    },
+    {
+      "code": "FSD",
+      "city": "Sioux Falls",
+      "state": "SD",
+      "region": "Midwest",
+      "aliases": [
+        "FSD",
+        "Sioux Falls"
+      ]
     }
   ]
 }
