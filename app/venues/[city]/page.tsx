@@ -4,10 +4,11 @@ import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Metadata } from 'next'
-import { getCityCodeFromSlug, getMetroByCode, getAllMetros, cityCodeToSlug } from '@/lib/city-slugs'
+import { getCityCodeFromSlug, getMetroByCode, getAllMetros, cityCodeToSlug, cityToSlug } from '@/lib/city-slugs'
 import { Venue } from '@/types'
 import VenueListClient from './venue-list-client'
 import SiteNav from '@/components/SiteNav'
+import { VENUE_TYPE_CONFIGS } from './type-hub-page'
 
 export function generateStaticParams() {
   return getAllMetros().map((metro) => ({ city: cityCodeToSlug[metro.code] }))
@@ -155,18 +156,83 @@ export default async function VenueListPage(
             </p>
           </div>
         ) : (
-          <VenueListClient
-            venues={venues}
-            citySlug={citySlug}
-            cityName={metro.city}
-            withShowsCount={venues.filter(v => v.upcoming_show_count > 0).length}
-          />
+          <>
+            <HubLinks venues={venues} citySlug={citySlug} />
+            <VenueListClient
+              venues={venues}
+              citySlug={citySlug}
+              cityName={metro.city}
+              withShowsCount={venues.filter(v => v.upcoming_show_count > 0).length}
+            />
+          </>
         )}
       </main>
 
       <footer className="mt-16 border-t border-slate-800 py-8 text-center text-slate-600 text-sm">
         Free Live Music · {metro.city} Free Music Venues
       </footer>
+    </div>
+  )
+}
+
+type VenueMin = { venue_type: string | null; neighborhood: string | null }
+
+function HubLinks({ venues, citySlug }: { venues: VenueMin[]; citySlug: string }) {
+  // Type hub links — only for types present in this city
+  const typeCounts: Record<string, number> = {}
+  for (const v of venues) {
+    const t = v.venue_type ?? 'other'
+    typeCounts[t] = (typeCounts[t] || 0) + 1
+  }
+  const presentTypes = VENUE_TYPE_CONFIGS.filter(c => (typeCounts[c.type] ?? 0) > 0)
+
+  // Top neighborhoods by venue count
+  const hoodCounts: Record<string, number> = {}
+  for (const v of venues) {
+    if (v.neighborhood) hoodCounts[v.neighborhood] = (hoodCounts[v.neighborhood] || 0) + 1
+  }
+  const topHoods = Object.entries(hoodCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([hood]) => hood)
+
+  if (presentTypes.length === 0 && topHoods.length === 0) return null
+
+  return (
+    <div className="mb-8 flex flex-col gap-4">
+      {presentTypes.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Browse by type</p>
+          <div className="flex flex-wrap gap-2">
+            {presentTypes.map(c => (
+              <Link
+                key={c.slug}
+                href={`/venues/${citySlug}/${c.slug}`}
+                className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors hover:opacity-80 ${c.color}`}
+              >
+                {c.label} <span className="opacity-60">({typeCounts[c.type]})</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {topHoods.length > 1 && (
+        <div>
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Browse by neighborhood</p>
+          <div className="flex flex-wrap gap-2">
+            {topHoods.map(hood => (
+              <Link
+                key={hood}
+                href={`/venues/${citySlug}/neighborhood/${cityToSlug(hood)}`}
+                className="text-xs font-medium px-3 py-1.5 rounded-full border bg-slate-800 text-slate-300 border-slate-700 hover:border-slate-500 hover:text-white transition-colors"
+              >
+                {hood}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

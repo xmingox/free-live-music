@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Metadata } from 'next'
 import { Venue, Concert } from '@/types'
-import { getCityCodeFromSlug, getMetroByCode, cityCodeToSlug } from '@/lib/city-slugs'
+import { getCityCodeFromSlug, getMetroByCode, cityCodeToSlug, cityToSlug } from '@/lib/city-slugs'
 import SiteNav from '@/components/SiteNav'
 
 export async function generateStaticParams() {
@@ -196,7 +196,18 @@ export default async function VenuePage(
 
         {/* Location */}
         <p className="text-slate-400 text-base mb-6">
-          {[v.neighborhood, metro.city, metro.state].filter(Boolean).join(', ')}
+          {v.neighborhood ? (
+            <>
+              <Link
+                href={`/venues/${citySlug}/neighborhood/${cityToSlug(v.neighborhood)}`}
+                className="hover:text-violet-300 transition-colors"
+              >
+                {v.neighborhood}
+              </Link>
+              {', '}
+            </>
+          ) : null}
+          {metro.city}, {metro.state}
         </p>
 
         {/* Info card */}
