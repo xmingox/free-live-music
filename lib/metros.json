@@ -59,7 +59,9 @@
       "city": "Philadelphia",
       "state": "PA",
       "region": "Northeast",
-      "aliases": ["PHI"]
+      "aliases": [
+        "PHI"
+      ]
     },
     {
       "code": "ATL",
@@ -75,7 +77,9 @@
       "city": "Miami",
       "state": "FL",
       "region": "South",
-      "aliases": ["MIA"]
+      "aliases": [
+        "MIA"
+      ]
     },
     {
       "code": "SF",
@@ -171,35 +175,45 @@
       "city": "Memphis",
       "state": "TN",
       "region": "South",
-      "aliases": ["MEM"]
+      "aliases": [
+        "MEM"
+      ]
     },
     {
       "code": "NOLA",
       "city": "New Orleans",
       "state": "LA",
       "region": "South",
-      "aliases": ["NOLA"]
+      "aliases": [
+        "NOLA"
+      ]
     },
     {
       "code": "MIN",
       "city": "Minneapolis",
       "state": "MN",
       "region": "Midwest",
-      "aliases": ["MIN"]
+      "aliases": [
+        "MIN"
+      ]
     },
     {
       "code": "DET",
       "city": "Detroit",
       "state": "MI",
       "region": "Midwest",
-      "aliases": ["DET"]
+      "aliases": [
+        "DET"
+      ]
     },
     {
       "code": "KC",
       "city": "Kansas City",
       "state": "MO",
       "region": "Midwest",
-      "aliases": ["KC"]
+      "aliases": [
+        "KC"
+      ]
     },
     {
       "code": "STL",
@@ -215,14 +229,18 @@
       "city": "Indianapolis",
       "state": "IN",
       "region": "Midwest",
-      "aliases": ["IND"]
+      "aliases": [
+        "IND"
+      ]
     },
     {
       "code": "CLE",
       "city": "Cleveland",
       "state": "OH",
       "region": "Midwest",
-      "aliases": ["CLE"]
+      "aliases": [
+        "CLE"
+      ]
     },
     {
       "code": "PHX",
@@ -260,13 +278,6 @@
       ]
     },
     {
-      "code": "SAC",
-      "city": "Sacramento",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
-    },
-    {
       "code": "SD",
       "city": "San Diego",
       "state": "CA",
@@ -274,20 +285,6 @@
       "aliases": [
         "SD"
       ]
-    },
-    {
-      "code": "OAK",
-      "city": "Oakland",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "SJ",
-      "city": "San Jose",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
     },
     {
       "code": "LB",
@@ -306,48 +303,6 @@
       "aliases": [
         "ANA"
       ]
-    },
-    {
-      "code": "FRE",
-      "city": "Fresno",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "BCK",
-      "city": "Bakersfield",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "RIV",
-      "city": "Riverside",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "STK",
-      "city": "Stockton",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "OXN",
-      "city": "Oxnard",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "VIS",
-      "city": "Visalia",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
     },
     {
       "code": "PIT",
@@ -372,7 +327,9 @@
       "city": "Buffalo",
       "state": "NY",
       "region": "Northeast",
-      "aliases": ["BUF"]
+      "aliases": [
+        "BUF"
+      ]
     },
     {
       "code": "PRV",
@@ -385,13 +342,6 @@
       "code": "HRT",
       "city": "Hartford",
       "state": "CT",
-      "region": "Northeast",
-      "aliases": []
-    },
-    {
-      "code": "ALBY",
-      "city": "Albany",
-      "state": "NY",
       "region": "Northeast",
       "aliases": []
     },
@@ -431,7 +381,9 @@
       "city": "Raleigh",
       "state": "NC",
       "region": "Southeast",
-      "aliases": ["RDU"]
+      "aliases": [
+        "RDU"
+      ]
     },
     {
       "code": "GRE",
@@ -445,25 +397,13 @@
       "city": "Charleston",
       "state": "SC",
       "region": "Southeast",
-      "aliases": ["CHS"]
-    },
-    {
-      "code": "COL",
-      "city": "Columbia",
-      "state": "SC",
-      "region": "Southeast",
-      "aliases": []
+      "aliases": [
+        "CHS"
+      ]
     },
     {
       "code": "SAV",
       "city": "Savannah",
-      "state": "GA",
-      "region": "Southeast",
-      "aliases": []
-    },
-    {
-      "code": "AUG",
-      "city": "Augusta",
       "state": "GA",
       "region": "Southeast",
       "aliases": []
@@ -482,7 +422,9 @@
       "city": "Tampa",
       "state": "FL",
       "region": "Southeast",
-      "aliases": ["TB"]
+      "aliases": [
+        "TB"
+      ]
     },
     {
       "code": "ORL",
@@ -501,20 +443,6 @@
     {
       "code": "WPB",
       "city": "West Palm Beach",
-      "state": "FL",
-      "region": "Southeast",
-      "aliases": []
-    },
-    {
-      "code": "MCO",
-      "city": "Daytona Beach",
-      "state": "FL",
-      "region": "Southeast",
-      "aliases": []
-    },
-    {
-      "code": "PEN",
-      "city": "Pensacola",
       "state": "FL",
       "region": "Southeast",
       "aliases": []
@@ -545,36 +473,8 @@
       ]
     },
     {
-      "code": "MOB",
-      "city": "Mobile",
-      "state": "AL",
-      "region": "South",
-      "aliases": []
-    },
-    {
-      "code": "JAC",
-      "city": "Jackson",
-      "state": "MS",
-      "region": "South",
-      "aliases": []
-    },
-    {
       "code": "BR",
       "city": "Baton Rouge",
-      "state": "LA",
-      "region": "South",
-      "aliases": []
-    },
-    {
-      "code": "LAF",
-      "city": "Lafayette",
-      "state": "LA",
-      "region": "South",
-      "aliases": []
-    },
-    {
-      "code": "SHR",
-      "city": "Shreveport",
       "state": "LA",
       "region": "South",
       "aliases": []
@@ -649,37 +549,9 @@
       "aliases": []
     },
     {
-      "code": "TRI",
-      "city": "Tri-Cities",
-      "state": "TN",
-      "region": "South",
-      "aliases": []
-    },
-    {
       "code": "DES",
       "city": "Des Moines",
       "state": "IA",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "CED",
-      "city": "Cedar Rapids",
-      "state": "IA",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "MSP",
-      "city": "Minneapolis-St. Paul",
-      "state": "MN",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "DUL",
-      "city": "Duluth",
-      "state": "MN",
       "region": "Midwest",
       "aliases": []
     },
@@ -688,18 +560,13 @@
       "city": "Milwaukee",
       "state": "WI",
       "region": "Midwest",
-      "aliases": ["MIL"]
+      "aliases": [
+        "MIL"
+      ]
     },
     {
       "code": "MAD",
       "city": "Madison",
-      "state": "WI",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "GRB",
-      "city": "Green Bay",
       "state": "WI",
       "region": "Midwest",
       "aliases": []
@@ -719,25 +586,13 @@
       "aliases": []
     },
     {
-      "code": "FLI",
-      "city": "Flint",
-      "state": "MI",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "LAN",
-      "city": "Lansing",
-      "state": "MI",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
       "code": "CMH",
       "city": "Columbus",
       "state": "OH",
       "region": "Midwest",
-      "aliases": ["CMH"]
+      "aliases": [
+        "CMH"
+      ]
     },
     {
       "code": "CIN",
@@ -768,118 +623,6 @@
       "aliases": []
     },
     {
-      "code": "CAN",
-      "city": "Canton",
-      "state": "OH",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "LIM",
-      "city": "Lima",
-      "state": "OH",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "INV",
-      "city": "Inverness",
-      "state": "IL",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "RCK",
-      "city": "Rockford",
-      "state": "IL",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "PEO",
-      "city": "Peoria",
-      "state": "IL",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "SPRI",
-      "city": "Springfield",
-      "state": "IL",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "EV",
-      "city": "Evansville",
-      "state": "IN",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "FWY",
-      "city": "Fort Wayne",
-      "state": "IN",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "SBN",
-      "city": "South Bend",
-      "state": "IN",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "LBY",
-      "city": "Lafayette",
-      "state": "IN",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "TER",
-      "city": "Terre Haute",
-      "state": "IN",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "JEF",
-      "city": "Jefferson City",
-      "state": "MO",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "SPRM",
-      "city": "Springfield",
-      "state": "MO",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "JOP",
-      "city": "Joplin",
-      "state": "MO",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "KCK",
-      "city": "Kansas City",
-      "state": "KS",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "TOP",
-      "city": "Topeka",
-      "state": "KS",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
       "code": "WIC",
       "city": "Wichita",
       "state": "KS",
@@ -896,36 +639,8 @@
       ]
     },
     {
-      "code": "LIN",
-      "city": "Lincoln",
-      "state": "NE",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "GRD",
-      "city": "Grand Island",
-      "state": "NE",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
       "code": "RNO",
       "city": "Reno",
-      "state": "NV",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "CRS",
-      "city": "Carson City",
-      "state": "NV",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "HEN",
-      "city": "Henderson",
       "state": "NV",
       "region": "West",
       "aliases": []
@@ -934,55 +649,6 @@
       "code": "BSE",
       "city": "Boise",
       "state": "ID",
-      "region": "Mountain",
-      "aliases": []
-    },
-    {
-      "code": "POC",
-      "city": "Pocatello",
-      "state": "ID",
-      "region": "Mountain",
-      "aliases": []
-    },
-    {
-      "code": "MSL",
-      "city": "Missoula",
-      "state": "MT",
-      "region": "Mountain",
-      "aliases": []
-    },
-    {
-      "code": "BIL",
-      "city": "Billings",
-      "state": "MT",
-      "region": "Mountain",
-      "aliases": []
-    },
-    {
-      "code": "GRT",
-      "city": "Great Falls",
-      "state": "MT",
-      "region": "Mountain",
-      "aliases": []
-    },
-    {
-      "code": "CHY",
-      "city": "Cheyenne",
-      "state": "WY",
-      "region": "Mountain",
-      "aliases": []
-    },
-    {
-      "code": "CSP",
-      "city": "Casper",
-      "state": "WY",
-      "region": "Mountain",
-      "aliases": []
-    },
-    {
-      "code": "LAR",
-      "city": "Laramie",
-      "state": "WY",
       "region": "Mountain",
       "aliases": []
     },
@@ -1001,115 +667,10 @@
       "aliases": []
     },
     {
-      "code": "PUE",
-      "city": "Pueblo",
-      "state": "CO",
-      "region": "Mountain",
-      "aliases": []
-    },
-    {
-      "code": "GJT",
-      "city": "Grand Junction",
-      "state": "CO",
-      "region": "Mountain",
-      "aliases": []
-    },
-    {
       "code": "FTC",
       "city": "Fort Collins",
       "state": "CO",
       "region": "Mountain",
-      "aliases": []
-    },
-    {
-      "code": "OGD",
-      "city": "Ogden",
-      "state": "UT",
-      "region": "Mountain",
-      "aliases": []
-    },
-    {
-      "code": "PRO",
-      "city": "Provo",
-      "state": "UT",
-      "region": "Mountain",
-      "aliases": []
-    },
-    {
-      "code": "STG",
-      "city": "St. George",
-      "state": "UT",
-      "region": "Mountain",
-      "aliases": []
-    },
-    {
-      "code": "LOG",
-      "city": "Logan",
-      "state": "UT",
-      "region": "Mountain",
-      "aliases": []
-    },
-    {
-      "code": "LAS",
-      "city": "Las Cruces",
-      "state": "NM",
-      "region": "Southwest",
-      "aliases": []
-    },
-    {
-      "code": "ROA",
-      "city": "Roswell",
-      "state": "NM",
-      "region": "Southwest",
-      "aliases": []
-    },
-    {
-      "code": "HOB",
-      "city": "Hobbs",
-      "state": "NM",
-      "region": "Southwest",
-      "aliases": []
-    },
-    {
-      "code": "GLB",
-      "city": "Glendale",
-      "state": "AZ",
-      "region": "Southwest",
-      "aliases": []
-    },
-    {
-      "code": "MES",
-      "city": "Mesa",
-      "state": "AZ",
-      "region": "Southwest",
-      "aliases": []
-    },
-    {
-      "code": "CHN",
-      "city": "Chandler",
-      "state": "AZ",
-      "region": "Southwest",
-      "aliases": []
-    },
-    {
-      "code": "SCO",
-      "city": "Scottsdale",
-      "state": "AZ",
-      "region": "Southwest",
-      "aliases": []
-    },
-    {
-      "code": "TEM",
-      "city": "Tempe",
-      "state": "AZ",
-      "region": "Southwest",
-      "aliases": []
-    },
-    {
-      "code": "PES",
-      "city": "Peoria",
-      "state": "AZ",
-      "region": "Southwest",
       "aliases": []
     },
     {
@@ -1123,34 +684,6 @@
       ]
     },
     {
-      "code": "YUM",
-      "city": "Yuma",
-      "state": "AZ",
-      "region": "Southwest",
-      "aliases": []
-    },
-    {
-      "code": "MON",
-      "city": "Monterey",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "SCR",
-      "city": "Santa Cruz",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "SLO",
-      "city": "San Luis Obispo",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
-    },
-    {
       "code": "SBA",
       "city": "Santa Barbara",
       "state": "CA",
@@ -1160,78 +693,8 @@
       ]
     },
     {
-      "code": "VEN",
-      "city": "Ventura",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "SAN",
-      "city": "Santa Ana",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "SBD",
-      "city": "San Bernardino",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "THO",
-      "city": "Thousand Oaks",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "SIM",
-      "city": "Simi Valley",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "CAM",
-      "city": "Camarillo",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "MER",
-      "city": "Merced",
-      "state": "CA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "EVR",
-      "city": "Everett",
-      "state": "WA",
-      "region": "West",
-      "aliases": []
-    },
-    {
       "code": "TAC",
       "city": "Tacoma",
-      "state": "WA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "OLY",
-      "city": "Olympia",
-      "state": "WA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "VAN",
-      "city": "Vancouver",
       "state": "WA",
       "region": "West",
       "aliases": []
@@ -1244,36 +707,8 @@
       "aliases": []
     },
     {
-      "code": "YAK",
-      "city": "Yakima",
-      "state": "WA",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "BEL",
-      "city": "Bellingham",
-      "state": "WA",
-      "region": "West",
-      "aliases": []
-    },
-    {
       "code": "EUG",
       "city": "Eugene",
-      "state": "OR",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "SAL",
-      "city": "Salem",
-      "state": "OR",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "GRS",
-      "city": "Gresham",
       "state": "OR",
       "region": "West",
       "aliases": []
@@ -1283,69 +718,6 @@
       "city": "Bend",
       "state": "OR",
       "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "MED",
-      "city": "Medford",
-      "state": "OR",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "ASH",
-      "city": "Ashland",
-      "state": "OR",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "KLA",
-      "city": "Klamath Falls",
-      "state": "OR",
-      "region": "West",
-      "aliases": []
-    },
-    {
-      "code": "BOU",
-      "city": "Boulder",
-      "state": "CO",
-      "region": "Mountain",
-      "aliases": []
-    },
-    {
-      "code": "AUR",
-      "city": "Aurora",
-      "state": "CO",
-      "region": "Mountain",
-      "aliases": []
-    },
-    {
-      "code": "LAK",
-      "city": "Lakewood",
-      "state": "CO",
-      "region": "Mountain",
-      "aliases": []
-    },
-    {
-      "code": "DUH",
-      "city": "Dubuque",
-      "state": "IA",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "DVM",
-      "city": "Davenport",
-      "state": "IA",
-      "region": "Midwest",
-      "aliases": []
-    },
-    {
-      "code": "WAT",
-      "city": "Waterloo",
-      "state": "IA",
-      "region": "Midwest",
       "aliases": []
     },
     {
