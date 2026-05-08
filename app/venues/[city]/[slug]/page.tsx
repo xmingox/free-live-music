@@ -5,7 +5,21 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Metadata } from 'next'
 import { Venue, Concert } from '@/types'
-import { getCityCodeFromSlug, getMetroByCode } from '@/lib/city-slugs'
+import { getCityCodeFromSlug, getMetroByCode, cityCodeToSlug } from '@/lib/city-slugs'
+
+export async function generateStaticParams() {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+  const { data: venues } = await supabase
+    .from('venues')
+    .select('slug, city')
+
+  return (venues ?? [])
+    .filter(v => cityCodeToSlug[v.city])
+    .map(v => ({ city: cityCodeToSlug[v.city], slug: v.slug }))
+}
 
 const venueTypeLabels: Record<string, string> = {
   park: 'Park',

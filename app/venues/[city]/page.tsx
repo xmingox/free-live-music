@@ -4,8 +4,12 @@ import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Metadata } from 'next'
-import { getCityCodeFromSlug, getMetroByCode } from '@/lib/city-slugs'
+import { getCityCodeFromSlug, getMetroByCode, getAllMetros, cityCodeToSlug } from '@/lib/city-slugs'
 import { Venue } from '@/types'
+
+export function generateStaticParams() {
+  return getAllMetros().map((metro) => ({ city: cityCodeToSlug[metro.code] }))
+}
 
 const venueTypeLabels: Record<string, string> = {
   park: 'Park',
