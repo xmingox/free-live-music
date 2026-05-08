@@ -84,6 +84,16 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
 
   if (!concert) notFound()
 
+  const today = new Date().toISOString().split('T')[0]
+  const { data: related } = await supabase
+    .from('concerts')
+    .select('slug, artist_name, venue, neighborhood, date, time')
+    .eq('city', concert.city)
+    .neq('id', concert.id)
+    .gte('date', today)
+    .order('date', { ascending: true })
+    .limit(5)
+
   const city = cityNames[concert.city] ?? concert.city
   const canonicalUrl = `https://www.freelivemusic.co/concert/${slug}`
 
@@ -197,9 +207,17 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
         </div>
 
         {/* Artist name */}
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-6 bg-gradient-to-r from-violet-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4 bg-gradient-to-r from-violet-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
           {concert.artist_name}
         </h1>
+
+        {/* Description */}
+        <p className="text-slate-300 text-base leading-relaxed mb-8">
+          {concert.artist_name} performs free at {concert.venue} in {concert.neighborhood}, {city} on {formatDate(concert.date)}{concert.time ? ` at ${formatTime(concert.time)}` : ''}.{' '}
+          {concert.admission_type === 'Free RSVP'
+            ? 'This event is free but requires an RSVP — check the official listing to reserve your spot.'
+            : 'No tickets or cover charge needed — just show up and enjoy.'}
+        </p>
 
         {/* Details card */}
         <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 flex flex-col gap-5 mb-8">
@@ -281,6 +299,34 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
         >
           ← Browse All Free Shows
         </Link>
+
+        {/* Related shows */}
+        {related && related.length > 0 && (
+          <section className="mt-10">
+            <h2 className="text-lg font-bold text-white mb-4">More Free Shows in {city}</h2>
+            <div className="flex flex-col gap-2">
+              {related.map((show) => (
+                <Link
+                  key={show.slug}
+                  href={`/concert/${show.slug}`}
+                  className="flex items-start justify-between gap-4 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 hover:border-slate-600 rounded-xl px-4 py-3 transition-all duration-150 group"
+                >
+                  <div className="min-w-0">
+                    <p className="font-semibold text-white text-sm group-hover:text-violet-300 transition-colors truncate">
+                      {show.artist_name}
+                    </p>
+                    <p className="text-slate-400 text-xs mt-0.5 truncate">
+                      {show.venue} · {show.neighborhood}
+                    </p>
+                  </div>
+                  <span className="text-xs text-slate-400 shrink-0 mt-0.5">
+                    {new Date(show.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
     </div>
   )
