@@ -14,6 +14,22 @@ function parseTimeToIso(time: string): string {
   return `${String(h).padStart(2, '0')}:${min}:00`
 }
 
+function parseEndTimeIso(time: string): string {
+  const m = time.match(/^(\d+):(\d+)\s*(am|pm)$/i)
+  if (!m) return '22:00:00'
+  let h = parseInt(m[1])
+  const min = m[2]
+  const period = m[3].toLowerCase()
+  if (period === 'pm' && h !== 12) h += 12
+  if (period === 'am' && h === 12) h = 0
+  h = (h + 2) % 24
+  return `${String(h).padStart(2, '0')}:${min}:00`
+}
+
+function isValidUrl(url: string): boolean {
+  try { new URL(url); return true } catch { return false }
+}
+
 // ISR: re-render at most once per hour instead of on every request
 export const revalidate = 3600
 
@@ -97,13 +113,21 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
   const city = cityNames[concert.city] ?? concert.city
   const canonicalUrl = `https://www.freelivemusic.co/concert/${slug}`
 
+  const offerUrl = concert.source_url && isValidUrl(concert.source_url) ? concert.source_url : canonicalUrl
+  const ogImageUrl = `https://www.freelivemusic.co/concert/${slug}/opengraph-image`
+  const eventDescription = `${concert.artist_name} performs free at ${concert.venue} in ${concert.neighborhood}, ${city} on ${formatDate(concert.date)}${concert.time ? ` at ${formatTime(concert.time)}` : ''}. ${concert.admission_type === 'Free RSVP' ? 'Free admission with RSVP — check the official listing to reserve your spot.' : 'Free admission — no tickets or cover charge needed, just show up and enjoy.'}`
+
   const eventJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Event',
     name: concert.artist_name,
+    description: eventDescription,
+    image: concert.image_url ?? ogImageUrl,
     startDate: concert.time ? `${concert.date}T${parseTimeToIso(concert.time)}` : concert.date,
+    endDate: concert.time ? `${concert.date}T${parseEndTimeIso(concert.time)}` : concert.date,
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    performer: { '@type': 'PerformingGroup', name: concert.artist_name },
     location: {
       '@type': 'Place',
       name: concert.venue,
@@ -117,12 +141,13 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
       price: '0',
       priceCurrency: 'USD',
       availability: 'https://schema.org/InStock',
-      url: concert.source_url ?? canonicalUrl,
+      validFrom: concert.created_at.split('T')[0],
+      url: offerUrl,
     },
     organizer: {
       '@type': 'Organization',
       name: concert.source_name ?? 'Free Live Music',
-      url: concert.source_url ?? 'https://www.freelivemusic.co',
+      url: isValidUrl(concert.source_url ?? '') ? concert.source_url! : 'https://www.freelivemusic.co',
     },
   }
 
