@@ -945,6 +945,26 @@
         "PWM",
         "Portland ME"
       ]
+    },
+    {
+      "code": "CAE",
+      "city": "Columbia",
+      "state": "SC",
+      "region": "Southeast",
+      "aliases": [
+        "CAE",
+        "Columbia SC"
+      ]
+    },
+    {
+      "code": "HSV",
+      "city": "Huntsville",
+      "state": "AL",
+      "region": "Southeast",
+      "aliases": [
+        "HSV",
+        "Huntsville"
+      ]
     }
   ]
 }
