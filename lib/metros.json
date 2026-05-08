@@ -903,6 +903,48 @@
         "BTV",
         "Burlington"
       ]
+    },
+    {
+      "code": "ICY",
+      "city": "Iowa City",
+      "state": "IA",
+      "region": "Midwest",
+      "aliases": [
+        "ICY",
+        "Iowa City",
+        "Coralville"
+      ]
+    },
+    {
+      "code": "PNS",
+      "city": "Pensacola",
+      "state": "FL",
+      "region": "Southeast",
+      "aliases": [
+        "PNS",
+        "Pensacola",
+        "Pensacola Beach"
+      ]
+    },
+    {
+      "code": "FAY",
+      "city": "Fayetteville",
+      "state": "AR",
+      "region": "South",
+      "aliases": [
+        "FAY",
+        "Fayetteville"
+      ]
+    },
+    {
+      "code": "PWM",
+      "city": "Portland",
+      "state": "ME",
+      "region": "Northeast",
+      "aliases": [
+        "PWM",
+        "Portland ME"
+      ]
     }
   ]
 }
