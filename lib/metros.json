@@ -965,6 +965,18 @@
         "HSV",
         "Huntsville"
       ]
+    },
+    {
+      "code": "VB",
+      "city": "Virginia Beach",
+      "state": "VA",
+      "region": "Southeast",
+      "aliases": [
+        "VB",
+        "Virginia Beach",
+        "Norfolk",
+        "Chesapeake"
+      ]
     }
   ]
 }
