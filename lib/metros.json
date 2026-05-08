@@ -91,8 +91,6 @@
         "Oakland",
         "Berkeley",
         "San Jose",
-        "Santa Cruz",
-        "San Luis Obispo",
         "Santa Barbara",
         "Sacramento",
         "Stockton",
@@ -794,6 +792,43 @@
       "region": "West",
       "aliases": [
         "HNL"
+      ]
+    },
+    {
+      "code": "SLO",
+      "city": "San Luis Obispo",
+      "state": "CA",
+      "region": "West",
+      "aliases": [
+        "SLO",
+        "San Luis Obispo"
+      ]
+    },
+    {
+      "code": "MTY",
+      "city": "Monterey",
+      "state": "CA",
+      "region": "West",
+      "aliases": [
+        "MTY",
+        "Monterey",
+        "Pacific Grove",
+        "Carmel",
+        "Seaside",
+        "Carmel Valley",
+        "Soledad"
+      ]
+    },
+    {
+      "code": "SCZ",
+      "city": "Santa Cruz",
+      "state": "CA",
+      "region": "West",
+      "aliases": [
+        "SCZ",
+        "Santa Cruz",
+        "Capitola",
+        "Watsonville"
       ]
     }
   ]
