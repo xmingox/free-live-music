@@ -5,7 +5,10 @@
       "city": "New York",
       "state": "NY",
       "region": "Northeast",
-      "aliases": ["NYC", "New York City"]
+      "aliases": [
+        "NYC",
+        "New York City"
+      ]
     },
     {
       "code": "LA",
@@ -29,14 +32,18 @@
       "city": "Chicago",
       "state": "IL",
       "region": "Midwest",
-      "aliases": ["CHI"]
+      "aliases": [
+        "CHI"
+      ]
     },
     {
       "code": "DAL",
       "city": "Dallas",
       "state": "TX",
       "region": "South",
-      "aliases": ["DAL"]
+      "aliases": [
+        "DAL"
+      ]
     },
     {
       "code": "HOU",
@@ -59,7 +66,9 @@
       "city": "Atlanta",
       "state": "GA",
       "region": "South",
-      "aliases": ["ATL"]
+      "aliases": [
+        "ATL"
+      ]
     },
     {
       "code": "MIA",
@@ -94,21 +103,28 @@
       "city": "Boston",
       "state": "MA",
       "region": "Northeast",
-      "aliases": ["BOS"]
+      "aliases": [
+        "BOS"
+      ]
     },
     {
       "code": "DC",
       "city": "Washington",
       "state": "DC",
       "region": "Northeast",
-      "aliases": ["DC", "Washington DC"]
+      "aliases": [
+        "DC",
+        "Washington DC"
+      ]
     },
     {
       "code": "SEA",
       "city": "Seattle",
       "state": "WA",
       "region": "West",
-      "aliases": ["SEA"]
+      "aliases": [
+        "SEA"
+      ]
     },
     {
       "code": "PDX",
@@ -137,14 +153,18 @@
       "city": "Austin",
       "state": "TX",
       "region": "South",
-      "aliases": ["AUS"]
+      "aliases": [
+        "AUS"
+      ]
     },
     {
       "code": "NSH",
       "city": "Nashville",
       "state": "TN",
       "region": "South",
-      "aliases": ["NSH"]
+      "aliases": [
+        "NSH"
+      ]
     },
     {
       "code": "MEM",
@@ -186,7 +206,9 @@
       "city": "St. Louis",
       "state": "MO",
       "region": "Midwest",
-      "aliases": ["STL"]
+      "aliases": [
+        "STL"
+      ]
     },
     {
       "code": "IND",
@@ -214,7 +236,9 @@
       "city": "Las Vegas",
       "state": "NV",
       "region": "Southwest",
-      "aliases": []
+      "aliases": [
+        "LV"
+      ]
     },
     {
       "code": "SLC",
@@ -230,7 +254,9 @@
       "city": "Albuquerque",
       "state": "NM",
       "region": "Southwest",
-      "aliases": ["ABQ"]
+      "aliases": [
+        "ABQ"
+      ]
     },
     {
       "code": "SAC",
@@ -244,7 +270,9 @@
       "city": "San Diego",
       "state": "CA",
       "region": "West",
-      "aliases": ["SD"]
+      "aliases": [
+        "SD"
+      ]
     },
     {
       "code": "OAK",
@@ -265,14 +293,18 @@
       "city": "Long Beach",
       "state": "CA",
       "region": "West",
-      "aliases": ["LB"]
+      "aliases": [
+        "LB"
+      ]
     },
     {
       "code": "ANA",
       "city": "Anaheim",
       "state": "CA",
       "region": "West",
-      "aliases": ["ANA"]
+      "aliases": [
+        "ANA"
+      ]
     },
     {
       "code": "FRE",
@@ -321,14 +353,18 @@
       "city": "Pittsburgh",
       "state": "PA",
       "region": "Northeast",
-      "aliases": ["PIT"]
+      "aliases": [
+        "PIT"
+      ]
     },
     {
       "code": "BAL",
       "city": "Baltimore",
       "state": "MD",
       "region": "Northeast",
-      "aliases": ["BAL"]
+      "aliases": [
+        "BAL"
+      ]
     },
     {
       "code": "BUF",
@@ -384,14 +420,18 @@
       "city": "Charlotte",
       "state": "NC",
       "region": "Southeast",
-      "aliases": ["CHR"]
+      "aliases": [
+        "CHR"
+      ]
     },
     {
       "code": "RDU",
       "city": "Raleigh",
       "state": "NC",
       "region": "Southeast",
-      "aliases": ["RAH"]
+      "aliases": [
+        "RAH"
+      ]
     },
     {
       "code": "GRE",
@@ -433,7 +473,9 @@
       "city": "Jacksonville",
       "state": "FL",
       "region": "Southeast",
-      "aliases": ["JAX"]
+      "aliases": [
+        "JAX"
+      ]
     },
     {
       "code": "TB",
@@ -482,7 +524,9 @@
       "city": "Louisville",
       "state": "KY",
       "region": "South",
-      "aliases": ["LOU"]
+      "aliases": [
+        "LOU"
+      ]
     },
     {
       "code": "LEX",
@@ -496,7 +540,9 @@
       "city": "Birmingham",
       "state": "AL",
       "region": "South",
-      "aliases": ["BHM"]
+      "aliases": [
+        "BHM"
+      ]
     },
     {
       "code": "MOB",
@@ -538,35 +584,45 @@
       "city": "San Antonio",
       "state": "TX",
       "region": "South",
-      "aliases": ["SAT"]
+      "aliases": [
+        "SAT"
+      ]
     },
     {
       "code": "FTW",
       "city": "Fort Worth",
       "state": "TX",
       "region": "South",
-      "aliases": ["FTW"]
+      "aliases": [
+        "FTW"
+      ]
     },
     {
       "code": "ELP",
       "city": "El Paso",
       "state": "TX",
       "region": "South",
-      "aliases": ["ELP"]
+      "aliases": [
+        "ELP"
+      ]
     },
     {
       "code": "OKC",
       "city": "Oklahoma City",
       "state": "OK",
       "region": "South",
-      "aliases": ["OKC"]
+      "aliases": [
+        "OKC"
+      ]
     },
     {
       "code": "TUL",
       "city": "Tulsa",
       "state": "OK",
       "region": "South",
-      "aliases": ["TLS"]
+      "aliases": [
+        "TLS"
+      ]
     },
     {
       "code": "ARK",
@@ -832,7 +888,9 @@
       "city": "Omaha",
       "state": "NE",
       "region": "Midwest",
-      "aliases": ["OMA"]
+      "aliases": [
+        "OMA"
+      ]
     },
     {
       "code": "LIN",
@@ -1056,7 +1114,9 @@
       "city": "Tucson",
       "state": "AZ",
       "region": "Southwest",
-      "aliases": ["TUS"]
+      "aliases": [
+        "TUS"
+      ]
     },
     {
       "code": "YUM",
@@ -1091,7 +1151,9 @@
       "city": "Santa Barbara",
       "state": "CA",
       "region": "West",
-      "aliases": ["SBA"]
+      "aliases": [
+        "SBA"
+      ]
     },
     {
       "code": "VEN",
@@ -1287,7 +1349,9 @@
       "city": "Honolulu",
       "state": "HI",
       "region": "West",
-      "aliases": ["HNL"]
+      "aliases": [
+        "HNL"
+      ]
     }
   ]
 }
