@@ -2,6 +2,14 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/react'
+import { Inter } from 'next/font/google'
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  display: 'swap',
+  variable: '--font-inter',
+})
 
 export const metadata: Metadata = {
   title: 'Free Live Music — Free Concerts Nationwide',
@@ -27,7 +35,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <head>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-HE4QED3BWS"
