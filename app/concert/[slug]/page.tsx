@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
 import { Concert } from '@/types'
 import Link from 'next/link'
+import { cityCodeToSlug } from '@/lib/city-slugs'
 
 function parseTimeToIso(time: string): string {
   const m = time.match(/^(\d+):(\d+)\s*(am|pm)$/i)
@@ -99,6 +100,17 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
     .single()
 
   if (!concert) notFound()
+
+  // Fetch venue slug for linking when venue_id is set
+  let venueSlug: string | null = null
+  if (concert.venue_id) {
+    const { data: v } = await supabase
+      .from('venues')
+      .select('slug')
+      .eq('id', concert.venue_id)
+      .single()
+    venueSlug = v?.slug ?? null
+  }
 
   const today = new Date().toISOString().split('T')[0]
   const { data: related } = await supabase
@@ -271,9 +283,26 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
             <div>
               <p className="text-sm text-slate-400 mb-0.5">Venue</p>
               {concert.venue && concert.venue !== 'TBD' && (
-                <p className="font-semibold text-white">{concert.venue}</p>
+                venueSlug && cityCodeToSlug[concert.city] ? (
+                  <Link
+                    href={`/venues/${cityCodeToSlug[concert.city]}/${venueSlug}`}
+                    className="font-semibold text-violet-300 hover:text-violet-200 transition-colors"
+                  >
+                    {concert.venue}
+                  </Link>
+                ) : (
+                  <p className="font-semibold text-white">{concert.venue}</p>
+                )
               )}
               <p className="text-slate-300 text-sm">{concert.neighborhood} · {city}</p>
+              {venueSlug && cityCodeToSlug[concert.city] && (
+                <Link
+                  href={`/venues/${cityCodeToSlug[concert.city]}/${venueSlug}`}
+                  className="text-xs text-slate-500 hover:text-violet-400 transition-colors mt-0.5 inline-block"
+                >
+                  More shows at this venue →
+                </Link>
+              )}
             </div>
           </div>
 

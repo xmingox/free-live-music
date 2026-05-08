@@ -2,11 +2,13 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Concert, City, DateFilter } from '@/types'
 import ConcertCard from '@/components/ConcertCard'
 import DateFilterBar from '@/components/DateFilter'
 import metros from '@/lib/metros.json'
+import { cityCodeToSlug } from '@/lib/city-slugs'
 
 const SubmitEventModal = dynamic(
   () => import('@/components/SubmitEventModal').then(m => ({ default: m.SubmitEventModal })),
@@ -203,6 +205,17 @@ export default function ConcertsClient({
               Share Event
             </button>
           </div>
+
+          {cityCodeToSlug[city] && (
+            <div className="mt-4">
+              <Link
+                href={`/venues/${cityCodeToSlug[city]}`}
+                className="inline-flex items-center gap-1.5 text-sm text-violet-400 hover:text-violet-300 transition-colors"
+              >
+                Browse {metros.metros.find(m => m.code === city)?.city ?? city} venues →
+              </Link>
+            </div>
+          )}
 
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>

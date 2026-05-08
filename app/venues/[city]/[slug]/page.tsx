@@ -101,6 +101,26 @@ export default async function VenuePage(
 
   if (!venue) notFound()
 
+  // Nearby venues — same neighborhood first, fall back to same venue_type
+  const { data: nearbyRaw } = await supabase
+    .from('venues')
+    .select('id, slug, name, venue_type, neighborhood')
+    .eq('city', metroCode!)
+    .eq('neighborhood', venue.neighborhood ?? '')
+    .neq('id', venue.id)
+    .limit(6)
+
+  const nearby = (nearbyRaw && nearbyRaw.length >= 2)
+    ? nearbyRaw
+    : await supabase
+        .from('venues')
+        .select('id, slug, name, venue_type, neighborhood')
+        .eq('city', metroCode!)
+        .eq('venue_type', venue.venue_type ?? 'other')
+        .neq('id', venue.id)
+        .limit(6)
+        .then(r => r.data ?? [])
+
   const today = new Date().toISOString().split('T')[0]
   const { data: concerts } = await supabase
     .from('concerts')
@@ -230,8 +250,33 @@ export default async function VenuePage(
 
           {shows.length === 0 ? (
             <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-6 text-center">
-              <p className="text-slate-500 text-sm">No upcoming shows listed for this venue.</p>
-              <p className="text-slate-600 text-xs mt-1">Check back soon — we update regularly.</p>
+              {v.music_schedule ? (
+                <>
+                  <p className="text-slate-400 text-sm">
+                    No shows on the calendar yet — but {v.name} hosts live music{' '}
+                    <span className="text-slate-300">{v.music_schedule.toLowerCase()}</span>.
+                  </p>
+                  {v.website && isValidUrl(v.website) && (
+                    <a href={v.website} target="_blank" rel="noopener noreferrer"
+                      className="mt-3 inline-block text-xs text-violet-400 hover:text-violet-300 transition-colors">
+                      Check their site for the latest lineup →
+                    </a>
+                  )}
+                </>
+              ) : v.website && isValidUrl(v.website) ? (
+                <>
+                  <p className="text-slate-500 text-sm">No upcoming shows confirmed yet.</p>
+                  <a href={v.website} target="_blank" rel="noopener noreferrer"
+                    className="mt-3 inline-block text-xs text-violet-400 hover:text-violet-300 transition-colors">
+                    Visit {v.name}&apos;s website for updates →
+                  </a>
+                </>
+              ) : (
+                <>
+                  <p className="text-slate-500 text-sm">No upcoming shows listed for this venue.</p>
+                  <p className="text-slate-600 text-xs mt-1">Check back soon — we update regularly.</p>
+                </>
+              )}
             </div>
           ) : (
             <div className="flex flex-col gap-2">
@@ -258,6 +303,31 @@ export default async function VenuePage(
             </div>
           )}
         </section>
+
+        {/* Nearby venues */}
+        {nearby.length > 0 && (
+          <section className="mt-10">
+            <h2 className="text-lg font-bold text-white mb-4">
+              Other Free Music Spots in {v.neighborhood ?? metro.city}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {nearby.map((nv) => (
+                <Link
+                  key={nv.id}
+                  href={`/venues/${citySlug}/${nv.slug}`}
+                  className="flex flex-col bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 hover:border-slate-600 rounded-xl px-4 py-3 transition-all duration-150 group"
+                >
+                  <p className="font-semibold text-white text-sm group-hover:text-violet-300 transition-colors truncate">
+                    {nv.name}
+                  </p>
+                  {nv.neighborhood && (
+                    <p className="text-slate-500 text-xs mt-0.5">{nv.neighborhood}</p>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Claim CTA */}
         <div className="mt-12 bg-slate-800/40 border border-slate-700/40 rounded-2xl p-6 text-center">
