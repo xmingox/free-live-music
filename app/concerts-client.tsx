@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { Concert, City, DateFilter } from '@/types'
 import ConcertCard from '@/components/ConcertCard'
 import DateFilterBar from '@/components/DateFilter'
@@ -82,25 +82,41 @@ export default function ConcertsClient({
   initialConcerts: Concert[]
   defaultCity: City
 }) {
-  const searchParams = useSearchParams()
   const router = useRouter()
-  const [city, setCity] = useState<City>(() => parseCity(searchParams.get('city')))
+
+  // Initialize from defaultCity so SSR renders a full page without Suspense.
+  // Read actual URL params after hydration in a one-time effect below.
+  const [city, setCity] = useState<City>(defaultCity)
   const [state, setState] = useState<string>(() => {
-    const metro = metros.metros.find(m => m.code === city)
+    const metro = metros.metros.find(m => m.code === defaultCity)
     return metro?.state || 'NY'
   })
-  const [dateFilter, setDateFilter] = useState<DateFilter>(() => parseDateFilter(searchParams.get('date')))
-  const [dateFrom, setDateFrom] = useState<string>(searchParams.get('dateFrom') || '')
-  const [dateTo, setDateTo] = useState<string>(searchParams.get('dateTo') || '')
+  const [dateFilter, setDateFilter] = useState<DateFilter>('all')
+  const [dateFrom, setDateFrom] = useState<string>('')
+  const [dateTo, setDateTo] = useState<string>('')
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false)
 
   // Per-city concert cache so switching back doesn't re-fetch
   const cache = useRef<Partial<Record<City, Concert[]>>>({ [defaultCity]: initialConcerts })
-  const [concerts, setConcerts] = useState<Concert[]>(
-    city === defaultCity ? initialConcerts : []
-  )
-  const [isFetching, setIsFetching] = useState(city !== defaultCity)
+  const [concerts, setConcerts] = useState<Concert[]>(initialConcerts)
+  const [isFetching, setIsFetching] = useState(false)
+
+  // Sync from URL params once on mount — avoids useSearchParams() which forces Suspense
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const urlCity = parseCity(params.get('city'))
+    const urlFilter = parseDateFilter(params.get('date'))
+    const urlDateFrom = params.get('dateFrom') || ''
+    const urlDateTo = params.get('dateTo') || ''
+    if (urlCity !== defaultCity) {
+      setCity(urlCity)
+      setState(metros.metros.find(m => m.code === urlCity)?.state || 'NY')
+    }
+    if (urlFilter !== 'all') setDateFilter(urlFilter)
+    if (urlDateFrom) setDateFrom(urlDateFrom)
+    if (urlDateTo) setDateTo(urlDateTo)
+  }, [defaultCity])
 
   const states = getAllStates()
   const metrosForState = getMetrosForState(state)
