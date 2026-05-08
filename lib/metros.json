@@ -75,7 +75,7 @@
       "city": "Miami",
       "state": "FL",
       "region": "South",
-      "aliases": []
+      "aliases": ["MIA"]
     },
     {
       "code": "SF",
@@ -178,14 +178,14 @@
       "city": "New Orleans",
       "state": "LA",
       "region": "South",
-      "aliases": []
+      "aliases": ["NOLA"]
     },
     {
       "code": "MIN",
       "city": "Minneapolis",
       "state": "MN",
       "region": "Midwest",
-      "aliases": []
+      "aliases": ["MIN"]
     },
     {
       "code": "DET",
