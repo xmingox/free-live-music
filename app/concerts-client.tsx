@@ -1,12 +1,17 @@
 'use client'
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
+import dynamic from 'next/dynamic'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Concert, City, DateFilter } from '@/types'
-import { SubmitEventModal } from '@/components/SubmitEventModal'
 import ConcertCard from '@/components/ConcertCard'
 import DateFilterBar from '@/components/DateFilter'
 import metros from '@/lib/metros.json'
+
+const SubmitEventModal = dynamic(
+  () => import('@/components/SubmitEventModal').then(m => ({ default: m.SubmitEventModal })),
+  { ssr: false }
+)
 
 const VALID_CITIES = new Set<City>(metros.metros.map(m => m.code as City))
 const VALID_DATE_FILTERS = new Set<DateFilter>(['tonight', 'weekend', 'week', 'all', 'custom'])
