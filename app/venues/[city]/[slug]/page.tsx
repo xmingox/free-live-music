@@ -211,6 +211,25 @@ export default async function VenuePage(
           {metro.city}, {metro.state}
         </p>
 
+        {/* Static map thumbnail */}
+        {v.lat && v.lng && process.env.NEXT_PUBLIC_MAPBOX_TOKEN && (
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${v.lat},${v.lng}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block rounded-2xl overflow-hidden mb-6 border border-slate-700/60 hover:border-slate-500 transition-colors"
+          >
+            <img
+              src={`https://api.mapbox.com/styles/v1/mapbox/dark-v11/static/pin-s+f43f5e(${v.lng},${v.lat})/${v.lng},${v.lat},14,0/800x240@2x?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`}
+              alt={`Map showing location of ${v.name}`}
+              width={800}
+              height={240}
+              loading="lazy"
+              className="w-full h-40 object-cover"
+            />
+          </a>
+        )}
+
         {/* Info card */}
         <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 flex flex-col gap-4 mb-8">
           {v.address && (
