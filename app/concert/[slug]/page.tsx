@@ -241,6 +241,17 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
             : 'No tickets or cover charge needed — just show up and enjoy.'}
         </p>
 
+        {/* Event image */}
+        {concert.image_url && (
+          <div className="mb-8 rounded-2xl overflow-hidden border border-slate-700/60">
+            <img
+              src={concert.image_url}
+              alt={`${concert.artist_name} event flyer`}
+              className="w-full object-contain bg-slate-900"
+            />
+          </div>
+        )}
+
         {/* Details card */}
         <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 flex flex-col gap-5 mb-8">
           {/* Date & Time */}
