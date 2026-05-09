@@ -2,8 +2,9 @@ import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
 import { Concert } from '@/types'
 import Link from 'next/link'
-import { cityCodeToSlug } from '@/lib/city-slugs'
+import { cityCodeToSlug, getMetroByCode } from '@/lib/city-slugs'
 import SiteNav from '@/components/SiteNav'
+import SiteFooter from '@/components/SiteFooter'
 
 function parseTimeToIso(time: string): string {
   const m = time.match(/^(\d+):(\d+)\s*(am|pm)$/i)
@@ -32,21 +33,7 @@ function isValidUrl(url: string): boolean {
   try { new URL(url); return true } catch { return false }
 }
 
-// ISR: re-render at most once per hour instead of on every request
 export const revalidate = 3600
-
-const cityNames: Record<string, string> = {
-  NYC: 'New York City',
-  LA: 'Los Angeles',
-  SF: 'San Francisco',
-  CHI: 'Chicago',
-  AUS: 'Austin',
-  SEA: 'Seattle',
-  DC: 'Washington DC',
-  BOS: 'Boston',
-  DEN: 'Denver',
-  PDX: 'Portland',
-}
 
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr + 'T00:00:00')
@@ -72,7 +59,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { data } = await supabase.from('concerts').select('*').eq('slug', slug).single()
   if (!data) return { title: 'Concert Not Found' }
 
-  const city = cityNames[data.city] ?? data.city
+  const city = getMetroByCode(data.city)?.city ?? data.city
   const canonicalUrl = `https://www.freelivemusic.co/concert/${slug}`
   return {
     title: `${data.artist_name} — Free Concert in ${city} | Free Live Music`,
@@ -123,7 +110,7 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
     .order('date', { ascending: true })
     .limit(5)
 
-  const city = cityNames[concert.city] ?? concert.city
+  const city = getMetroByCode(concert.city)?.city ?? concert.city
   const canonicalUrl = `https://www.freelivemusic.co/concert/${slug}`
 
   const offerUrl = concert.source_url && isValidUrl(concert.source_url) ? concert.source_url : canonicalUrl
@@ -370,6 +357,7 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
           </section>
         )}
       </main>
+      <SiteFooter cityLine={`Free live music in ${city} · No tickets needed`} />
     </div>
   )
 }
