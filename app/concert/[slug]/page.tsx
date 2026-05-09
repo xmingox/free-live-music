@@ -1,5 +1,3 @@
-import { createClient } from '@supabase/supabase-js'
-import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
 import { Concert } from '@/types'
 import Link from 'next/link'
@@ -8,46 +6,41 @@ import SiteNav from '@/components/SiteNav'
 import SiteFooter from '@/components/SiteFooter'
 import { outboundUrl, bookingSearchUrl } from '@/lib/affiliate'
 
-function supabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+// Use fetch() with next: { revalidate } so Next.js treats this route as ISR.
+// The Supabase JS client uses its own internal fetch that Next.js can't track,
+// making the page permanently dynamic (private, no-cache). Direct REST calls fix this.
+const SB_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const SB_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const SB_HEADERS = {
+  apikey: SB_KEY,
+  Authorization: `Bearer ${SB_KEY}`,
+  Accept: 'application/json',
 }
 
-const getConcertBySlug = unstable_cache(
-  async (slug: string) => {
-    const { data } = await supabase().from('concerts').select('*').eq('slug', slug).single()
-    return data as Concert | null
-  },
-  ['concert-by-slug'],
-  { revalidate: 3600 }
-)
+async function sbGet<T>(path: string, revalidate = 3600): Promise<T[]> {
+  const res = await fetch(`${SB_URL}/rest/v1/${path}`, {
+    headers: SB_HEADERS,
+    next: { revalidate },
+  })
+  if (!res.ok) return []
+  return res.json()
+}
 
-const getVenueSlug = unstable_cache(
-  async (venueId: string) => {
-    const { data } = await supabase().from('venues').select('slug').eq('id', venueId).single()
-    return data?.slug as string | null ?? null
-  },
-  ['venue-slug-by-id'],
-  { revalidate: 3600 }
-)
+async function getConcertBySlug(slug: string): Promise<Concert | null> {
+  const rows = await sbGet<Concert>(`concerts?slug=eq.${encodeURIComponent(slug)}&select=*&limit=1`)
+  return rows[0] ?? null
+}
 
-const getRelatedConcerts = unstable_cache(
-  async (city: string, excludeId: string, today: string) => {
-    const { data } = await supabase()
-      .from('concerts')
-      .select('slug, artist_name, venue, neighborhood, date, time')
-      .eq('city', city)
-      .neq('id', excludeId)
-      .gte('date', today)
-      .order('date', { ascending: true })
-      .limit(5)
-    return data ?? []
-  },
-  ['related-concerts'],
-  { revalidate: 3600 }
-)
+async function getVenueSlug(venueId: string): Promise<string | null> {
+  const rows = await sbGet<{ slug: string }>(`venues?id=eq.${encodeURIComponent(venueId)}&select=slug&limit=1`)
+  return rows[0]?.slug ?? null
+}
+
+async function getRelatedConcerts(city: string, excludeId: string, today: string) {
+  return sbGet<{ slug: string; artist_name: string; venue: string; neighborhood: string; date: string; time: string | null }>(
+    `concerts?city=eq.${encodeURIComponent(city)}&id=neq.${encodeURIComponent(excludeId)}&date=gte.${today}&select=slug,artist_name,venue,neighborhood,date,time&order=date.asc&limit=5`
+  )
+}
 
 function parseTimeToIso(time: string): string {
   const m = time.match(/^(\d+):(\d+)\s*(am|pm)$/i)
