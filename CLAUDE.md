@@ -1,12 +1,12 @@
 # freelivemusic.co — Project Context for Claude Code
-> Last updated: May 5, 2026
+> Last updated: May 9, 2026
 
 ## What This Is
 A web app that helps people find free live music events near them across the US. Aggregates data from Eventbrite (via Apify scraping), parks & rec calendars, and user submissions. Starting with LA/NYC, expanding to 75+ US cities.
 
 - **Live site:** https://www.freelivemusic.co
 - **GitHub:** https://github.com/xmingox/free-live-music
-- **Active branch:** main (Vercel auto-deploys on push)
+- **Active branch:** main
 - **Status:** Live & functional as of May 5, 2026
 
 ---
@@ -32,9 +32,16 @@ A web app that helps people find free live music events near them across the US.
 - Service role: `SUPABASE_SERVICE_ROLE_KEY` (see `.env.local`)
 
 **Vercel**
-- Active project: `free-live-music-1lwp` ← THIS is the live one
-- Dead project: `free-live-music` ← old/disconnected, ignore
-- Domain `www.freelivemusic.co` is assigned to `free-live-music-1lwp`
+- Active project: `free-live-music-1lwp` (projectId: `prj_et8HJ3Ndyix10qA6lUvQNUxyFH7D`) ← THIS is the live one
+- Dead project: `free-live-music` ← old CLI artifact, ignore
+- Domain `www.freelivemusic.co` → `free-live-music-1lwp`
+- `.vercel/project.json` is correctly linked to `free-live-music-1lwp`
+- **Git auto-deploy is NOT set up** — deploys require `vercel --prod` (see Deployment section)
+
+**Mapbox**
+- Token: `NEXT_PUBLIC_MAPBOX_TOKEN` (set in Vercel env + `.env.local`)
+- Used for: `/venues/[city]/map` interactive map, static thumbnails on venue detail pages
+- Free tier: 50k map loads/month
 
 **Apify scraper:** `crawlerbros/eventbrite-events-scraper` (~$0.001/result)
 
@@ -80,6 +87,9 @@ Current data: 829 verified events, all with slugs populated.
 - `app/venues/[city]/[slug]/page.tsx` — individual venue detail page
 - `app/venues/[city]/type-hub-page.tsx` — shared server component for venue type hubs; imported by each type wrapper
 - `app/venues/[city]/bars/page.tsx` — "Free Music Bars in {City}" (+ breweries, parks, restaurants, amphitheaters)
+- `app/venues/[city]/map/page.tsx` — full-screen Mapbox GL map page (server component)
+- `app/venues/[city]/map/VenueMapWrapper.tsx` — client wrapper holding the dynamic ssr:false import
+- `app/venues/[city]/map/VenueMapClient.tsx` — Mapbox GL JS interactive map with filterable side panel
 - `app/venues/[city]/neighborhood/[hood]/page.tsx` — neighborhood hub pages; on-demand, no generateStaticParams
 - `components/SiteNav.tsx` — site-wide nav (Concerts | Venues links + breadcrumb); used on all venue and concert detail pages
 - `lib/metros.json` — metro definitions with city codes and aliases
@@ -99,17 +109,11 @@ NYC, LA, NSH, CHI, ATL, AUS, DAL, BOS, DEN, DC, PDX, SEA, SF, MEM, FTW
 
 ## Open Bugs / Current Tasks
 
-### 🔴 Deduplication bug (active)
-Events render multiple times on homepage grid even though they exist once in Supabase. Check `concerts-client.tsx` for array concatenation bug in `useEffect` / `useMemo`.
-
-### 🟡 Sitemap missing concert pages
-`/concert/[slug]` pages not in sitemap.xml. Need to add all 829 slugs from Supabase at priority 0.6.
-
-### 🟡 Time display
-Events show `19:00:00` raw format instead of `7:00 PM`.
-
-### 🟡 Venue shows "TBD"
-Consider hiding venue line when value is TBD.
+All previously listed bugs fixed as of May 9, 2026:
+- ✅ Deduplication — 4 duplicate DB rows deleted; `getConcerts()` dedupes by id
+- ✅ Sitemap — paginated query now includes all 3,063 future concert pages
+- ✅ Time display — `formatTime()` in ConcertCard handles both `19:00:00` and `7:30pm`
+- ✅ Venue "TBD" — card already hides venue line and shows neighborhood only
 
 ---
 
@@ -125,8 +129,20 @@ Consider hiding venue line when value is TBD.
 
 ## Deployment
 
-Git push to `main` → Vercel auto-deploys to `free-live-music-1lwp` → live at `www.freelivemusic.co`
-⚠️ Ignore old dead project `free-live-music` — domain moved away from it on May 5, 2026.
+Git auto-deploy is **not** connected. Deploy manually after pushing:
+
+```bash
+# 1. Push code changes
+git add . && git commit -m "..." && git push origin main
+
+# 2. Deploy to production (runs from /home/win11/free-live-music)
+vercel --prod --yes
+```
+
+`.vercel/project.json` is already linked to `free-live-music-1lwp` (the live project).
+`www.freelivemusic.co` is the production domain — Vercel will alias it automatically.
+
+To set up git auto-deploy (one-time): go to Vercel dashboard → free-live-music-1lwp → Settings → Git → connect `xmingox/free-live-music` repo, branch `main`.
 
 ---
 
@@ -231,16 +247,12 @@ Last Updated: May 6, 2026
 git add .
 git commit -m "Your message"
 git push origin main
-# Vercel auto-deploys after push
+vercel --prod --yes   # manual deploy required — git auto-deploy not connected
 ```
 
-### Data Changes (Database)
+### Data Changes (clear ISR cache)
 ```bash
-1. Go to https://vercel.com/dashboard
-2. Find free-live-music project
-3. Click "Redeploy" button
-4. Wait ~30-60 seconds
-5. Refresh site in new private window
+vercel --prod --yes   # redeploy to bust the 1-hour ISR cache
 ```
 
 ## Notes for Claude Code & Cowork
