@@ -487,10 +487,35 @@ Neighborhood name in venue detail page (`app/venues/[city]/[slug]/page.tsx`) now
 3. Microsoft Clarity — 25 KiB JS + forced reflow (77ms). Fixed: removed entirely.
 4. JSON-LD in every ConcertCard — 24× `buildJsonLd()` + `JSON.stringify()` during hydration. Fixed: removed from cards (stays on concert detail page).
 
-**Still unresolved (known):**
-- Render-blocking CSS: 6.9 KiB Tailwind bundle, 190ms load, 150ms savings possible. Hard to fix in Next.js without critical CSS inlining.
-- Legacy JS polyfills: 11.5 KiB (Array.at, Object.fromEntries, etc.). `browserslist` in package.json doesn't affect Next.js 15 SWC. `browsersListForSwc` experimental flag was removed in Next.js 15.
-- Unused JS: 65 KiB — needs bundle treemap (View Treemap in PageSpeed report) to identify the source.
+**Still unresolved (known — not worth fixing now):**
+- Render-blocking CSS: 6.9 KiB Tailwind bundle, 190ms load. Hard to fix without critical CSS inlining.
+- Legacy JS polyfills (12 KiB) + Unused JS (65 KiB): Both come from `@swc/helpers/esm` — SWC's shared chunk for class syntax, generators, destructuring polyfills. A Next.js 15 SWC limitation — `browsersListForSwc` was removed in Next.js 15.x and there's no public API to set SWC browser targets. Only impacts first visits (browser-cached after that).
+
+---
+
+## Bundle Analysis
+
+Run to identify large JS chunks and their sources:
+
+```bash
+ANALYZE=true npm run build
+# Output: .next/analyze/client.html (open in browser)
+```
+
+### Current bundle (May 8, 2026)
+First Load JS shared by all pages: **339 KiB**
+
+| Chunk | Size | Contents |
+|-------|------|----------|
+| `255-*.js` | 65.4 KiB | `@swc/helpers/esm` — SWC polyfill helpers (class syntax, async/await, destructuring). Cannot reduce without switching from SWC to Babel. |
+| `4bd1b696-*.js` | 54.2 KiB | Next.js router internals |
+| `ed9f2dc4-*.js` | 217 KiB | React runtime + Next.js framework |
+| other | 2.0 KiB | Page-level shared code |
+
+### What to look for
+- Large chunks from `node_modules` that aren't used on every page → mark as dynamic import
+- Any library > 20 KiB appearing in a page-specific chunk → check if it can be removed or swapped
+- `@swc/helpers` size growing → means more complex transpilation, check for class-heavy patterns
 
 ### Footer Nav — Phase 2 Complete (May 8, 2026)
 `components/SiteFooter.tsx` — 12 city venue links hardcoded from top metros (NYC, LA, CHI, SF, AUS, SEA, DC, BOS, DEN, ATL, NSH, PDX). Used on homepage, venue list, venue detail, type hub, and neighborhood hub pages. Homepage uses an inlined version (client component can't import server components).
