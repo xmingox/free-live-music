@@ -94,7 +94,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           border: '1px solid rgba(167,139,250,0.3)',
           borderRadius: 12,
           padding: '10px 20px',
-          width: 'fit-content',
+          alignSelf: 'flex-start',
         }}
       >
         <div style={{ fontSize: 18, color: '#a78bfa' }}>No tickets · No cover · Just show up</div>
