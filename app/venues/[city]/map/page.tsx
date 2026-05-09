@@ -4,12 +4,10 @@ import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Metadata } from 'next'
-import dynamic from 'next/dynamic'
 import { getCityCodeFromSlug, getMetroByCode, getAllMetros, cityCodeToSlug } from '@/lib/city-slugs'
 import { Venue } from '@/types'
 import SiteNav from '@/components/SiteNav'
-
-const VenueMapClient = dynamic(() => import('./VenueMapClient'), { ssr: false })
+import VenueMapWrapper from './VenueMapWrapper'
 
 export function generateStaticParams() {
   return getAllMetros().map(metro => ({ city: cityCodeToSlug[metro.code] }))
@@ -88,7 +86,7 @@ export default async function VenueMapPage(
       </div>
 
       <div className="flex-1 min-h-0">
-        <VenueMapClient venues={venues} citySlug={citySlug} />
+        <VenueMapWrapper venues={venues} citySlug={citySlug} />
       </div>
     </div>
   )
