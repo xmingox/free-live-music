@@ -131,6 +131,13 @@ export default async function TonightPage({
       </section>
 
       <main className="max-w-6xl mx-auto px-4 py-12">
+        {concerts.length > 0 && (
+          <p className="text-slate-600 text-sm mb-8 max-w-2xl">
+            {concerts.length === 1
+              ? `One free show is happening in ${metro.city} today. No tickets or cover charge needed — walk up and enjoy.`
+              : `${concerts.length} free shows are happening in ${metro.city} today. No tickets or cover charges — walk up and enjoy. Shows are sorted by start time.`}
+          </p>
+        )}
         {concerts.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {concerts.map((concert) => (

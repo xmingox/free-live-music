@@ -169,6 +169,13 @@ export default async function ThisWeekendPage({
       </section>
 
       <main className="max-w-6xl mx-auto px-4 py-12">
+        {concerts.length > 0 && (
+          <p className="text-slate-600 text-sm mb-8 max-w-2xl">
+            {concerts.length === 1
+              ? `One free show is happening in ${metro.city} this weekend. No tickets or cover charge — just show up.`
+              : `${concerts.length} free shows across ${metro.city} this weekend. All events are free — no tickets, no cover charge. Some may require a free RSVP, noted on each listing.`}
+          </p>
+        )}
         {concerts.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {concerts.map((concert) => (

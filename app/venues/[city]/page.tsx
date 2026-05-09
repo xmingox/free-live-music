@@ -144,7 +144,7 @@ export default async function VenueListPage(
           </h1>
           <div className="flex items-center justify-between gap-4">
             <p className="text-slate-400">
-              {venues.length} venue{venues.length !== 1 ? 's' : ''} with free live music in {metro.city}, {metro.state}
+              {venues.length} venue{venues.length !== 1 ? 's' : ''} · {venues.filter(v => v.upcoming_show_count > 0).length} with upcoming shows
             </p>
             <Link
               href={`/venues/${citySlug}/map`}
@@ -157,6 +157,12 @@ export default async function VenueListPage(
             </Link>
           </div>
         </div>
+
+        {venues.length > 0 && (
+          <p className="text-slate-400 text-sm mb-8 max-w-2xl leading-relaxed">
+            {venueIntro(venues, metro.city, metro.state)}
+          </p>
+        )}
 
         {venues.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
@@ -185,7 +191,38 @@ export default async function VenueListPage(
   )
 }
 
-type VenueMin = { venue_type: string | null; neighborhood: string | null }
+type VenueMin = { venue_type: string | null; neighborhood: string | null; upcoming_show_count: number }
+
+function venueIntro(venues: VenueMin[], cityName: string, state: string): string {
+  const withShows = venues.filter(v => v.upcoming_show_count > 0).length
+
+  const typeCounts: Record<string, number> = {}
+  for (const v of venues) {
+    const t = v.venue_type ?? 'other'
+    typeCounts[t] = (typeCounts[t] || 0) + 1
+  }
+  const topTypes = Object.entries(typeCounts)
+    .filter(([t]) => t !== 'other')
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([t]) => venueTypeLabels[t] ?? t)
+
+  const parts: string[] = []
+  parts.push(
+    `${cityName} has ${venues.length} venue${venues.length !== 1 ? 's' : ''} with free live music`
+    + (state ? ` across ${cityName}, ${state}` : '') + '.'
+  )
+  if (withShows > 0) {
+    parts.push(`${withShows} ${withShows === 1 ? 'venue has' : 'venues have'} upcoming shows scheduled.`)
+  }
+  if (topTypes.length > 0) {
+    const list = topTypes.length === 1
+      ? topTypes[0] + 's'
+      : topTypes.slice(0, -1).join('s, ') + 's and ' + topTypes[topTypes.length - 1] + 's'
+    parts.push(`Browse ${list} — all free to attend, no cover charge.`)
+  }
+  return parts.join(' ')
+}
 
 function HubLinks({ venues, citySlug }: { venues: VenueMin[]; citySlug: string }) {
   // Type hub links — only for types present in this city

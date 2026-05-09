@@ -209,8 +209,50 @@ export default async function CityPage({
   const concerts = await getConcertsByCity(metro)
   const insights = getCityInsights(concerts, metro)
 
+  // FAQPage structured data — answers vary by city based on real concert data
+  const faqItems: { q: string; a: string }[] = [
+    {
+      q: `Are there free concerts in ${metro.city} this weekend?`,
+      a: `Yes — check our free concerts in ${metro.city} this weekend page for the current weekend's shows. All events are free to attend with no tickets or cover charge.`,
+    },
+    {
+      q: `Where can I see free live music in ${metro.city}?`,
+      a: insights?.topVenues.length
+        ? `Popular free music venues in ${metro.city} include ${insights.topVenues.join(', ')}. Browse all ${metro.city} venues for a full list.`
+        : `${metro.city} hosts free concerts in parks, amphitheaters, plazas, and cultural institutions throughout the city. Browse our venues page for a full list.`,
+    },
+    {
+      q: `Do I need tickets for free concerts in ${metro.city}?`,
+      a: `Most free concerts in ${metro.city} are walk-up free — no tickets or reservation needed, just show up. Some events are free RSVP, which is noted on each listing.`,
+    },
+    ...(insights?.topGenres.length
+      ? [{
+          q: `What kinds of music are at free concerts in ${metro.city}?`,
+          a: `Free concerts in ${metro.city} cover a wide range of genres including ${insights.topGenres.join(', ')}, and more. Check individual listings for genre details.`,
+        }]
+      : []),
+    {
+      q: `How often are new free concerts added for ${metro.city}?`,
+      a: `This page is updated daily as new events are announced. ${insights?.lastDateLabel ? `Current listings run through ${insights.lastDateLabel}.` : 'Check back regularly for the latest shows.'}`,
+    },
+  ]
+
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       {/* Hero Section */}
       <section className="border-b border-slate-200 bg-white">
         <div className="max-w-6xl mx-auto px-4 py-12">
@@ -382,22 +424,20 @@ export default async function CityPage({
             </div>
           </div>
 
-          {metro.aliases && metro.aliases.length > 0 && (
-            <div className="mt-8 pt-8 border-t border-slate-300">
-              <h3 className="text-xl font-bold text-slate-900 mb-4">Browse by City in the {metro.city} Area</h3>
-              <div className="flex flex-wrap gap-3">
-                {metro.aliases.map((alias) => (
-                  <Link
-                    key={alias}
-                    href={`/concerts/city/${cityToSlug(alias)}`}
-                    className="text-blue-600 hover:text-blue-700 hover:underline text-sm"
-                  >
-                    {alias}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* FAQ section — matches FAQPage JSON-LD above for rich results */}
+          <div className="mt-12 pt-8 border-t border-slate-300">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">
+              Frequently Asked Questions
+            </h2>
+            <dl className="space-y-6">
+              {faqItems.map(({ q, a }) => (
+                <div key={q}>
+                  <dt className="font-semibold text-slate-900 mb-1">{q}</dt>
+                  <dd className="text-slate-600 text-sm leading-relaxed">{a}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
         </div>
       </section>
     </div>
