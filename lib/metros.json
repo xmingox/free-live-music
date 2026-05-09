@@ -1098,6 +1098,27 @@
       "state": "CA",
       "region": "West",
       "aliases": ["VNT", "Oxnard", "Camarillo", "Port Hueneme", "Channel Islands"]
+    },
+    {
+      "code": "SJC",
+      "city": "San Jose",
+      "state": "CA",
+      "region": "West",
+      "aliases": ["SJC", "San Jose", "Sunnyvale", "Santa Clara", "Milpitas", "Campbell"]
+    },
+    {
+      "code": "ABE",
+      "city": "Allentown",
+      "state": "PA",
+      "region": "Northeast",
+      "aliases": ["ABE", "Allentown", "Bethlehem", "Easton", "Lehigh Valley"]
+    },
+    {
+      "code": "MCA",
+      "city": "McAllen",
+      "state": "TX",
+      "region": "South",
+      "aliases": ["MCA", "McAllen", "Edinburg", "Mission", "Pharr", "Rio Grande Valley"]
     }
   ]
 }
