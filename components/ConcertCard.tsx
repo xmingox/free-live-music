@@ -26,6 +26,15 @@ function formatDate(dateStr: string): string {
   return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
 }
 
+function formatTime(timeStr: string): string {
+  if (/am|pm/i.test(timeStr)) return timeStr
+  const [h, m] = timeStr.split(':').map(Number)
+  if (isNaN(h) || isNaN(m)) return timeStr
+  const period = h >= 12 ? 'pm' : 'am'
+  const hour = h % 12 || 12
+  return `${hour}:${String(m).padStart(2, '0')}${period}`
+}
+
 function isToday(dateStr: string): boolean {
   const today = new Date()
   const date = new Date(dateStr + 'T00:00:00')
@@ -99,7 +108,7 @@ export default function ConcertCard({ concert }: { concert: Concert }) {
           <span className="text-sm">
             <span className="text-slate-200">{formatDate(concert.date)}</span>
             {concert.time && (
-              <span className="text-slate-500"> · {concert.time}</span>
+              <span className="text-slate-500"> · {formatTime(concert.time!)}</span>
             )}
           </span>
         </div>
