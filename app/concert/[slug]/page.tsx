@@ -70,6 +70,10 @@ function isValidUrl(url: string): boolean {
 }
 
 export const revalidate = 3600
+// Empty array = pre-build nothing, but enable on-demand ISR for all slugs.
+// Without this, Next.js 15 marks the route ƒ (fully dynamic) and emits
+// private/no-cache headers regardless of fetch revalidate settings.
+export async function generateStaticParams() { return [] }
 
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr + 'T00:00:00')
