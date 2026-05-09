@@ -176,6 +176,22 @@ export default async function CityPage({
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-12">
+        {/* Quick date filter links */}
+        <div className="flex flex-wrap gap-3 mb-8">
+          <Link
+            href={`/concerts/${cityParam}/tonight`}
+            className="px-4 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-sm font-medium hover:bg-blue-100 transition"
+          >
+            Tonight
+          </Link>
+          <Link
+            href={`/concerts/${cityParam}/this-weekend`}
+            className="px-4 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-sm font-medium hover:bg-blue-100 transition"
+          >
+            This Weekend
+          </Link>
+        </div>
+
         {concerts && concerts.length > 0 ? (
           <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
