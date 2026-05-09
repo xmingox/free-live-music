@@ -471,3 +471,26 @@ Neighborhood name in venue detail page (`app/venues/[city]/[slug]/page.tsx`) now
 - Named routes (`bars/`, `neighborhood/`) always take precedence over dynamic `[slug]/` in Next.js App Router — safe to add without routing conflicts
 - `cityToSlug()` from `lib/city-slugs.ts` is used for both generating neighborhood hub URLs and resolving slugs back to DB neighborhood strings
 - Type hub pages import `VENUE_TYPE_CONFIGS` from `type-hub-page.tsx` — single source of truth for type metadata (slug, label, color)
+
+### PageSpeed Results Summary (May 8, 2026)
+| Metric | Before | After | Fix |
+|--------|--------|-------|-----|
+| Mobile score | 74 | **81** | Multiple fixes |
+| Desktop score | — | **100** | — |
+| LCP (mobile) | 5.4s | **4.1s** | Removed Clarity + JSON-LD from cards |
+| TBT (mobile) | 600ms | **30ms** | Removed useSearchParams, fixed router.push on mount |
+| Long tasks | 6 | **3** | JSON-LD removal |
+
+**Root causes found and fixed:**
+1. `useSearchParams()` — forced Suspense boundary, sent empty HTML. Fixed: removed, use `useEffect(window.location.search)` instead.
+2. `router.push()` on every mount — triggered soft navigation during hydration. Fixed: `didInitRef` guard + `router.replace`.
+3. Microsoft Clarity — 25 KiB JS + forced reflow (77ms). Fixed: removed entirely.
+4. JSON-LD in every ConcertCard — 24× `buildJsonLd()` + `JSON.stringify()` during hydration. Fixed: removed from cards (stays on concert detail page).
+
+**Still unresolved (known):**
+- Render-blocking CSS: 6.9 KiB Tailwind bundle, 190ms load, 150ms savings possible. Hard to fix in Next.js without critical CSS inlining.
+- Legacy JS polyfills: 11.5 KiB (Array.at, Object.fromEntries, etc.). `browserslist` in package.json doesn't affect Next.js 15 SWC. `browsersListForSwc` experimental flag was removed in Next.js 15.
+- Unused JS: 65 KiB — needs bundle treemap (View Treemap in PageSpeed report) to identify the source.
+
+### Footer Nav — Phase 2 Complete (May 8, 2026)
+`components/SiteFooter.tsx` — 12 city venue links hardcoded from top metros (NYC, LA, CHI, SF, AUS, SEA, DC, BOS, DEN, ATL, NSH, PDX). Used on homepage, venue list, venue detail, type hub, and neighborhood hub pages. Homepage uses an inlined version (client component can't import server components).
