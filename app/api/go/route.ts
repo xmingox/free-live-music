@@ -1,19 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { wrapWithAwin } from '@/lib/affiliate'
 
-function applyAffiliateParams(url: URL): URL {
-  const out = new URL(url.toString())
+function applyAffiliateTracking(url: URL): string {
   const host = url.hostname.replace(/^www\./, '')
 
-  // Booking.com — sign up at booking.com/affiliate-program/
-  // Set BOOKING_AFFILIATE_ID in Vercel env vars once approved
-  if (
-    (host === 'booking.com' || host.endsWith('.booking.com')) &&
-    process.env.BOOKING_AFFILIATE_ID
-  ) {
-    out.searchParams.set('aid', process.env.BOOKING_AFFILIATE_ID)
+  // Booking.com via Awin — wrap in Awin tracking redirect
+  if (host === 'booking.com' || host.endsWith('.booking.com')) {
+    return wrapWithAwin(url.toString())
   }
 
-  return out
+  return url.toString()
 }
 
 export async function GET(request: NextRequest) {
@@ -33,7 +29,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 
-  dest = applyAffiliateParams(dest)
+  const finalUrl = applyAffiliateTracking(dest)
 
-  return NextResponse.redirect(dest.toString(), { status: 302 })
+  return NextResponse.redirect(finalUrl, { status: 302 })
 }
