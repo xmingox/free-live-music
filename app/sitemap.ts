@@ -8,16 +8,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
-  const { data: concerts } = await supabase
-    .from('concerts')
-    .select('slug, date, created_at')
-    .order('date', { ascending: true })
+  const today = new Date().toISOString().split('T')[0]
+  const allConcerts: { slug: string; date: string; created_at: string }[] = []
+  const pageSize = 1000
+  let offset = 0
+  while (true) {
+    const { data, error } = await supabase
+      .from('concerts')
+      .select('slug, date, created_at')
+      .eq('is_verified', true)
+      .gte('date', today)
+      .order('date', { ascending: true })
+      .range(offset, offset + pageSize - 1)
+    if (error || !data?.length) break
+    allConcerts.push(...data)
+    if (data.length < pageSize) break
+    offset += pageSize
+  }
 
   const { data: venues } = await supabase
     .from('venues')
     .select('slug, city, updated_at')
 
-  const concertUrls: MetadataRoute.Sitemap = (concerts ?? []).map((c) => ({
+  const concertUrls: MetadataRoute.Sitemap = allConcerts.map((c) => ({
     url: `https://www.freelivemusic.co/concert/${c.slug}`,
     lastModified: c.created_at,
     changeFrequency: 'weekly',
@@ -32,7 +45,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }))
 
   // Include alias city pages that have >= 5 upcoming events
-  const today = new Date().toISOString().split('T')[0]
   const aliasCityNames = Object.values(aliasSlugMap).map((a) => a.cityName)
   const aliasUrls: MetadataRoute.Sitemap = []
 
