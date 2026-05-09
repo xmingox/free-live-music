@@ -487,9 +487,17 @@ Neighborhood name in venue detail page (`app/venues/[city]/[slug]/page.tsx`) now
 3. Microsoft Clarity — 25 KiB JS + forced reflow (77ms). Fixed: removed entirely.
 4. JSON-LD in every ConcertCard — 24× `buildJsonLd()` + `JSON.stringify()` during hydration. Fixed: removed from cards (stays on concert detail page).
 
-**Still unresolved (known — not worth fixing now):**
-- Render-blocking CSS: 6.9 KiB Tailwind bundle, 190ms load. Hard to fix without critical CSS inlining.
-- Legacy JS polyfills (12 KiB) + Unused JS (65 KiB): Both come from `@swc/helpers/esm` — SWC's shared chunk for class syntax, generators, destructuring polyfills. A Next.js 15 SWC limitation — `browsersListForSwc` was removed in Next.js 15.x and there's no public API to set SWC browser targets. Only impacts first visits (browser-cached after that).
+**Final result (May 8, 2026 6:01 PM):**
+- Mobile: **99/100**, FCP 1.0s, LCP 2.0s, TBT 80ms ✅
+- Desktop: **100/100** ✅
+- LCP 2.0s = Google "Good" range (under 2.5s threshold)
+
+**The unlock:** Vercel build auto-upgraded Next.js 15.3.1 → 15.5.15 (semver `^15.3.1`). First Load JS dropped from 339 KiB → 102 KiB due to improved chunk splitting in 15.5.x. Combined with all earlier fixes, pushed score from 74 → 99.
+
+**Still flagged (not worth fixing at 99):**
+- Render-blocking CSS: 120ms savings possible
+- Legacy JS polyfills: 12 KiB (`@swc/helpers`, smaller now but still present)
+- Unused JS: 64 KiB (same @swc/helpers root cause)
 
 ---
 
