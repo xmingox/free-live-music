@@ -518,7 +518,16 @@
       "state": "TX",
       "region": "South",
       "aliases": [
-        "FTW"
+        "FTW",
+        "Fort Worth",
+        "Azle",
+        "Keller",
+        "Grapevine",
+        "Burleson",
+        "Crowley",
+        "Mansfield",
+        "Haltom City",
+        "Tarrant County"
       ]
     },
     {
@@ -1174,7 +1183,7 @@
       "city": "Harrisburg",
       "state": "PA",
       "region": "Northeast",
-      "aliases": ["HBG", "Harrisburg", "York", "Lancaster", "Carlisle", "Lebanon"]
+      "aliases": ["HBG", "Harrisburg", "York", "Lancaster", "Carlisle", "Lebanon", "Hershey"]
     },
     {
       "code": "WSM",
