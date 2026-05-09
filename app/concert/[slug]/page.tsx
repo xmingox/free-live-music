@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
 import { Concert } from '@/types'
 import Link from 'next/link'
@@ -6,6 +7,47 @@ import { cityCodeToSlug, getMetroByCode } from '@/lib/city-slugs'
 import SiteNav from '@/components/SiteNav'
 import SiteFooter from '@/components/SiteFooter'
 import { outboundUrl, bookingSearchUrl } from '@/lib/affiliate'
+
+function supabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+}
+
+const getConcertBySlug = unstable_cache(
+  async (slug: string) => {
+    const { data } = await supabase().from('concerts').select('*').eq('slug', slug).single()
+    return data as Concert | null
+  },
+  ['concert-by-slug'],
+  { revalidate: 3600 }
+)
+
+const getVenueSlug = unstable_cache(
+  async (venueId: string) => {
+    const { data } = await supabase().from('venues').select('slug').eq('id', venueId).single()
+    return data?.slug as string | null ?? null
+  },
+  ['venue-slug-by-id'],
+  { revalidate: 3600 }
+)
+
+const getRelatedConcerts = unstable_cache(
+  async (city: string, excludeId: string, today: string) => {
+    const { data } = await supabase()
+      .from('concerts')
+      .select('slug, artist_name, venue, neighborhood, date, time')
+      .eq('city', city)
+      .neq('id', excludeId)
+      .gte('date', today)
+      .order('date', { ascending: true })
+      .limit(5)
+    return data ?? []
+  },
+  ['related-concerts'],
+  { revalidate: 3600 }
+)
 
 function parseTimeToIso(time: string): string {
   const m = time.match(/^(\d+):(\d+)\s*(am|pm)$/i)
@@ -52,23 +94,19 @@ function formatTime(time: string): string {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
   const { slug } = await params
-  const { data } = await supabase.from('concerts').select('*').eq('slug', slug).single()
-  if (!data) return { title: 'Concert Not Found' }
+  const concert = await getConcertBySlug(slug)
+  if (!concert) return { title: 'Concert Not Found' }
 
-  const city = getMetroByCode(data.city)?.city ?? data.city
+  const city = getMetroByCode(concert.city)?.city ?? concert.city
   const canonicalUrl = `https://www.freelivemusic.co/concert/${slug}`
   return {
-    title: `${data.artist_name} — Free Concert in ${city} | Free Live Music`,
-    description: `${data.artist_name} performs free at ${data.venue} in ${data.neighborhood}, ${city} on ${formatDate(data.date)}. Free admission.`,
+    title: `${concert.artist_name} — Free Concert in ${city} | Free Live Music`,
+    description: `${concert.artist_name} performs free at ${concert.venue} in ${concert.neighborhood}, ${city} on ${formatDate(concert.date)}. Free admission.`,
     alternates: { canonical: canonicalUrl },
     openGraph: {
-      title: `${data.artist_name} — Free Concert in ${city}`,
-      description: `Free show at ${data.venue} on ${formatDate(data.date)}`,
+      title: `${concert.artist_name} — Free Concert in ${city}`,
+      description: `Free show at ${concert.venue} on ${formatDate(concert.date)}`,
       url: canonicalUrl,
       siteName: 'Free Live Music',
       type: 'website',
@@ -78,38 +116,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ConcertPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-  const { data: concert } = await supabase
-    .from('concerts')
-    .select('*')
-    .eq('slug', slug)
-    .single()
-
+  const concert = await getConcertBySlug(slug)
   if (!concert) notFound()
 
-  // Fetch venue slug for linking when venue_id is set
-  let venueSlug: string | null = null
-  if (concert.venue_id) {
-    const { data: v } = await supabase
-      .from('venues')
-      .select('slug')
-      .eq('id', concert.venue_id)
-      .single()
-    venueSlug = v?.slug ?? null
-  }
-
   const today = new Date().toISOString().split('T')[0]
-  const { data: related } = await supabase
-    .from('concerts')
-    .select('slug, artist_name, venue, neighborhood, date, time')
-    .eq('city', concert.city)
-    .neq('id', concert.id)
-    .gte('date', today)
-    .order('date', { ascending: true })
-    .limit(5)
+  const [venueSlug, related] = await Promise.all([
+    concert.venue_id ? getVenueSlug(concert.venue_id) : Promise.resolve(null),
+    getRelatedConcerts(concert.city, concert.id, today),
+  ])
 
   const city = getMetroByCode(concert.city)?.city ?? concert.city
   const canonicalUrl = `https://www.freelivemusic.co/concert/${slug}`
