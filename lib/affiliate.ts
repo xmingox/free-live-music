@@ -19,10 +19,5 @@ export function bookingSearchUrl(city: string, state: string, date: string): str
     no_rooms: '1',
   })
 
-  // Client-side affiliate ID injection — /api/go handles server-side for Booking.com links,
-  // but for freshly generated URLs we add it directly
-  const aid = process.env.BOOKING_AFFILIATE_ID
-  if (aid) params.set('aid', aid)
-
   return `https://www.booking.com/searchresults.html?${params.toString()}`
 }

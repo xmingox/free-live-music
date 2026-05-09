@@ -4,15 +4,6 @@ function applyAffiliateParams(url: URL): URL {
   const out = new URL(url.toString())
   const host = url.hostname.replace(/^www\./, '')
 
-  // Eventbrite — sign up at eventbrite.com/l/eventbrite-affiliate-program/
-  // Set EVENTBRITE_AFFILIATE_ID in Vercel env vars once approved
-  if (
-    (host === 'eventbrite.com' || host.endsWith('.eventbrite.com')) &&
-    process.env.EVENTBRITE_AFFILIATE_ID
-  ) {
-    out.searchParams.set('aff', process.env.EVENTBRITE_AFFILIATE_ID)
-  }
-
   // Booking.com — sign up at booking.com/affiliate-program/
   // Set BOOKING_AFFILIATE_ID in Vercel env vars once approved
   if (
