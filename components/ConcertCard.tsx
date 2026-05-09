@@ -21,19 +21,6 @@ const genreColors: Record<string, string> = {
   'DJ Set': 'bg-rose-500/20 text-rose-300 border-rose-500/30',
 }
 
-const cityNames: Record<string, string> = {
-  NYC: 'New York, NY',
-  LA: 'Los Angeles, CA',
-  SF: 'San Francisco, CA',
-  CHI: 'Chicago, IL',
-  AUS: 'Austin, TX',
-  SEA: 'Seattle, WA',
-  DC: 'Washington, DC',
-  BOS: 'Boston, MA',
-  DEN: 'Denver, CO',
-  PDX: 'Portland, OR',
-}
-
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr + 'T00:00:00')
   return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
@@ -45,53 +32,6 @@ function isToday(dateStr: string): boolean {
   return date.toDateString() === today.toDateString()
 }
 
-function parseTimeToIso(time: string): string {
-  const m = time.match(/^(\d+):(\d+)\s*(am|pm)$/i)
-  if (!m) return '00:00:00'
-  let h = parseInt(m[1])
-  const min = m[2]
-  const period = m[3].toLowerCase()
-  if (period === 'pm' && h !== 12) h += 12
-  if (period === 'am' && h === 12) h = 0
-  return `${String(h).padStart(2, '0')}:${min}:00`
-}
-
-function buildJsonLd(concert: Concert) {
-  const cityName = cityNames[concert.city] ?? concert.city
-  const startDate = concert.time
-    ? `${concert.date}T${parseTimeToIso(concert.time)}`
-    : concert.date
-
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Event',
-    name: concert.artist_name,
-    startDate,
-    eventStatus: 'https://schema.org/EventScheduled',
-    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-    location: {
-      '@type': 'Place',
-      name: concert.venue,
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: cityName,
-      },
-    },
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
-      availability: 'https://schema.org/InStock',
-      url: concert.source_url ?? `https://freelivemusic.co`,
-    },
-    organizer: {
-      '@type': 'Organization',
-      name: concert.source_name ?? 'Free Live Music',
-      url: concert.source_url ?? 'https://freelivemusic.co',
-    },
-  }
-}
-
 export default function ConcertCard({ concert }: { concert: Concert }) {
   const genreColor = concert.genre
     ? (genreColors[concert.genre] ?? 'bg-slate-500/20 text-slate-300 border-slate-500/30')
@@ -101,10 +41,6 @@ export default function ConcertCard({ concert }: { concert: Concert }) {
 
   return (
     <Link href={`/concert/${concert.slug}`} className="group relative flex flex-col bg-slate-800/60 border border-slate-700/60 rounded-2xl overflow-hidden hover:border-slate-600 hover:bg-slate-800 transition-all duration-200 hover:shadow-xl hover:shadow-black/30">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJsonLd(concert)) }}
-      />
       {/* Top accent line */}
       <div className="h-0.5 w-full bg-gradient-to-r from-violet-500 via-pink-500 to-orange-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
 
