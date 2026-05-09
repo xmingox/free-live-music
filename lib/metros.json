@@ -1231,6 +1231,13 @@
       "state": "SC",
       "region": "Southeast",
       "aliases": ["MYR", "Myrtle Beach", "North Myrtle Beach", "Conway", "Murrells Inlet", "Surfside Beach"]
+    },
+    {
+      "code": "SHV",
+      "city": "Shreveport",
+      "state": "LA",
+      "region": "South",
+      "aliases": ["SHV", "Shreveport", "Bossier City", "Bossier", "Caddo Parish"]
     }
   ]
 }
