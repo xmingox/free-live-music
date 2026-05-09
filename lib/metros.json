@@ -1147,6 +1147,20 @@
       "state": "CA",
       "region": "West",
       "aliases": ["BFL", "Bakersfield", "Delano", "Wasco", "Shafter"]
+    },
+    {
+      "code": "SPR",
+      "city": "Springfield",
+      "state": "MA",
+      "region": "Northeast",
+      "aliases": ["SPR", "Springfield", "Chicopee", "Holyoke", "Westfield", "West Springfield"]
+    },
+    {
+      "code": "POU",
+      "city": "Poughkeepsie",
+      "state": "NY",
+      "region": "Northeast",
+      "aliases": ["POU", "Poughkeepsie", "Fishkill", "Hyde Park", "Wappingers Falls", "Dutchess County"]
     }
   ]
 }
