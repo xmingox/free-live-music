@@ -1042,6 +1042,55 @@
         "Palmer",
         "Mat-Su"
       ]
+    },
+    {
+      "code": "RIV",
+      "city": "Riverside",
+      "state": "CA",
+      "region": "West",
+      "aliases": ["RIV", "San Bernardino", "Fontana", "Moreno Valley", "Inland Empire"]
+    },
+    {
+      "code": "GSP",
+      "city": "Greenville",
+      "state": "SC",
+      "region": "Southeast",
+      "aliases": ["GSP"]
+    },
+    {
+      "code": "ALY",
+      "city": "Albany",
+      "state": "NY",
+      "region": "Northeast",
+      "aliases": ["ALY"]
+    },
+    {
+      "code": "FMY",
+      "city": "Fort Myers",
+      "state": "FL",
+      "region": "South",
+      "aliases": ["FMY", "Cape Coral"]
+    },
+    {
+      "code": "SRQ",
+      "city": "Sarasota",
+      "state": "FL",
+      "region": "South",
+      "aliases": ["SRQ", "North Port"]
+    },
+    {
+      "code": "NHV",
+      "city": "New Haven",
+      "state": "CT",
+      "region": "Northeast",
+      "aliases": ["NHV", "North Haven", "West Haven", "Branford", "Milford"]
+    },
+    {
+      "code": "STA",
+      "city": "Stamford",
+      "state": "CT",
+      "region": "Northeast",
+      "aliases": ["STA", "Greenwich", "Bridgeport", "Norwalk"]
     }
   ]
 }
