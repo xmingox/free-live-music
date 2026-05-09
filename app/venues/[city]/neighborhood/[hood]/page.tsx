@@ -7,6 +7,7 @@ import { Metadata } from 'next'
 import { getCityCodeFromSlug, getMetroByCode, cityCodeToSlug } from '@/lib/city-slugs'
 import { Venue } from '@/types'
 import SiteNav from '@/components/SiteNav'
+import SiteFooter from '@/components/SiteFooter'
 import { cityToSlug } from '@/lib/city-slugs'
 
 const venueTypeLabels: Record<string, string> = {
@@ -232,9 +233,7 @@ export default async function NeighborhoodPage(
         )}
       </main>
 
-      <footer className="mt-16 border-t border-slate-800 py-8 text-center text-slate-600 text-sm">
-        Free Live Music · Free Music in {neighborhood}, {metro.city}
-      </footer>
+      <SiteFooter cityLine={`Free live music in ${neighborhood}, ${metro.city}`} />
     </div>
   )
 }

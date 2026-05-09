@@ -5,6 +5,7 @@ import { Metadata } from 'next'
 import { getCityCodeFromSlug, getMetroByCode, cityCodeToSlug } from '@/lib/city-slugs'
 import { Venue } from '@/types'
 import SiteNav from '@/components/SiteNav'
+import SiteFooter from '@/components/SiteFooter'
 
 export type VenueTypeConfig = {
   type: string
@@ -236,9 +237,7 @@ export default async function TypeHubPage({
         )}
       </main>
 
-      <footer className="mt-16 border-t border-slate-800 py-8 text-center text-slate-600 text-sm">
-        Free Live Music · Free Music {config.label} in {metro.city}
-      </footer>
+      <SiteFooter cityLine={`Free music ${config.label.toLowerCase()} in ${metro.city} · All shows free admission`} />
     </div>
   )
 }

@@ -9,6 +9,7 @@ import { Venue } from '@/types'
 import VenueListClient from './venue-list-client'
 import SiteNav from '@/components/SiteNav'
 import { VENUE_TYPE_CONFIGS } from './type-hub-page'
+import SiteFooter from '@/components/SiteFooter'
 
 export function generateStaticParams() {
   return getAllMetros().map((metro) => ({ city: cityCodeToSlug[metro.code] }))
@@ -168,9 +169,7 @@ export default async function VenueListPage(
         )}
       </main>
 
-      <footer className="mt-16 border-t border-slate-800 py-8 text-center text-slate-600 text-sm">
-        Free Live Music · {metro.city} Free Music Venues
-      </footer>
+      <SiteFooter cityLine={`${metro.city} free music venues · All shows free admission`} />
     </div>
   )
 }

@@ -123,13 +123,16 @@ export default function ConcertsClient({
   const states = getAllStates()
   const metrosForState = getMetrosForState(state)
 
+  // Skip the initial mount — only sync URL on user-driven state changes
+  const didInitRef = useRef(false)
   useEffect(() => {
+    if (!didInitRef.current) { didInitRef.current = true; return }
     const params = new URLSearchParams()
     params.set('city', city)
     params.set('date', dateFilter)
     if (dateFrom) params.set('dateFrom', dateFrom)
     if (dateTo) params.set('dateTo', dateTo)
-    router.push(`?${params.toString()}`)
+    router.replace(`?${params.toString()}`)
   }, [city, dateFilter, dateFrom, dateTo, router])
 
   useEffect(() => {
@@ -331,8 +334,44 @@ export default function ConcertsClient({
         )}
       </main>
 
-      <footer className="mt-16 border-t border-slate-800 py-8 text-center text-slate-600 text-sm">
-        Free Live Music · Free Live Music Across America · All shows free admission
+      <footer className="mt-16 border-t border-slate-800 bg-slate-950">
+        <div className="max-w-7xl mx-auto px-4 py-10">
+          <div className="mb-8">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+              Free Music Venues by City
+            </p>
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
+              {[
+                { name: 'New York', slug: 'new-york' },
+                { name: 'Los Angeles', slug: 'los-angeles' },
+                { name: 'Chicago', slug: 'chicago' },
+                { name: 'San Francisco', slug: 'san-francisco' },
+                { name: 'Austin', slug: 'austin' },
+                { name: 'Seattle', slug: 'seattle' },
+                { name: 'Washington DC', slug: 'washington' },
+                { name: 'Boston', slug: 'boston' },
+                { name: 'Denver', slug: 'denver' },
+                { name: 'Atlanta', slug: 'atlanta' },
+                { name: 'Nashville', slug: 'nashville' },
+                { name: 'Portland', slug: 'portland' },
+              ].map(c => (
+                <Link key={c.slug} href={`/venues/${c.slug}`} className="text-sm text-slate-400 hover:text-violet-300 transition-colors">
+                  {c.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 border-t border-slate-800/60">
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-bold text-slate-300">Free Live Music</span>
+              <span className="text-slate-700">·</span>
+              <Link href="/venues/new-york" className="text-sm text-slate-500 hover:text-slate-300 transition-colors">
+                Venues
+              </Link>
+            </div>
+            <p className="text-xs text-slate-600">Free live music across America · All shows free admission</p>
+          </div>
+        </div>
       </footer>
 
       <SubmitEventModal

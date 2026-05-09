@@ -72,12 +72,19 @@ Current data: 829 verified events, all with slugs populated.
 
 ## Key Files
 
-- `app/concerts-client.tsx` — home page client component, reads `?city=` param via `useSearchParams()`, filters client-side
+- `app/concerts-client.tsx` — home page client component; reads URL params via `useEffect(window.location.search)` (NOT useSearchParams — avoids Suspense boundary that caused LCP 5.3s)
 - `app/concerts/[city]/page.tsx` — metro city SSR page
 - `app/concerts/city/[alias]/page.tsx` — alias city SSR page
+- `app/venues/[city]/page.tsx` — city venue list with type/neighborhood discovery hub links
+- `app/venues/[city]/venue-list-client.tsx` — client search/filter for venue list
+- `app/venues/[city]/[slug]/page.tsx` — individual venue detail page
+- `app/venues/[city]/type-hub-page.tsx` — shared server component for venue type hubs; imported by each type wrapper
+- `app/venues/[city]/bars/page.tsx` — "Free Music Bars in {City}" (+ breweries, parks, restaurants, amphitheaters)
+- `app/venues/[city]/neighborhood/[hood]/page.tsx` — neighborhood hub pages; on-demand, no generateStaticParams
+- `components/SiteNav.tsx` — site-wide nav (Concerts | Venues links + breadcrumb); used on all venue and concert detail pages
 - `lib/metros.json` — metro definitions with city codes and aliases
 - `lib/data.ts` — Supabase query helpers, alias-aware
-- `lib/city-slugs.ts` — slug helpers
+- `lib/city-slugs.ts` — slug helpers including `cityToSlug()` for URL generation
 
 ---
 
@@ -125,11 +132,11 @@ Git push to `main` → Vercel auto-deploys to `free-live-music-1lwp` → live at
 
 ## Roadmap
 
-Done ✅: DB setup, Eventbrite import (829 events), Next.js 15.3.1, metro alias fixes, alias city pages, ISR, domain fix
+Done ✅: DB setup, Eventbrite import (829 events), Next.js 15.3.1, metro alias fixes, alias city pages, ISR, domain fix, LCP fix (5.3s → <3s), venue discovery (6,300+ venues across 108 cities), venue UX Phase 1 + 2 (type hubs, neighborhood hubs, site nav, nearby venues)
 
 In Progress 🔄: Deduplication bug, sitemap concert pages, SEO architecture
 
-Planned ⏳: Search Console submission, dynamic meta tags, genre/date filtering, event page improvements, user submissions, push notifications, more data sources (LA Parks, Hollywood Bowl, Grand Performances, KCRW)
+Planned ⏳: Search Console submission, genre/date filtering, event page improvements, user submissions, push notifications, venue map view (/venues/[city]/map), footer nav with city list, more data sources (LA Parks, Hollywood Bowl, Grand Performances, KCRW)
 
 ---
 
@@ -420,3 +427,47 @@ Inserted 30 verified events across 6 series:
 **Code changes:** Added `ANA` to metros.json aliases and to City type in types/index.ts.
 **Pagination fix:** Rewrote getConcerts() in lib/data.ts to paginate using .range() (1000 rows/page) — fixes Supabase server-side max_rows cap that was silently truncating results for all cities.
 **Skipped:** La Mesa Sundays at Six (2026 performers not yet announced), Sonidos del Barrio (2026 dates not yet announced).
+
+---
+
+## Session Summary — May 8, 2026
+
+### LCP Fix (5.3s → <3s)
+**Root cause:** `useSearchParams()` in `concerts-client.tsx` forced the component into a Suspense boundary. Server sent empty HTML; the skeleton showed at FCP (2.9s), and the real content swapped in at LCP (5.3s) — a 2.4s gap caused entirely by a Suspense swap, not image loading.
+**Fix:** Removed `useSearchParams` entirely. State now initializes from `defaultCity` prop (SSR-safe). A one-time `useEffect` reads `window.location.search` after hydration. Full page content renders on the server — no Suspense, no empty HTML.
+**Lesson:** Never use `useSearchParams()` in a component that should SSR. Use `useEffect` + `window.location.search` for one-time URL param reads instead.
+
+### Venue Discovery Pipeline
+Ran `scripts/discover-venues.mjs` across 72 cities using Google Places API. Inserted ~6,300 venues total across 108 metro areas. Data includes: name, address, neighborhood, lat/lng, venue_type, google_place_id, website, music_schedule.
+**Dead URL cleanup:** Identified and NULLed websites for 3 venues with Amazon affiliate links inserted by Google Places. DNS-failing venues (closed businesses) left as-is — website field conveys useful historical info.
+
+### Venue UX — Phase 1 (completed)
+1. `components/SiteNav.tsx` — site-wide nav with breadcrumbs + Concerts/Venues links, used on all venue and concert detail pages
+2. `concerts-client.tsx` — added slim top nav bar and "Browse {City} venues →" link in hero
+3. `app/concert/[slug]/page.tsx` — venue name links to venue detail page when venue_id is set
+4. `app/venues/[city]/venue-list-client.tsx` — search input, type filter chips, "With upcoming shows" toggle
+5. `app/venues/[city]/[slug]/page.tsx` — nearby venues section, music_schedule-aware empty state, Claim CTA
+
+### Venue UX — Phase 2 (completed)
+#### Venue type hub pages
+`app/venues/[city]/type-hub-page.tsx` — shared server component (query + layout) for type-filtered pages.
+Thin wrappers at named routes (takes precedence over `[slug]` in Next.js App Router):
+- `bars/page.tsx` → `/venues/chicago/bars` — "Free Music Bars in Chicago"
+- `breweries/page.tsx`, `parks/page.tsx`, `restaurants/page.tsx`, `amphitheaters/page.tsx`
+Each has `generateStaticParams` covering all 108 cities + ISR revalidate=3600.
+
+#### Neighborhood hub pages
+`app/venues/[city]/neighborhood/[hood]/page.tsx` — on-demand rendering (no generateStaticParams). URL slug `lincoln-park` is resolved to canonical DB neighborhood string via `cityToSlug()` comparison against all distinct neighborhoods for that city.
+
+#### Discovery links on venue list page
+`app/venues/[city]/page.tsx` now renders a `HubLinks` server component above the filter UI:
+- "Browse by type" colored chips — only shows types present in that city
+- "Browse by neighborhood" gray chips — top 8 neighborhoods by venue count
+
+#### Venue detail → neighborhood link
+Neighborhood name in venue detail page (`app/venues/[city]/[slug]/page.tsx`) now links to the neighborhood hub.
+
+### Architecture Notes
+- Named routes (`bars/`, `neighborhood/`) always take precedence over dynamic `[slug]/` in Next.js App Router — safe to add without routing conflicts
+- `cityToSlug()` from `lib/city-slugs.ts` is used for both generating neighborhood hub URLs and resolving slugs back to DB neighborhood strings
+- Type hub pages import `VENUE_TYPE_CONFIGS` from `type-hub-page.tsx` — single source of truth for type metadata (slug, label, color)

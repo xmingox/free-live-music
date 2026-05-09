@@ -7,6 +7,7 @@ import { Metadata } from 'next'
 import { Venue, Concert } from '@/types'
 import { getCityCodeFromSlug, getMetroByCode, cityCodeToSlug, cityToSlug } from '@/lib/city-slugs'
 import SiteNav from '@/components/SiteNav'
+import SiteFooter from '@/components/SiteFooter'
 
 export async function generateStaticParams() {
   const supabase = createClient(
@@ -359,6 +360,8 @@ export default async function VenuePage(
           </Link>
         </div>
       </main>
+
+      <SiteFooter cityLine={`${v.name} · Free live music in ${metro.city}`} />
     </div>
   )
 }

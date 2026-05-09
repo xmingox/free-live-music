@@ -20,6 +20,13 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
+  "browserslist": [
+    "last 2 chrome versions",
+    "last 2 firefox versions",
+    "last 2 safari versions",
+    "last 2 edge versions",
+    "not dead"
+  ],
   "devDependencies": {
     "@types/node": "^22",
     "@types/react": "^19",
