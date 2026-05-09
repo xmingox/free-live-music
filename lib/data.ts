@@ -45,7 +45,15 @@ export async function getConcerts(metroCode?: string): Promise<Concert[]> {
     }
 
     if (!all.length) return MOCK_CONCERTS
-    return all
+
+    // Deduplicate by id (guards against accidental double-imports)
+    const seen = new Set<string>()
+    const deduped = all.filter(c => {
+      if (seen.has(c.id)) return false
+      seen.add(c.id)
+      return true
+    })
+    return deduped
   } catch {
     return MOCK_CONCERTS
   }
