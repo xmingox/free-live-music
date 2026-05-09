@@ -75,6 +75,57 @@ export async function generateMetadata({
   }
 }
 
+function joinList(items: string[]): string {
+  if (items.length === 0) return ''
+  if (items.length === 1) return items[0]
+  if (items.length === 2) return `${items[0]} and ${items[1]}`
+  return `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`
+}
+
+function getCityInsights(concerts: Concert[], metro: ReturnType<typeof getMetroByCode>) {
+  if (!metro || !concerts.length) return null
+
+  const artistCounts = new Map<string, number>()
+  const venueCounts = new Map<string, number>()
+  const hoodCounts = new Map<string, number>()
+  const genreCounts = new Map<string, number>()
+
+  for (const c of concerts) {
+    if (c.artist_name) artistCounts.set(c.artist_name, (artistCounts.get(c.artist_name) ?? 0) + 1)
+    if (c.venue) venueCounts.set(c.venue, (venueCounts.get(c.venue) ?? 0) + 1)
+    if (c.neighborhood) hoodCounts.set(c.neighborhood, (hoodCounts.get(c.neighborhood) ?? 0) + 1)
+    if (c.genre) genreCounts.set(c.genre, (genreCounts.get(c.genre) ?? 0) + 1)
+  }
+
+  const topSeries = [...artistCounts.entries()]
+    .filter(([, n]) => n >= 2)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([name]) => name)
+
+  const topVenues = [...venueCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([name]) => name)
+
+  const topHoods = [...hoodCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([name]) => name)
+
+  const topGenres = [...genreCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([name]) => name)
+
+  const lastDate = concerts.at(-1)?.date
+  const lastDateLabel = lastDate
+    ? new Date(lastDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    : null
+
+  return { topSeries, topVenues, topHoods, topGenres, lastDateLabel, total: concerts.length }
+}
+
 async function getConcertsByCity(metro: ReturnType<typeof getMetroByCode>): Promise<Concert[]> {
   if (!metro) return []
   const cityNames = [metro.city, ...(metro.aliases || [])]
@@ -156,6 +207,7 @@ export default async function CityPage({
   }
 
   const concerts = await getConcertsByCity(metro)
+  const insights = getCityInsights(concerts, metro)
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
@@ -232,59 +284,73 @@ export default async function CityPage({
               <h2 className="text-3xl font-bold text-slate-900 mb-4">
                 Free Live Music in {metro.city}
               </h2>
-              <p className="text-slate-700 mb-4">
-                Looking for free live music and concerts in {metro.city}, {metro.state}?
-                You've found the right place. We curate verified events from parks, outdoor venues,
-                festivals, and cultural institutions throughout the city.
-              </p>
-              <p className="text-slate-600 mb-4">
-                All events on this page are completely free to attend. No cover charges, no ticket fees—just great live music.
-              </p>
-              <ul className="space-y-2 text-slate-600">
-                <li className="flex items-center">
-                  <span className="mr-3 text-blue-600">✓</span>
-                  Outdoor parks and amphitheaters
-                </li>
-                <li className="flex items-center">
-                  <span className="mr-3 text-blue-600">✓</span>
-                  Beach and waterfront concerts
-                </li>
-                <li className="flex items-center">
-                  <span className="mr-3 text-blue-600">✓</span>
-                  Community festivals and street fairs
-                </li>
-                <li className="flex items-center">
-                  <span className="mr-3 text-blue-600">✓</span>
-                  Museum and cultural center performances
-                </li>
-              </ul>
+              {insights ? (
+                <>
+                  <p className="text-slate-700 mb-4">
+                    {metro.city} has {insights.total} free concert{insights.total !== 1 ? 's' : ''} coming up
+                    {insights.topSeries.length > 0 && (
+                      <>, including {joinList(insights.topSeries)}</>
+                    )}.
+                    {' '}All events are completely free — no tickets, no cover charges.
+                  </p>
+                  {insights.topVenues.length > 0 && (
+                    <p className="text-slate-600 mb-4">
+                      Shows take place at {joinList(insights.topVenues)}
+                      {insights.topHoods.length > 0 && (
+                        <> and other venues across {joinList(insights.topHoods)}</>
+                      )}.
+                      {insights.lastDateLabel && <> Events run through {insights.lastDateLabel}.</>}
+                    </p>
+                  )}
+                  {insights.topGenres.length > 0 && (
+                    <p className="text-slate-600">
+                      Genres include {joinList(insights.topGenres)} and more.
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p className="text-slate-700">
+                  Looking for free live music in {metro.city}, {metro.state}? We curate verified
+                  free events from parks, outdoor venues, festivals, and cultural institutions
+                  across the city — no tickets, no cover charges.
+                </p>
+              )}
             </div>
 
             <div>
-              <h2 className="text-3xl font-bold text-slate-900 mb-4">Why Use This Site?</h2>
+              <h2 className="text-3xl font-bold text-slate-900 mb-4">Browse by Date</h2>
               <ul className="space-y-4">
                 <li>
-                  <h3 className="font-semibold text-slate-900 mb-1">✓ Always Free</h3>
-                  <p className="text-slate-600 text-sm">
-                    Every event on this site is completely free to attend. No cover charges, no surprise fees.
+                  <Link
+                    href={`/concerts/${cityParam}/tonight`}
+                    className="font-semibold text-blue-600 hover:underline"
+                  >
+                    Free concerts in {metro.city} tonight →
+                  </Link>
+                  <p className="text-slate-600 text-sm mt-1">
+                    Shows happening today — walk up and enjoy.
                   </p>
                 </li>
                 <li>
-                  <h3 className="font-semibold text-slate-900 mb-1">✓ Hand-Verified</h3>
-                  <p className="text-slate-600 text-sm">
-                    Every event is verified by our team to ensure accuracy and current information.
+                  <Link
+                    href={`/concerts/${cityParam}/this-weekend`}
+                    className="font-semibold text-blue-600 hover:underline"
+                  >
+                    Free concerts this weekend in {metro.city} →
+                  </Link>
+                  <p className="text-slate-600 text-sm mt-1">
+                    Friday through Sunday shows — plan your weekend.
                   </p>
                 </li>
                 <li>
-                  <h3 className="font-semibold text-slate-900 mb-1">✓ Constantly Updated</h3>
-                  <p className="text-slate-600 text-sm">
-                    New events are added daily so you'll always find the latest free concerts in {metro.city}.
-                  </p>
-                </li>
-                <li>
-                  <h3 className="font-semibold text-slate-900 mb-1">✓ Easy to Filter</h3>
-                  <p className="text-slate-600 text-sm">
-                    Filter by date, genre, and type to find exactly what you're looking for.
+                  <Link
+                    href={`/venues/${cityCodeToSlug[cityCode]}`}
+                    className="font-semibold text-blue-600 hover:underline"
+                  >
+                    Free music venues in {metro.city} →
+                  </Link>
+                  <p className="text-slate-600 text-sm mt-1">
+                    Bars, parks, and amphitheaters with live music.
                   </p>
                 </li>
               </ul>
