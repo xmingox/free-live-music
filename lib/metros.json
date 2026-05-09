@@ -1119,6 +1119,20 @@
       "state": "TX",
       "region": "South",
       "aliases": ["MCA", "McAllen", "Edinburg", "Mission", "Pharr", "Rio Grande Valley"]
+    },
+    {
+      "code": "DAB",
+      "city": "Daytona Beach",
+      "state": "FL",
+      "region": "Southeast",
+      "aliases": ["DAB", "Daytona Beach", "Deltona", "Ormond Beach", "Port Orange", "Holly Hill"]
+    },
+    {
+      "code": "PRO",
+      "city": "Provo",
+      "state": "UT",
+      "region": "Mountain",
+      "aliases": ["PRO", "Provo", "Orem", "Springville", "Spanish Fork", "Payson"]
     }
   ]
 }
