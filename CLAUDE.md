@@ -36,7 +36,7 @@ A web app that helps people find free live music events near them across the US.
 - Dead project: `free-live-music` ← old CLI artifact, ignore
 - Domain `www.freelivemusic.co` → `free-live-music-1lwp`
 - `.vercel/project.json` is correctly linked to `free-live-music-1lwp`
-- **Git auto-deploy is NOT set up** — deploys require `vercel --prod` (see Deployment section)
+- **Git auto-deploy IS set up** — GitHub webhook (id: 620105144) → Vercel deploy hook `Pn3qZiZvRH` → auto-deploys `main` on every push
 
 **Mapbox**
 - Token: `NEXT_PUBLIC_MAPBOX_TOKEN` (set in Vercel env + `.env.local`)
@@ -129,20 +129,16 @@ All previously listed bugs fixed as of May 9, 2026:
 
 ## Deployment
 
-Git auto-deploy is **not** connected. Deploy manually after pushing:
+Git push to `main` → auto-deploys to `www.freelivemusic.co` via GitHub webhook → Vercel deploy hook.
 
 ```bash
-# 1. Push code changes
 git add . && git commit -m "..." && git push origin main
-
-# 2. Deploy to production (runs from /home/win11/free-live-music)
-vercel --prod --yes
+# Vercel build starts automatically (~2-3 min)
 ```
 
-`.vercel/project.json` is already linked to `free-live-music-1lwp` (the live project).
-`www.freelivemusic.co` is the production domain — Vercel will alias it automatically.
+For data-only changes (ISR cache bust), same — just push any commit.
 
-To set up git auto-deploy (one-time): go to Vercel dashboard → free-live-music-1lwp → Settings → Git → connect `xmingox/free-live-music` repo, branch `main`.
+**How it works:** GitHub webhook (id: 620105144) fires on every push to any branch and calls Vercel deploy hook `Pn3qZiZvRH` which always deploys from `main`.
 
 ---
 
@@ -247,12 +243,12 @@ Last Updated: May 6, 2026
 git add .
 git commit -m "Your message"
 git push origin main
-vercel --prod --yes   # manual deploy required — git auto-deploy not connected
+# Vercel auto-deploys via GitHub webhook — no manual step needed
 ```
 
 ### Data Changes (clear ISR cache)
 ```bash
-vercel --prod --yes   # redeploy to bust the 1-hour ISR cache
+git commit --allow-empty -m "Bust ISR cache" && git push origin main
 ```
 
 ## Notes for Claude Code & Cowork
