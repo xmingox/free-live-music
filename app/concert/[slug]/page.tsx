@@ -235,10 +235,15 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
 
         {/* Description */}
         <p className="text-slate-300 text-base leading-relaxed mb-8">
-          {concert.artist_name} performs free at {concert.venue} in {concert.neighborhood}, {city} on {formatDate(concert.date)}{concert.time ? ` at ${formatTime(concert.time)}` : ''}.{' '}
-          {concert.admission_type === 'Free RSVP'
-            ? 'This event is free but requires an RSVP — check the official listing to reserve your spot.'
-            : 'No tickets or cover charge needed — just show up and enjoy.'}
+          {concert.description
+            ? concert.description
+            : <>
+                {concert.artist_name} performs free at {concert.venue} in {concert.neighborhood}, {city} on {formatDate(concert.date)}{concert.time ? ` at ${formatTime(concert.time)}` : ''}.{' '}
+                {concert.admission_type === 'Free RSVP'
+                  ? 'This event is free but requires an RSVP — check the official listing to reserve your spot.'
+                  : 'No tickets or cover charge needed — just show up and enjoy.'}
+              </>
+          }
         </p>
 
         {/* Event image */}
