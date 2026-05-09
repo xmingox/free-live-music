@@ -28,5 +28,5 @@ export const metadata: Metadata = {
 export default async function Home() {
   const concerts = await getConcerts('NYC')
   // Match SSR payload to initial page size — client fetches more on scroll/city-switch.
-  return <ConcertsClient initialConcerts={concerts} defaultCity="NYC" />
+  return <ConcertsClient initialConcerts={concerts.slice(0, 24)} defaultCity="NYC" />
 }

@@ -102,8 +102,10 @@ export default function ConcertsClient({
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false)
 
-  // Per-city concert cache so switching back doesn't re-fetch
-  const cache = useRef<Partial<Record<City, Concert[]>>>({ [defaultCity]: initialConcerts })
+  // Per-city concert cache so switching back doesn't re-fetch.
+  // Don't pre-warm defaultCity — the initialConcerts are a small SSR slice;
+  // the effect below fetches the full list from the API on mount.
+  const cache = useRef<Partial<Record<City, Concert[]>>>({})
   const [concerts, setConcerts] = useState<Concert[]>(initialConcerts)
   const [isFetching, setIsFetching] = useState(false)
 
