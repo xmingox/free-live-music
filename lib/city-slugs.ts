@@ -20,14 +20,15 @@ export const slugToCityCode: Record<string, string> = Object.fromEntries(
   metros.metros.map(m => [cityToSlug(m.city), m.code])
 )
 
-// Reverse map: code → slug
-export const cityCodeToSlug: Record<string, string> = Object.fromEntries(
-  metros.metros.map(m => [m.code, cityToSlug(m.city)])
-)
+// Reverse map: code → slug (aliases included so events stored under alias codes resolve correctly)
+export const cityCodeToSlug: Record<string, string> = Object.fromEntries([
+  ...metros.metros.flatMap(m => (m.aliases || []).map((alias: string) => [alias, cityToSlug(m.city)])),
+  ...metros.metros.map(m => [m.code, cityToSlug(m.city)]),
+])
 
-// Get metro by code
+// Get metro by code or alias
 export function getMetroByCode(code: string): Metro | undefined {
-  return metros.metros.find(m => m.code === code) as Metro | undefined
+  return metros.metros.find(m => m.code === code || (m.aliases || []).includes(code)) as Metro | undefined
 }
 
 // Get city code from slug
