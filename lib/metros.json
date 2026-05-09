@@ -1161,6 +1161,41 @@
       "state": "NY",
       "region": "Northeast",
       "aliases": ["POU", "Poughkeepsie", "Fishkill", "Hyde Park", "Wappingers Falls", "Dutchess County"]
+    },
+    {
+      "code": "JAN",
+      "city": "Jackson",
+      "state": "MS",
+      "region": "South",
+      "aliases": ["JAN", "Jackson", "Ridgeland", "Brandon", "Madison", "Pearl"]
+    },
+    {
+      "code": "HBG",
+      "city": "Harrisburg",
+      "state": "PA",
+      "region": "Northeast",
+      "aliases": ["HBG", "Harrisburg", "York", "Lancaster", "Carlisle", "Lebanon"]
+    },
+    {
+      "code": "WSM",
+      "city": "Winston-Salem",
+      "state": "NC",
+      "region": "Southeast",
+      "aliases": ["WSM", "Winston-Salem", "Forsyth", "Kernersville", "Clemmons", "High Point"]
+    },
+    {
+      "code": "AGS",
+      "city": "Augusta",
+      "state": "GA",
+      "region": "Southeast",
+      "aliases": ["AGS", "Augusta", "Evans", "Martinez", "Grovetown", "Aiken"]
+    },
+    {
+      "code": "MLB",
+      "city": "Melbourne",
+      "state": "FL",
+      "region": "Southeast",
+      "aliases": ["MLB", "Melbourne", "Palm Bay", "Brevard County", "Cocoa", "Titusville", "Rockledge"]
     }
   ]
 }
