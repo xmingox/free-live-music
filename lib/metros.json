@@ -1133,6 +1133,20 @@
       "state": "UT",
       "region": "Mountain",
       "aliases": ["PRO", "Provo", "Orem", "Springville", "Spanish Fork", "Payson"]
+    },
+    {
+      "code": "FRE",
+      "city": "Fresno",
+      "state": "CA",
+      "region": "West",
+      "aliases": ["FRE", "Fresno", "Clovis", "Madera", "Selma", "Sanger"]
+    },
+    {
+      "code": "BFL",
+      "city": "Bakersfield",
+      "state": "CA",
+      "region": "West",
+      "aliases": ["BFL", "Bakersfield", "Delano", "Wasco", "Shafter"]
     }
   ]
 }
