@@ -40,6 +40,10 @@ function getMetrosForState(state: string): MetroType[] {
 }
 
 function filterByDate(concerts: Concert[], filter: DateFilter, dateFrom?: string, dateTo?: string): Concert[] {
+  // 'all' is already pre-filtered to future dates by the DB query — skip client Date() to avoid
+  // hydration mismatch between server render time and client time.
+  if (filter === 'all') return concerts
+
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
@@ -56,7 +60,6 @@ function filterByDate(concerts: Concert[], filter: DateFilter, dateFrom?: string
       case 'tonight':
         return concertDate.toDateString() === today.toDateString()
       case 'weekend': {
-        const dayOfWeek = concertDate.getDay()
         const daysUntilFriday = (5 - today.getDay() + 7) % 7
         const fridayDate = new Date(today)
         fridayDate.setDate(fridayDate.getDate() + (daysUntilFriday === 0 ? 0 : daysUntilFriday))
@@ -64,13 +67,13 @@ function filterByDate(concerts: Concert[], filter: DateFilter, dateFrom?: string
         sundayDate.setDate(sundayDate.getDate() + 2)
         return concertDate >= fridayDate && concertDate <= sundayDate
       }
-      case 'week':
+      case 'week': {
         const weekFromNow = new Date(today)
         weekFromNow.setDate(weekFromNow.getDate() + 7)
         return concertDate >= today && concertDate <= weekFromNow
-      case 'all':
+      }
       default:
-        return concertDate >= today
+        return true
     }
   })
 }
@@ -215,10 +218,8 @@ export default function ConcertsClient({
                   Always free
                 </span>
               </div>
-              <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-1">
-                <span className="bg-gradient-to-r from-violet-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
-                  Free Live Music
-                </span>
+              <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-1 bg-gradient-to-r from-violet-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
+                Free Live Music
               </h1>
               <p className="text-slate-400 text-lg">The best free shows across the US</p>
             </div>

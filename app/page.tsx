@@ -27,6 +27,6 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const concerts = await getConcerts('NYC')
-  // Cap SSR payload at 72 entries (3 pages) — city-switch always re-fetches from API.
-  return <ConcertsClient initialConcerts={concerts.slice(0, 72)} defaultCity="NYC" />
+  // Match SSR payload to initial page size — client fetches more on scroll/city-switch.
+  return <ConcertsClient initialConcerts={concerts.slice(0, 24)} defaultCity="NYC" />
 }
