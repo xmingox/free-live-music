@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { cityCodeToSlug, getMetroByCode } from '@/lib/city-slugs'
 import SiteNav from '@/components/SiteNav'
 import SiteFooter from '@/components/SiteFooter'
+import { outboundUrl, bookingSearchUrl } from '@/lib/affiliate'
 
 function parseTimeToIso(time: string): string {
   const m = time.match(/^(\d+):(\d+)\s*(am|pm)$/i)
@@ -310,24 +311,47 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
           )}
         </div>
 
-        {/* CTA */}
-        {concert.source_url && (
-          <a
-            href={concert.source_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full text-center bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white font-bold py-4 rounded-xl transition-all duration-200 shadow-lg shadow-violet-900/30 mb-6"
-          >
-            View Official Listing →
-          </a>
-        )}
-
+        {/* Primary CTA */}
         <Link
           href="/"
-          className="block w-full text-center bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-4 rounded-xl transition-all duration-200"
+          className="block w-full text-center bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white font-bold py-4 rounded-xl transition-all duration-200 shadow-lg shadow-violet-900/30 mb-3"
         >
           ← Browse All Free Shows
         </Link>
+
+        {/* Secondary: official listing */}
+        {concert.source_url && (
+          <a
+            href={outboundUrl(concert.source_url, 'concert-detail')}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full text-center bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-semibold py-3 rounded-xl transition-all duration-200 mb-6 text-sm"
+          >
+            View Official Listing ↗
+          </a>
+        )}
+
+        {/* Hotel affiliate — shown only for destination metros */}
+        {(() => {
+          const metro = getMetroByCode(concert.city)
+          if (!metro) return null
+          const hotelUrl = bookingSearchUrl(metro.city, metro.state, concert.date)
+          return (
+            <a
+              href={hotelUrl}
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              className="flex items-center justify-between w-full bg-slate-900 border border-slate-700/50 hover:border-slate-600 rounded-xl px-4 py-3 mb-6 transition-colors group"
+            >
+              <span className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
+                Visiting {metro.city}? Find hotels near this show
+              </span>
+              <span className="text-xs text-slate-500 group-hover:text-violet-400 transition-colors shrink-0 ml-2">
+                Hotels ↗
+              </span>
+            </a>
+          )
+        })()}
 
         {/* Related shows */}
         {related && related.length > 0 && (
