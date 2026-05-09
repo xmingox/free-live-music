@@ -1224,6 +1224,13 @@
       "state": "PA",
       "region": "Northeast",
       "aliases": ["SCR", "Scranton", "Wilkes-Barre", "Hazleton", "Pittston", "Lackawanna County"]
+    },
+    {
+      "code": "MYR",
+      "city": "Myrtle Beach",
+      "state": "SC",
+      "region": "Southeast",
+      "aliases": ["MYR", "Myrtle Beach", "North Myrtle Beach", "Conway", "Murrells Inlet", "Surfside Beach"]
     }
   ]
 }
