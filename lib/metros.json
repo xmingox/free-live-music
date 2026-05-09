@@ -1091,6 +1091,13 @@
       "state": "CT",
       "region": "Northeast",
       "aliases": ["STA", "Greenwich", "Bridgeport", "Norwalk"]
+    },
+    {
+      "code": "VNT",
+      "city": "Ventura",
+      "state": "CA",
+      "region": "West",
+      "aliases": ["VNT", "Oxnard", "Camarillo", "Port Hueneme", "Channel Islands"]
     }
   ]
 }
