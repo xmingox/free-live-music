@@ -1196,6 +1196,34 @@
       "state": "FL",
       "region": "Southeast",
       "aliases": ["MLB", "Melbourne", "Palm Bay", "Brevard County", "Cocoa", "Titusville", "Rockledge"]
+    },
+    {
+      "code": "SRO",
+      "city": "Santa Rosa",
+      "state": "CA",
+      "region": "West",
+      "aliases": ["SRO", "Santa Rosa", "Rohnert Park", "Petaluma", "Sebastopol", "Sonoma County"]
+    },
+    {
+      "code": "LAN",
+      "city": "Lansing",
+      "state": "MI",
+      "region": "Midwest",
+      "aliases": ["LAN", "Lansing", "East Lansing", "Okemos", "Haslett", "Holt", "Mason"]
+    },
+    {
+      "code": "MOD",
+      "city": "Modesto",
+      "state": "CA",
+      "region": "West",
+      "aliases": ["MOD", "Modesto", "Turlock", "Ceres", "Riverbank", "Stanislaus County"]
+    },
+    {
+      "code": "SCR",
+      "city": "Scranton",
+      "state": "PA",
+      "region": "Northeast",
+      "aliases": ["SCR", "Scranton", "Wilkes-Barre", "Hazleton", "Pittston", "Lackawanna County"]
     }
   ]
 }
