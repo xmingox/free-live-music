@@ -20,6 +20,7 @@ export interface Concert {
   source_url: string | null
   source_name: string | null
   source_id: string | null
+  description?: string | null
   created_at: string
 }
 
