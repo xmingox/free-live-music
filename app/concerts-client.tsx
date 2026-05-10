@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef, useTransition } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -105,8 +105,9 @@ export default function ConcertsClient({
   const cache = useRef<Partial<Record<City, Concert[]>>>({})
   const [concerts, setConcerts] = useState<Concert[]>(initialConcerts)
   const [isFetching, setIsFetching] = useState(false)
-  // Track whether the first fetch has run — on initial mount we keep SSR concerts
-  // visible (good LCP) instead of clearing them while the full list loads.
+  const [, startTransition] = useTransition()
+  // On initial mount, skip the loading indicator so SSR concerts stay visible
+  // (good LCP). Only show loading state on explicit city switches.
   const isFirstFetchRef = useRef(true)
 
   // Sync from URL params once on mount — avoids useSearchParams() which forces Suspense
@@ -147,17 +148,20 @@ export default function ConcertsClient({
       isFirstFetchRef.current = false
       return
     }
-    setIsFetching(true)
-    // On the initial mount keep SSR concerts visible while the full list loads.
-    // On city switches clear so stale city's events don't flash.
-    if (!isFirstFetchRef.current) setConcerts([])
+    const isFirst = isFirstFetchRef.current
     isFirstFetchRef.current = false
+    if (!isFirst) {
+      setIsFetching(true)
+      setConcerts([])
+    }
     fetch(`/api/concerts?city=${city}`)
       .then(r => r.json())
       .then((data: Concert[]) => {
         cache.current[city] = data
-        setConcerts(data)
-        setIsFetching(false)
+        startTransition(() => {
+          setConcerts(data)
+          setIsFetching(false)
+        })
       })
       .catch(() => setIsFetching(false))
   }, [city])
