@@ -359,7 +359,7 @@ export default async function TypeHubPage({
         </section>
       </main>
 
-      <SiteFooter cityLine={`Free music ${config.label.toLowerCase()} in ${metro.city} · All shows free admission`} />
+      <SiteFooter cityLine={`Free music ${config.label.toLowerCase()} in ${metro.city} · All shows free admission`} venueTypeSlug={citySlug} />
     </div>
   )
 }

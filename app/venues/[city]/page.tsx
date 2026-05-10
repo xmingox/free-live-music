@@ -123,8 +123,35 @@ export default async function VenueListPage(
 
   const venues = await getVenuesForCity(metroCode!)
 
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `Free Music Venues in ${metro.city}`,
+    description: `Venues with free live music in ${metro.city}, ${metro.state}`,
+    url: `https://www.freelivemusic.co/venues/${citySlug}`,
+    numberOfItems: venues.length,
+    itemListElement: venues.slice(0, 50).map((venue, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'MusicVenue',
+        name: venue.name,
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: metro.city,
+          addressRegion: metro.state,
+        },
+        url: `https://www.freelivemusic.co/venues/${citySlug}/${venue.slug}`,
+      },
+    })),
+  }
+
   return (
     <div className="min-h-screen bg-slate-950 text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
       <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 py-4">
           <SiteNav
@@ -190,7 +217,7 @@ export default async function VenueListPage(
         )}
       </main>
 
-      <SiteFooter cityLine={`${metro.city} free music venues · All shows free admission`} />
+      <SiteFooter cityLine={`${metro.city} free music venues · All shows free admission`} venueTypeSlug={citySlug} />
     </div>
   )
 }

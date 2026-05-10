@@ -141,8 +141,35 @@ export default async function NeighborhoodPage(
   const { neighborhood, venues } = result
   const withShowsCount = venues.filter(v => v.upcoming_show_count > 0).length
 
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `Free Music Venues in ${neighborhood}, ${metro.city}`,
+    description: `Venues with free live music in ${neighborhood}, ${metro.city}, ${metro.state}`,
+    url: `https://www.freelivemusic.co/venues/${citySlug}/neighborhood/${hoodSlug}`,
+    numberOfItems: venues.length,
+    itemListElement: venues.map((venue, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'MusicVenue',
+        name: venue.name,
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: metro.city,
+          addressRegion: metro.state,
+        },
+        url: `https://www.freelivemusic.co/venues/${citySlug}/${venue.slug}`,
+      },
+    })),
+  }
+
   return (
     <div className="min-h-screen bg-slate-950 text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
       <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 py-4">
           <SiteNav
@@ -248,7 +275,7 @@ export default async function NeighborhoodPage(
         )}
       </main>
 
-      <SiteFooter cityLine={`Free live music in ${neighborhood}, ${metro.city}`} />
+      <SiteFooter cityLine={`Free live music in ${neighborhood}, ${metro.city}`} venueTypeSlug={citySlug} />
     </div>
   )
 }
