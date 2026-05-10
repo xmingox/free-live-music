@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import { Concert } from '@/types'
 import Link from 'next/link'
 import { cityCodeToSlug, getMetroByCode } from '@/lib/city-slugs'
@@ -39,6 +39,18 @@ async function getVenueSlug(venueId: string): Promise<string | null> {
 async function getRelatedConcerts(city: string, excludeId: string, today: string) {
   return sbGet<{ slug: string; artist_name: string; venue: string; neighborhood: string; date: string; time: string | null }>(
     `concerts?city=eq.${encodeURIComponent(city)}&id=neq.${encodeURIComponent(excludeId)}&date=gte.${today}&select=slug,artist_name,venue,neighborhood,date,time&order=date.asc&limit=5`
+  )
+}
+
+async function getVenueConcerts(venue: string, excludeId: string, today: string) {
+  return sbGet<{ slug: string; artist_name: string; venue: string; date: string }>(
+    `concerts?venue=eq.${encodeURIComponent(venue)}&id=neq.${encodeURIComponent(excludeId)}&date=gte.${today}&select=slug,artist_name,venue,date&order=date.asc&limit=4`
+  )
+}
+
+async function getNeighborhoodConcerts(city: string, neighborhood: string, excludeId: string, today: string) {
+  return sbGet<{ slug: string; artist_name: string; venue: string; neighborhood: string; date: string }>(
+    `concerts?city=eq.${encodeURIComponent(city)}&neighborhood=eq.${encodeURIComponent(neighborhood)}&id=neq.${encodeURIComponent(excludeId)}&date=gte.${today}&select=slug,artist_name,venue,neighborhood,date&order=date.asc&limit=4`
   )
 }
 
@@ -97,7 +109,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   const city = getMetroByCode(concert.city)?.city ?? concert.city
   const canonicalUrl = `https://www.freelivemusic.co/concert/${slug}`
-  return {
+  const normalMetadata = {
     title: `${concert.artist_name} — Free Concert in ${city} | Free Live Music`,
     description: `${concert.artist_name} performs free at ${concert.venue} in ${concert.neighborhood}, ${city} on ${formatDate(concert.date)}. Free admission.`,
     alternates: { canonical: canonicalUrl },
@@ -109,6 +121,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       type: 'website',
     },
   }
+
+  // Add noindex for recently-past concerts (within the last 7 days):
+  // people may still search for them, but we don't want them permanently indexed.
+  const today = new Date().toISOString().split('T')[0]
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  if (concert.date < today && concert.date >= sevenDaysAgo) {
+    return { ...normalMetadata, robots: { index: false, follow: false } }
+  }
+
+  return normalMetadata
 }
 
 export default async function ConcertPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -117,9 +139,27 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
   if (!concert) notFound()
 
   const today = new Date().toISOString().split('T')[0]
-  const [venueSlug, related] = await Promise.all([
+
+  // Redirect past concerts (8+ days old) to venue or city page so Google
+  // processes the 308 and removes the stale URL from its index.
+  const eightDaysAgo = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  if (concert.date <= eightDaysAgo) {
+    const citySlug = cityCodeToSlug[concert.city]
+    if (concert.venue_id) {
+      const venueSlugForRedirect = await getVenueSlug(concert.venue_id)
+      if (venueSlugForRedirect && citySlug) {
+        permanentRedirect(`/venues/${citySlug}/${venueSlugForRedirect}`)
+      }
+    }
+    // Fallback: redirect to city concerts page
+    permanentRedirect(`/concerts/${citySlug ?? 'new-york'}`)
+  }
+
+  const [venueSlug, related, venueConcerts, neighborhoodConcerts] = await Promise.all([
     concert.venue_id ? getVenueSlug(concert.venue_id) : Promise.resolve(null),
     getRelatedConcerts(concert.city, concert.id, today),
+    concert.venue ? getVenueConcerts(concert.venue, concert.id, today) : Promise.resolve([]),
+    concert.neighborhood ? getNeighborhoodConcerts(concert.city, concert.neighborhood, concert.id, today) : Promise.resolve([]),
   ])
 
   const city = getMetroByCode(concert.city)?.city ?? concert.city
@@ -131,7 +171,7 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
 
   const eventJsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Event',
+    '@type': 'MusicEvent',
     name: concert.artist_name,
     description: eventDescription,
     image: concert.image_url ?? ogImageUrl,
@@ -139,7 +179,7 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
     endDate: concert.time ? `${concert.date}T${parseEndTimeIso(concert.time)}` : concert.date,
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-    performer: { '@type': 'PerformingGroup', name: concert.artist_name },
+    performer: { '@type': 'MusicGroup', name: concert.artist_name },
     location: {
       '@type': 'Place',
       name: concert.venue,
@@ -391,31 +431,97 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
           )
         })()}
 
-        {/* Related shows */}
-        {related && related.length > 0 && (
+        {/* More free music section */}
+        {(venueConcerts.length > 0 || neighborhoodConcerts.length > 0 || (related && related.length > 0)) && (
           <section className="mt-10">
-            <h2 className="text-lg font-bold text-white mb-4">More Free Shows in {city}</h2>
-            <div className="flex flex-col gap-2">
-              {related.map((show) => (
-                <Link
-                  key={show.slug}
-                  href={`/concert/${show.slug}`}
-                  className="flex items-start justify-between gap-4 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 hover:border-slate-600 rounded-xl px-4 py-3 transition-all duration-150 group"
-                >
-                  <div className="min-w-0">
-                    <p className="font-semibold text-white text-sm group-hover:text-violet-300 transition-colors truncate">
-                      {show.artist_name}
-                    </p>
-                    <p className="text-slate-400 text-xs mt-0.5 truncate">
-                      {show.venue} · {show.neighborhood}
-                    </p>
-                  </div>
-                  <span className="text-xs text-slate-400 shrink-0 mt-0.5">
-                    {new Date(show.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </span>
-                </Link>
-              ))}
-            </div>
+            <h2 className="text-lg font-bold text-white mb-5">More free music</h2>
+
+            {/* Row 1: More at this venue */}
+            {venueConcerts.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-3">
+                  More at {concert.venue}
+                </h3>
+                <div className="flex flex-col gap-2">
+                  {venueConcerts.map((show) => (
+                    <Link
+                      key={show.slug}
+                      href={`/concert/${show.slug}`}
+                      className="flex items-start justify-between gap-4 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-600 rounded-xl px-4 py-3 transition-all duration-150 group"
+                    >
+                      <div className="min-w-0">
+                        <p className="font-semibold text-white text-sm group-hover:text-violet-300 transition-colors truncate">
+                          {show.artist_name}
+                        </p>
+                      </div>
+                      <span className="text-xs text-slate-400 shrink-0 mt-0.5">
+                        {new Date(show.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Row 2: More in this neighborhood or city */}
+            {neighborhoodConcerts.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-3">
+                  More free music in {concert.neighborhood || city}
+                </h3>
+                <div className="flex flex-col gap-2">
+                  {neighborhoodConcerts.map((show) => (
+                    <Link
+                      key={show.slug}
+                      href={`/concert/${show.slug}`}
+                      className="flex items-start justify-between gap-4 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-600 rounded-xl px-4 py-3 transition-all duration-150 group"
+                    >
+                      <div className="min-w-0">
+                        <p className="font-semibold text-white text-sm group-hover:text-violet-300 transition-colors truncate">
+                          {show.artist_name}
+                        </p>
+                        <p className="text-slate-400 text-xs mt-0.5 truncate">
+                          {show.venue}
+                        </p>
+                      </div>
+                      <span className="text-xs text-slate-400 shrink-0 mt-0.5">
+                        {new Date(show.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Fallback: city-wide related shows (when no venue or neighborhood matches) */}
+            {venueConcerts.length === 0 && neighborhoodConcerts.length === 0 && related && related.length > 0 && (
+              <div>
+                <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-3">
+                  More free shows in {city}
+                </h3>
+                <div className="flex flex-col gap-2">
+                  {related.map((show) => (
+                    <Link
+                      key={show.slug}
+                      href={`/concert/${show.slug}`}
+                      className="flex items-start justify-between gap-4 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-slate-600 rounded-xl px-4 py-3 transition-all duration-150 group"
+                    >
+                      <div className="min-w-0">
+                        <p className="font-semibold text-white text-sm group-hover:text-violet-300 transition-colors truncate">
+                          {show.artist_name}
+                        </p>
+                        <p className="text-slate-400 text-xs mt-0.5 truncate">
+                          {show.venue} · {show.neighborhood}
+                        </p>
+                      </div>
+                      <span className="text-xs text-slate-400 shrink-0 mt-0.5">
+                        {new Date(show.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </section>
         )}
       </main>

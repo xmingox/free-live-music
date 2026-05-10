@@ -247,11 +247,47 @@ export default async function CityPage({
     })),
   }
 
+  const itemListConcerts = concerts.slice(0, 20)
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `Free Live Music in ${metro.city}`,
+    description: `Upcoming free concerts in ${metro.city}, ${metro.state}`,
+    url: `https://www.freelivemusic.co/concerts/${citySlug}`,
+    numberOfItems: itemListConcerts.length,
+    itemListElement: itemListConcerts.map((concert, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'MusicEvent',
+        name: concert.artist_name,
+        startDate: concert.time
+          ? `${concert.date}T${concert.time}`
+          : `${concert.date}T18:00:00`,
+        location: {
+          '@type': 'Place',
+          name: concert.venue ?? metro.city,
+          address: `${metro.city}, ${metro.state}`,
+        },
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock',
+        },
+      },
+    })),
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
       />
       {/* Hero Section */}
       <section className="border-b border-slate-200 bg-white">

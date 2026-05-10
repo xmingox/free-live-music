@@ -145,8 +145,35 @@ export default async function TypeHubPage({
   const venues = await getVenuesByType(metroCode!, config.type)
   const withShowsCount = venues.filter(v => v.upcoming_show_count > 0).length
 
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `Free Music ${config.label} in ${metro.city}`,
+    description: `Find free live music at ${config.description} in ${metro.city}, ${metro.state}`,
+    url: `https://www.freelivemusic.co/venues/${citySlug}/${config.slug}`,
+    numberOfItems: venues.length,
+    itemListElement: venues.map((venue, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'MusicVenue',
+        name: venue.name,
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: metro.city,
+          addressRegion: metro.state,
+        },
+        url: `https://www.freelivemusic.co/venues/${citySlug}/${venue.slug}`,
+      },
+    })),
+  }
+
   return (
     <div className="min-h-screen bg-slate-950 text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
       <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 py-4">
           <SiteNav
