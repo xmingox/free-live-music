@@ -102,7 +102,11 @@ export default function ConcertsClient({
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false)
 
-  const cache = useRef<Partial<Record<City, Concert[]>>>({})
+  // Pre-populate cache with SSR concerts so the initial city never triggers a
+  // client fetch — eliminating the re-render that was delaying LCP by ~2s.
+  const cache = useRef<Partial<Record<City, Concert[]>>>({
+    ...(initialConcerts.length > 0 ? { [defaultCity]: initialConcerts } : {}),
+  })
   const [concerts, setConcerts] = useState<Concert[]>(initialConcerts)
   const [isFetching, setIsFetching] = useState(false)
   const [, startTransition] = useTransition()
