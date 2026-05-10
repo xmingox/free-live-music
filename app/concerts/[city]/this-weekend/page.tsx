@@ -10,7 +10,7 @@ import {
   cityCodeToSlug,
 } from '@/lib/city-slugs'
 
-export const revalidate = 3600
+export const revalidate = 600
 
 export async function generateStaticParams() {
   return getAllCityCodes()
@@ -143,8 +143,34 @@ export default async function ThisWeekendPage({
   const { start, end, label } = getWeekendRange()
   const concerts = await getWeekendConcerts(metro, start, end)
 
+  const itemListJsonLd = concerts.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `Free Concerts in ${metro.city} This Weekend`,
+    url: `https://www.freelivemusic.co/concerts/${city}/this-weekend`,
+    numberOfItems: concerts.length,
+    itemListElement: concerts.map((concert, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'MusicEvent',
+        name: concert.artist_name,
+        startDate: concert.time ? `${concert.date}T${concert.time}` : concert.date,
+        location: {
+          '@type': 'Place',
+          name: concert.venue ?? metro.city,
+          address: `${metro.city}, ${metro.state}`,
+        },
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      },
+    })),
+  } : null
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      {itemListJsonLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
+      )}
       <section className="border-b border-slate-200 bg-white">
         <div className="max-w-6xl mx-auto px-4 py-12">
           <nav className="flex items-center gap-2 text-sm text-slate-500 mb-4">
