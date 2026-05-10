@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import { Concert } from '@/types'
 import Link from 'next/link'
 import { cityCodeToSlug, getMetroByCode } from '@/lib/city-slugs'
@@ -123,14 +123,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     },
   }
 
-  // Add noindex for recently-past concerts (within the last 7 days):
-  // people may still search for them, but we don't want them permanently indexed.
-  const today = new Date().toISOString().split('T')[0]
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-  if (concert.date < today && concert.date >= sevenDaysAgo) {
-    return { ...normalMetadata, robots: { index: false, follow: false } }
-  }
-
   return normalMetadata
 }
 
@@ -140,6 +132,12 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
   if (!concert) notFound()
 
   const today = new Date().toISOString().split('T')[0]
+
+  // Past concerts redirect to the city listing — 308 permanent so crawlers follow
+  if (concert.date < today) {
+    const citySlug = cityCodeToSlug[concert.city]
+    permanentRedirect(citySlug ? `/concerts/${citySlug}` : '/')
+  }
 
   const [venueSlug, related, venueConcerts, neighborhoodConcerts] = await Promise.all([
     concert.venue_id ? getVenueSlug(concert.venue_id) : Promise.resolve(null),
