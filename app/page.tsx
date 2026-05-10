@@ -1,9 +1,8 @@
-// ISR: re-render at most once per hour instead of on every request
-export const revalidate = 3600
-
 import { Metadata } from 'next'
 import ConcertsClient from './concerts-client'
 import { getConcerts } from '@/lib/data'
+import { getMetroByCode } from '@/lib/city-slugs'
+import { City } from '@/types'
 
 export const metadata: Metadata = {
   title: 'Free Live Music Near You | freelivemusic.co',
@@ -25,7 +24,19 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function Home() {
-  const concerts = await getConcerts('NYC')
-  return <ConcertsClient initialConcerts={concerts.slice(0, 24)} defaultCity="NYC" />
+function resolveMetroCode(cityParam: string | undefined): City {
+  if (!cityParam) return 'NYC'
+  const code = cityParam.toUpperCase()
+  return (getMetroByCode(code) ? code : 'NYC') as City
+}
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ city?: string }>
+}) {
+  const { city: cityParam } = await searchParams
+  const metroCode = resolveMetroCode(cityParam)
+  const concerts = await getConcerts(metroCode)
+  return <ConcertsClient initialConcerts={concerts.slice(0, 24)} defaultCity={metroCode} />
 }
