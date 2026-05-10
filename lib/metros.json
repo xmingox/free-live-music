@@ -1457,6 +1457,55 @@
       "state": "NE",
       "region": "Midwest",
       "aliases": ["LNK", "Lincoln", "Lancaster County"]
+    },
+    {
+      "code": "SBN",
+      "city": "South Bend",
+      "state": "IN",
+      "region": "Midwest",
+      "aliases": ["SBN", "South Bend", "Mishawaka", "Notre Dame", "St. Joseph County"]
+    },
+    {
+      "code": "EVV",
+      "city": "Evansville",
+      "state": "IN",
+      "region": "Midwest",
+      "aliases": ["EVV", "Evansville", "Vanderburgh County"]
+    },
+    {
+      "code": "BWG",
+      "city": "Bowling Green",
+      "state": "KY",
+      "region": "Southeast",
+      "aliases": ["BWG", "Bowling Green", "Warren County"]
+    },
+    {
+      "code": "FAR",
+      "city": "Fargo",
+      "state": "ND",
+      "region": "Midwest",
+      "aliases": ["FAR", "Fargo", "Moorhead", "West Fargo", "Cass County"]
+    },
+    {
+      "code": "GTF",
+      "city": "Great Falls",
+      "state": "MT",
+      "region": "Mountain",
+      "aliases": ["GTF", "Great Falls", "Cascade County"]
+    },
+    {
+      "code": "SLE",
+      "city": "Salem",
+      "state": "OR",
+      "region": "Pacific Northwest",
+      "aliases": ["SLE", "Salem", "Marion County", "Polk County"]
+    },
+    {
+      "code": "TWF",
+      "city": "Twin Falls",
+      "state": "ID",
+      "region": "Mountain",
+      "aliases": ["TWF", "Twin Falls", "Magic Valley"]
     }
   ]
 }
