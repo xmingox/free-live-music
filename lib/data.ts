@@ -1,19 +1,17 @@
+import { unstable_cache } from 'next/cache'
 import { Concert } from '@/types'
 import { MOCK_CONCERTS } from './mock-data'
 import metros from './metros.json'
 
-export async function getConcerts(metroCode?: string): Promise<Concert[]> {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    return MOCK_CONCERTS
-  }
+async function fetchConcerts(metroCode?: string): Promise<Concert[]> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  if (!supabaseUrl || !supabaseKey) return MOCK_CONCERTS
 
   try {
     const { createClient } = await import('@supabase/supabase-js')
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    )
-    
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
     const today = new Date().toISOString().split('T')[0]
 
     let cityFilter: string[] | undefined
@@ -48,13 +46,20 @@ export async function getConcerts(metroCode?: string): Promise<Concert[]> {
 
     // Deduplicate by id (guards against accidental double-imports)
     const seen = new Set<string>()
-    const deduped = all.filter(c => {
+    return all.filter(c => {
       if (seen.has(c.id)) return false
       seen.add(c.id)
       return true
     })
-    return deduped
   } catch {
     return MOCK_CONCERTS
   }
 }
+
+// Cache per city code, revalidate hourly. Invalidate with revalidateTag('concerts')
+// from moderation approve to bust immediately after new events are added.
+export const getConcerts = unstable_cache(
+  fetchConcerts,
+  ['concerts'],
+  { revalidate: 3600, tags: ['concerts'] }
+)

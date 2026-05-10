@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidateTag } from 'next/cache'
 import metros from '@/lib/metros.json'
 import { City } from '@/types'
 
@@ -152,6 +153,8 @@ export async function POST(request: NextRequest) {
         errors.push(`Submission ${submission.id}: ${err instanceof Error ? err.message : 'unknown error'}`)
       }
     }
+
+    if (approved > 0) revalidateTag('concerts')
 
     return NextResponse.json({
       message: `Bulk approve complete. ${approved} approved, ${skipped} skipped.`,

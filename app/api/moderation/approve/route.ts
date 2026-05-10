@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidateTag } from 'next/cache'
 import { extractEventDetails } from '@/lib/extract-event-details'
 import { Concert, City } from '@/types'
 import metros from '@/lib/metros.json'
@@ -215,6 +216,8 @@ export async function POST(request: NextRequest) {
           { status: 500 }
         )
       }
+
+      revalidateTag('concerts')
 
       return NextResponse.json({
         message: 'Submission approved and concert published',
