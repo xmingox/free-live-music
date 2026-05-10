@@ -13,6 +13,10 @@
       "schedule": "15 5 * * *"
     },
     {
+      "path": "/api/maintenance/source-urls",
+      "schedule": "0 3 * * 0"
+    },
+    {
       "path": "/api/maintenance/venue-health",
       "schedule": "0 4 * * 0"
     },

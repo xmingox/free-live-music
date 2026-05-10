@@ -1,7 +1,7 @@
 import type { ImportRow } from './types'
 
 const SOURCE_NAME = 'Dana Point Summer of Music'
-const SOURCE_URL  = 'https://www.danapoint.org/departments/community-services-recreation/events-calendar'
+const SOURCE_URL  = 'https://www.danapoint.org/Events-directory'
 
 // Select Sundays, July–August 2026 — two acts per show
 const SHOWS: { date: string; artist: string }[] = [
