@@ -1,4 +1,4 @@
-import { notFound, permanentRedirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { Concert } from '@/types'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
@@ -142,21 +142,6 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
   if (!concert) notFound()
 
   const today = new Date().toISOString().split('T')[0]
-
-  // Redirect past concerts (8+ days old) to venue or city page so Google
-  // processes the 308 and removes the stale URL from its index.
-  const eightDaysAgo = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-  if (concert.date <= eightDaysAgo) {
-    const citySlug = cityCodeToSlug[concert.city]
-    if (concert.venue_id) {
-      const venueSlugForRedirect = await getVenueSlug(concert.venue_id)
-      if (venueSlugForRedirect && citySlug) {
-        permanentRedirect(`/venues/${citySlug}/${venueSlugForRedirect}`)
-      }
-    }
-    // Fallback: redirect to city concerts page
-    permanentRedirect(`/concerts/${citySlug ?? 'new-york'}`)
-  }
 
   const [venueSlug, related, venueConcerts, neighborhoodConcerts] = await Promise.all([
     concert.venue_id ? getVenueSlug(concert.venue_id) : Promise.resolve(null),
