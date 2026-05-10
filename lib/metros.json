@@ -1506,6 +1506,27 @@
       "state": "ID",
       "region": "Mountain",
       "aliases": ["TWF", "Twin Falls", "Magic Valley"]
+    },
+    {
+      "code": "CKV",
+      "city": "Clarksville",
+      "state": "TN",
+      "region": "Southeast",
+      "aliases": ["CKV", "Clarksville", "Montgomery County"]
+    },
+    {
+      "code": "MSL",
+      "city": "Florence",
+      "state": "AL",
+      "region": "Southeast",
+      "aliases": ["MSL", "Florence", "Muscle Shoals", "Sheffield", "Tuscumbia", "Shoals", "Lauderdale County"]
+    },
+    {
+      "code": "WAC",
+      "city": "Waco",
+      "state": "TX",
+      "region": "South",
+      "aliases": ["WAC", "Waco", "McLennan County"]
     }
   ]
 }
