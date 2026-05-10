@@ -1247,6 +1247,118 @@
       "state": "LA",
       "region": "South",
       "aliases": ["SHV", "Shreveport", "Bossier City", "Bossier", "Caddo Parish"]
+    },
+    {
+      "code": "BIL",
+      "city": "Billings",
+      "state": "MT",
+      "region": "Mountain",
+      "aliases": ["BIL", "Billings"]
+    },
+    {
+      "code": "MID",
+      "city": "Midland",
+      "state": "TX",
+      "region": "South",
+      "aliases": ["MID", "Midland"]
+    },
+    {
+      "code": "GRK",
+      "city": "Killeen",
+      "state": "TX",
+      "region": "South",
+      "aliases": ["GRK", "Killeen", "Temple", "Fort Hood"]
+    },
+    {
+      "code": "BLI",
+      "city": "Bellingham",
+      "state": "WA",
+      "region": "Pacific Northwest",
+      "aliases": ["BLI", "Bellingham", "Whatcom County"]
+    },
+    {
+      "code": "MSO",
+      "city": "Missoula",
+      "state": "MT",
+      "region": "Mountain",
+      "aliases": ["MSO", "Missoula"]
+    },
+    {
+      "code": "OLM",
+      "city": "Olympia",
+      "state": "WA",
+      "region": "Pacific Northwest",
+      "aliases": ["OLM", "Olympia", "Lacey", "Tumwater", "Thurston County"]
+    },
+    {
+      "code": "PEO",
+      "city": "Peoria",
+      "state": "IL",
+      "region": "Midwest",
+      "aliases": ["PEO", "Peoria", "East Peoria", "Pekin"]
+    },
+    {
+      "code": "RFD",
+      "city": "Rockford",
+      "state": "IL",
+      "region": "Midwest",
+      "aliases": ["RFD", "Rockford", "Loves Park", "Machesney Park"]
+    },
+    {
+      "code": "CMI",
+      "city": "Champaign",
+      "state": "IL",
+      "region": "Midwest",
+      "aliases": ["CMI", "Champaign", "Urbana", "Champaign-Urbana", "Monticello"]
+    },
+    {
+      "code": "YNG",
+      "city": "Youngstown",
+      "state": "OH",
+      "region": "Midwest",
+      "aliases": ["YNG", "Youngstown", "Boardman", "Warren", "Niles", "Mahoning County"]
+    },
+    {
+      "code": "CAK",
+      "city": "Canton",
+      "state": "OH",
+      "region": "Midwest",
+      "aliases": ["CAK", "Canton", "Massillon", "Alliance", "North Canton", "Plain Township", "Louisville", "Brewster", "Canal Fulton"]
+    },
+    {
+      "code": "MOB",
+      "city": "Mobile",
+      "state": "AL",
+      "region": "Southeast",
+      "aliases": ["MOB", "Mobile", "Baldwin County", "Daphne", "Fairhope"]
+    },
+    {
+      "code": "CRP",
+      "city": "Corpus Christi",
+      "state": "TX",
+      "region": "South",
+      "aliases": ["CRP", "Corpus Christi"]
+    },
+    {
+      "code": "LBB",
+      "city": "Lubbock",
+      "state": "TX",
+      "region": "South",
+      "aliases": ["LBB", "Lubbock"]
+    },
+    {
+      "code": "AMA",
+      "city": "Amarillo",
+      "state": "TX",
+      "region": "South",
+      "aliases": ["AMA", "Amarillo"]
+    },
+    {
+      "code": "ILM",
+      "city": "Wilmington",
+      "state": "NC",
+      "region": "Southeast",
+      "aliases": ["ILM", "Wilmington", "Wrightsville Beach", "Carolina Beach", "Brunswick County"]
     }
   ]
 }
