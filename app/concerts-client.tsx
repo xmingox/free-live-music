@@ -102,12 +102,12 @@ export default function ConcertsClient({
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false)
 
-  // Per-city concert cache so switching back doesn't re-fetch.
-  // Don't pre-warm defaultCity — the initialConcerts are a small SSR slice;
-  // the effect below fetches the full list from the API on mount.
   const cache = useRef<Partial<Record<City, Concert[]>>>({})
   const [concerts, setConcerts] = useState<Concert[]>(initialConcerts)
   const [isFetching, setIsFetching] = useState(false)
+  // Track whether the first fetch has run — on initial mount we keep SSR concerts
+  // visible (good LCP) instead of clearing them while the full list loads.
+  const isFirstFetchRef = useRef(true)
 
   // Sync from URL params once on mount — avoids useSearchParams() which forces Suspense
   useEffect(() => {
@@ -144,10 +144,14 @@ export default function ConcertsClient({
     if (cache.current[city]) {
       setConcerts(cache.current[city]!)
       setIsFetching(false)
+      isFirstFetchRef.current = false
       return
     }
     setIsFetching(true)
-    setConcerts([])
+    // On the initial mount keep SSR concerts visible while the full list loads.
+    // On city switches clear so stale city's events don't flash.
+    if (!isFirstFetchRef.current) setConcerts([])
+    isFirstFetchRef.current = false
     fetch(`/api/concerts?city=${city}`)
       .then(r => r.json())
       .then((data: Concert[]) => {
