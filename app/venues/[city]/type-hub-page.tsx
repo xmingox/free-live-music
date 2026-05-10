@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Metadata } from 'next'
-import { getCityCodeFromSlug, getMetroByCode, cityCodeToSlug } from '@/lib/city-slugs'
+import { getCityCodeFromSlug, getMetroByCode, cityCodeToSlug, cityToSlug } from '@/lib/city-slugs'
 import { Venue } from '@/types'
 import SiteNav from '@/components/SiteNav'
 import SiteFooter from '@/components/SiteFooter'
@@ -68,6 +68,28 @@ export const VENUE_TYPE_CONFIGS: VenueTypeConfig[] = [
 ]
 
 type VenueWithCount = Venue & { upcoming_show_count: number }
+
+async function getNeighborhoodsForType(metroCode: string, venueType: string): Promise<string[]> {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+  const { data } = await supabase
+    .from('venues')
+    .select('neighborhood')
+    .eq('city', metroCode)
+    .eq('venue_type', venueType)
+    .not('neighborhood', 'is', null)
+
+  const counts = new Map<string, number>()
+  for (const row of data ?? []) {
+    if (row.neighborhood) counts.set(row.neighborhood, (counts.get(row.neighborhood) || 0) + 1)
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([name]) => name)
+}
 
 async function getVenuesByType(metroCode: string, venueType: string): Promise<VenueWithCount[]> {
   const supabase = createClient(
@@ -142,8 +164,12 @@ export default async function TypeHubPage({
   const metro = getMetroByCode(metroCode!)
   if (!metro) notFound()
 
-  const venues = await getVenuesByType(metroCode!, config.type)
+  const [venues, neighborhoods] = await Promise.all([
+    getVenuesByType(metroCode!, config.type),
+    getNeighborhoodsForType(metroCode!, config.type),
+  ])
   const withShowsCount = venues.filter(v => v.upcoming_show_count > 0).length
+  const siblingTypes = VENUE_TYPE_CONFIGS.filter(c => c.type !== config.type)
 
   const itemListJsonLd = {
     '@context': 'https://schema.org',
@@ -270,6 +296,50 @@ export default async function TypeHubPage({
             </div>
           </>
         )}
+
+        {/* Neighborhood links */}
+        {neighborhoods.length > 0 && (
+          <section className="mt-12 pt-8 border-t border-slate-800">
+            <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">
+              Browse {config.label} by neighborhood
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {neighborhoods.map(hood => (
+                <Link
+                  key={hood}
+                  href={`/venues/${citySlug}/neighborhood/${cityToSlug(hood)}`}
+                  className="px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-sm text-slate-300 hover:border-violet-500/50 hover:text-violet-300 transition-colors"
+                >
+                  {hood}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Sibling type-hub links */}
+        <section className="mt-8 pt-8 border-t border-slate-800">
+          <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">
+            Other venue types in {metro.city}
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {siblingTypes.map(sibling => (
+              <Link
+                key={sibling.type}
+                href={`/venues/${citySlug}/${sibling.slug}`}
+                className={`px-3 py-1.5 rounded-full border text-sm font-medium transition-colors ${sibling.color} hover:opacity-80`}
+              >
+                {sibling.label}
+              </Link>
+            ))}
+            <Link
+              href={`/venues/${citySlug}`}
+              className="px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-sm text-slate-300 hover:border-slate-500 transition-colors"
+            >
+              All venues
+            </Link>
+          </div>
+        </section>
       </main>
 
       <SiteFooter cityLine={`Free music ${config.label.toLowerCase()} in ${metro.city} · All shows free admission`} />

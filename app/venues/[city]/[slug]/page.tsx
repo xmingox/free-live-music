@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Metadata } from 'next'
 import { Venue, Concert } from '@/types'
 import { getCityCodeFromSlug, getMetroByCode, cityCodeToSlug, cityToSlug } from '@/lib/city-slugs'
+import { VENUE_TYPE_CONFIGS } from '../type-hub-page'
 import SiteNav from '@/components/SiteNav'
 import SiteFooter from '@/components/SiteFooter'
 
@@ -136,6 +137,7 @@ export default async function VenuePage(
   const shows = (concerts ?? []) as Pick<Concert, 'id' | 'slug' | 'artist_name' | 'venue' | 'neighborhood' | 'date' | 'time' | 'genre' | 'admission_type' | 'source_url'>[]
   const typeLabel = venueTypeLabels[v.venue_type ?? 'other'] ?? 'Venue'
   const canonicalUrl = `https://www.freelivemusic.co/venues/${citySlug}/${slug}`
+  const typeHubConfig = VENUE_TYPE_CONFIGS.find(c => c.type === v.venue_type)
 
   const localBusinessJsonLd = {
     '@context': 'https://schema.org',
@@ -357,6 +359,28 @@ export default async function VenuePage(
               ))}
             </div>
           </section>
+        )}
+
+        {/* Hub links — type + neighborhood discovery */}
+        {(typeHubConfig || v.neighborhood) && (
+          <div className="mt-8 flex flex-wrap gap-3">
+            {typeHubConfig && (
+              <Link
+                href={`/venues/${citySlug}/${typeHubConfig.slug}`}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-slate-800 border border-slate-700 text-sm text-slate-300 hover:border-violet-500/50 hover:text-violet-300 transition-colors"
+              >
+                Browse all {typeHubConfig.label.toLowerCase()} in {metro.city} →
+              </Link>
+            )}
+            {v.neighborhood && (
+              <Link
+                href={`/venues/${citySlug}/neighborhood/${cityToSlug(v.neighborhood)}`}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-slate-800 border border-slate-700 text-sm text-slate-300 hover:border-violet-500/50 hover:text-violet-300 transition-colors"
+              >
+                Free music in {v.neighborhood} →
+              </Link>
+            )}
+          </div>
         )}
 
         {/* Claim CTA */}
