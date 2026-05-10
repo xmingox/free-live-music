@@ -7,7 +7,10 @@ import { Inter } from 'next/font/google'
 const inter = Inter({
   subsets: ['latin'],
   weight: ['400', '700'],
-  display: 'swap',
+  // 'optional' skips the font-swap repaint that was delaying LCP to 3.4s.
+  // The preloaded Inter file loads immediately on repeat visits (cached); on
+  // first-visit Slow 4G the page falls back to system-ui with no repaint.
+  display: 'optional',
   variable: '--font-inter',
 })
 
