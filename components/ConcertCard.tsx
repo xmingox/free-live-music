@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Concert } from '@/types'
 
@@ -45,7 +46,10 @@ export default function ConcertCard({ concert }: { concert: Concert }) {
   const genreColor = concert.genre
     ? (genreColors[concert.genre] ?? 'bg-slate-500/20 text-slate-300 border-slate-500/30')
     : null
-  const tonight = isToday(concert.date)
+  // Start as false to match server render (server is UTC, client may be a different
+  // timezone — computing isToday() during SSR causes hydration mismatches).
+  const [tonight, setTonight] = useState(false)
+  useEffect(() => { setTonight(isToday(concert.date)) }, [concert.date])
   const hasFooter = !!(concert.source_name || concert.source_url)
 
   return (
