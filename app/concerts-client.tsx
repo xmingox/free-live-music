@@ -102,12 +102,7 @@ export default function ConcertsClient({
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false)
 
-  // Pre-seed cache with all SSR concerts so the initial city skips the API fetch
-  // entirely — preventing the post-hydration DOM update that was delaying LCP to ~3.5s.
-  // initialConcerts is the full city list (not sliced), so Show More works instantly.
-  const cache = useRef<Partial<Record<City, Concert[]>>>({
-    [defaultCity]: initialConcerts,
-  })
+  const cache = useRef<Partial<Record<City, Concert[]>>>({})
   const [concerts, setConcerts] = useState<Concert[]>(initialConcerts)
   const [isFetching, setIsFetching] = useState(false)
   const [, startTransition] = useTransition()

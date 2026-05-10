@@ -2,17 +2,6 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/react'
-import { Inter } from 'next/font/google'
-
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  // 'optional' skips the font-swap repaint that was delaying LCP to 3.4s.
-  // The preloaded Inter file loads immediately on repeat visits (cached); on
-  // first-visit Slow 4G the page falls back to system-ui with no repaint.
-  display: 'optional',
-  variable: '--font-inter',
-})
 
 export const metadata: Metadata = {
   title: 'Free Live Music — Free Concerts Nationwide',
@@ -38,7 +27,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en">
       <head>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-HE4QED3BWS"
