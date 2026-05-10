@@ -57,6 +57,14 @@ export const VENUE_TYPE_CONFIGS: VenueTypeConfig[] = [
     description: 'amphitheaters and outdoor stages',
     color: 'bg-violet-500/20 text-violet-300 border-violet-500/30',
   },
+  {
+    type: 'coffee_shop',
+    label: 'Coffee Shops',
+    singular: 'Coffee Shop',
+    slug: 'coffee-shops',
+    description: 'coffee shops and cafés with live music',
+    color: 'bg-stone-500/20 text-stone-300 border-stone-500/30',
+  },
 ]
 
 type VenueWithCount = Venue & { upcoming_show_count: number }

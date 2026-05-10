@@ -83,8 +83,8 @@ const TYPE_PRIORITY = [
   ['bar',                     'bar'],
   ['night_club',              'bar'],
   ['restaurant',              'restaurant'],
-  ['cafe',                    'restaurant'],
-  ['coffee_shop',             'restaurant'],
+  ['cafe',                    'coffee_shop'],
+  ['coffee_shop',             'coffee_shop'],
   ['shopping_mall',           'mall'],
   ['market',                  'farmers_market'],
   ['church',                  'church'],
@@ -101,7 +101,7 @@ const SKIP_TYPES = new Set(['school', 'museum', 'library', 'church', 'farmers_ma
 
 // Default: only surface venues that typically host FREE music (bars, breweries, restaurants, malls).
 // amphitheater / park are mostly ticketed concert venues — opt-in with --all-types.
-const FREE_VENUE_TYPES = new Set(['bar', 'brewery', 'restaurant', 'mall', 'other'])
+const FREE_VENUE_TYPES = new Set(['bar', 'brewery', 'restaurant', 'coffee_shop', 'mall', 'other'])
 
 // Name keywords that almost always mean a ticketed commercial venue — skip regardless of type.
 const TICKETED_NAME_RE = /\b(theater|theatre|palladium|ballroom|auditorium|arena|improv|comedy\s*club|opera\s*house|concert\s*hall)\b/i
