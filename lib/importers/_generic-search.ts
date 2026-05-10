@@ -33,6 +33,7 @@
 import * as cheerio from 'cheerio'
 import { createClient } from '@supabase/supabase-js'
 import metros from '@/lib/metros.json'
+import { loadSuppressions, filterSuppressed } from './suppression'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -426,6 +427,18 @@ export async function genericSearchImport(cityCode: string): Promise<{
     console.warn('[genericSearchImport]', msg)
     errors.push(msg)
     toInsert = deduped
+  }
+
+  // 4b. Suppression filter — drop any rows matching crawl_suppressions
+  try {
+    const suppressions = await loadSuppressions(getSupabase())
+    const { kept, suppressed } = filterSuppressed(toInsert, suppressions)
+    if (suppressed > 0) {
+      console.log(`[genericSearchImport:${cityCode}] suppressed ${suppressed} rows`)
+    }
+    toInsert = kept as ExtractedEvent[]
+  } catch (err) {
+    console.warn('[genericSearchImport] suppression load failed (non-fatal):', err)
   }
 
   // 5. Insert

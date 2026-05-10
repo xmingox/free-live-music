@@ -28,11 +28,22 @@ interface VenueHealth {
   negative: number
 }
 
+interface Suppression {
+  id: string
+  pattern: string
+  match_field: string
+  match_type: string
+  reason: string
+  added_by: string
+  created_at: string
+}
+
 interface HealthData {
   cronRuns: CronRun[]
   submissionStats: SubmissionStat[]
   pendingCount: number
   venueHealth: VenueHealth
+  suppressions: Suppression[]
 }
 
 function approvalRate(stat: SubmissionStat): number {
@@ -432,7 +443,57 @@ export default function AdminHealthPage() {
           </div>
         </section>
 
-        {/* Section 4: Quick Links */}
+        {/* Section 4: Crawl Suppressions */}
+        <section>
+          <h2 className="text-lg font-semibold text-white mb-1">Crawl Suppressions</h2>
+          <p className="text-slate-400 text-xs mb-4">
+            Patterns matched against every imported row — matching rows are silently dropped before DB insert.
+            Add new rows directly in{' '}
+            <a
+              href="https://supabase.com/dashboard/project/rxdutrcjkmfhonzpsthb/editor"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:underline"
+            >
+              Supabase → crawl_suppressions
+            </a>.
+          </p>
+          {!data?.suppressions?.length ? (
+            <p className="text-slate-500 text-sm">No suppressions configured.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-slate-400 border-b border-slate-700">
+                    <th className="pb-2 pr-4 font-medium">Pattern</th>
+                    <th className="pb-2 pr-4 font-medium">Field</th>
+                    <th className="pb-2 pr-4 font-medium">Type</th>
+                    <th className="pb-2 pr-4 font-medium">Reason</th>
+                    <th className="pb-2 font-medium">Added</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.suppressions.map((s) => (
+                    <tr key={s.id} className="border-b border-slate-800/60">
+                      <td className="py-2 pr-4 text-orange-300 font-mono text-xs">{s.pattern}</td>
+                      <td className="py-2 pr-4 text-slate-300">{s.match_field}</td>
+                      <td className="py-2 pr-4 text-slate-400">{s.match_type}</td>
+                      <td className="py-2 pr-4 text-slate-400 max-w-xs truncate">{s.reason}</td>
+                      <td className="py-2 text-slate-500 text-xs whitespace-nowrap">
+                        {new Date(s.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        {s.added_by && s.added_by !== 'manual' && (
+                          <span className="ml-1 text-slate-600">({s.added_by})</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+
+        {/* Section 5: Quick Links */}
         <section>
           <h2 className="text-lg font-semibold text-white mb-4">Quick Links</h2>
           <div className="flex flex-wrap gap-3">

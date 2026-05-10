@@ -55,11 +55,12 @@ import { getDenverShows } from './denver'
 import { getPortlandShows } from './portland'
 import { getSeattleShows } from './seattle'
 import type { ImportRow } from './types'
+import { loadSuppressions, filterSuppressed } from './suppression'
 
 const ASYNC_SOURCES = [fetchNYCParks, scrapeGrandPerformances, getLevittLAShows, getLaPalmaShows]
 const SYNC_SOURCES  = [getWashingtonDCShows, getBostonShows, getDenverShows, getPortlandShows, getAustinShows, getSeattleShows, getChicagoShows, getSternGroveShows, getMarinaDelReyShows, getTorranceShows, getSantaClaritaShows, getGlendaleShows, getBeverlyHillsShows, getAlhambraShows, getNoHoShows, getArcadiaShows, getThousandOaksShows, getSimiValleyShows, getCamarilloShows, getHermosaBeachShows, getPlayaVistaShows, getSantaMonicaShows, getCulverCityShows, getManhattanBeachShows, getElSegundoShows, getRedondoBeachShows, getIrvineConcertShows, getIrvineSymphonyShows, getHuntingtonBeachPierShows, getMissionViejoShows, getRanchoSantaMargaritaShows, getBreaConcertShows, getCostaMesaShows, getDanaPointShows, getSanClementeShows, getPacificSymphonyShows, getSymphonyInTheCitiesShows, scrapeLincolnCenter, getOCCitiesShows, getSkirballShows, getPasadenaShows, getLongBeachShows, getOCParksShows, getSummerStageShows, getGettyShows, getLACMAShows, getLACMALatinShows, getNaumburgShows, getCelebrateBrooklynShows, getNYPhilShows, getBryantParkShows, getHudsonYardsShows]
 
-export async function runImport(): Promise<{ inserted: number; skipped: number; errors: string[] }> {
+export async function runImport(): Promise<{ inserted: number; skipped: number; suppressed: number; errors: string[] }> {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -68,6 +69,8 @@ export async function runImport(): Promise<{ inserted: number; skipped: number; 
   let inserted = 0
   let skipped  = 0
   const errors: string[] = []
+
+  const suppressions = await loadSuppressions(supabase)
 
   const allRows: ImportRow[] = []
 
@@ -87,7 +90,12 @@ export async function runImport(): Promise<{ inserted: number; skipped: number; 
     }
   }
 
-  for (const row of allRows) {
+  const { kept, suppressed: suppressedCount } = filterSuppressed(allRows, suppressions)
+  if (suppressedCount > 0) {
+    console.log(`[runImport] suppressed ${suppressedCount} rows`)
+  }
+
+  for (const row of kept as ImportRow[]) {
     const { error } = await supabase
       .from('concerts')
       .insert(row)
@@ -106,5 +114,5 @@ export async function runImport(): Promise<{ inserted: number; skipped: number; 
     }
   }
 
-  return { inserted, skipped, errors }
+  return { inserted, skipped, suppressed: suppressedCount, errors }
 }
