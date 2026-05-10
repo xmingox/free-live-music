@@ -312,7 +312,7 @@ export default function ConcertsClient({
             : `No free concerts listed in ${metros.metros.find(m => m.code === city)?.city || city} for this time window.`}
         </p>
 
-        {isFetching ? (
+        {isFetching && concerts.length === 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="h-48 rounded-xl bg-slate-800 animate-pulse" />
