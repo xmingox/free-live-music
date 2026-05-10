@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/react'
+import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
 
 export const metadata: Metadata = {
   title: 'Free Live Music — Free Concerts Nationwide',
@@ -23,6 +24,7 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  manifest: '/manifest.json',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -45,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {children}
         <Analytics />
+        <ServiceWorkerRegistration />
       </body>
     </html>
   )
