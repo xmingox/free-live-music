@@ -1,7 +1,7 @@
 import type { ImportRow } from './types'
 
 const SOURCE_NAME = 'Torrance Summer Nights'
-const SOURCE_URL  = 'https://www.torranceca.gov/services/cultural-services-arts-and-classes/torrance-summer-nights'
+const SOURCE_URL  = 'https://www.torranceca.gov/Our-Community/Citywide-Special-Events/Special-Events/Torrance-Summer-Nights'
 
 // Free Saturday concerts at Wilson Park Amphitheatre, June–September 2026
 const DATES = [

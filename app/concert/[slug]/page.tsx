@@ -1,10 +1,13 @@
 import { notFound, permanentRedirect } from 'next/navigation'
 import { Concert } from '@/types'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { cityCodeToSlug, getMetroByCode } from '@/lib/city-slugs'
 import SiteNav from '@/components/SiteNav'
 import SiteFooter from '@/components/SiteFooter'
 import { outboundUrl, bookingSearchUrl } from '@/lib/affiliate'
+
+const TrackView = dynamic(() => import('@/components/TrackView'), { ssr: false })
 
 // Use fetch() with next: { revalidate } so Next.js treats this route as ISR.
 // The Supabase JS client uses its own internal fetch that Next.js can't track,
@@ -255,6 +258,7 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
       </header>
 
       <main className="max-w-3xl mx-auto px-4 py-10">
+        <TrackView concertId={concert.id} />
         {/* City + Free badge */}
         <div className="flex items-center gap-3 mb-4">
           <span className="text-sm text-slate-400">{city}</span>

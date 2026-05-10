@@ -38,12 +38,21 @@ interface Suppression {
   created_at: string
 }
 
+interface TopConcert {
+  artist_name: string
+  venue: string
+  city: string
+  date: string
+  event_views: number
+}
+
 interface HealthData {
   cronRuns: CronRun[]
   submissionStats: SubmissionStat[]
   pendingCount: number
   venueHealth: VenueHealth
   suppressions: Suppression[]
+  topConcerts: TopConcert[]
 }
 
 function approvalRate(stat: SubmissionStat): number {
@@ -493,7 +502,51 @@ export default function AdminHealthPage() {
           )}
         </section>
 
-        {/* Section 5: Quick Links */}
+        {/* Section 5: Top Viewed Concerts */}
+        <section>
+          <h2 className="text-lg font-semibold text-white mb-1">Top Viewed Concerts</h2>
+          <p className="text-slate-400 text-xs mb-4">
+            Concerts with the most detail page views (all-time).
+          </p>
+          {!data?.topConcerts?.length ? (
+            <p className="text-slate-500 text-sm">
+              {loading ? 'Loading...' : 'No views recorded yet.'}
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-slate-400 border-b border-slate-700">
+                    <th className="pb-2 pr-4 font-medium">Artist</th>
+                    <th className="pb-2 pr-4 font-medium">Venue</th>
+                    <th className="pb-2 pr-4 font-medium">City</th>
+                    <th className="pb-2 pr-4 font-medium">Date</th>
+                    <th className="pb-2 font-medium text-right">Views</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.topConcerts.map((c, i) => (
+                    <tr key={i} className="border-b border-slate-800/60">
+                      <td className="py-2 pr-4 text-white font-medium">{c.artist_name}</td>
+                      <td className="py-2 pr-4 text-slate-300">{c.venue}</td>
+                      <td className="py-2 pr-4 text-slate-400 font-mono text-xs">{c.city}</td>
+                      <td className="py-2 pr-4 text-slate-400 text-xs whitespace-nowrap">
+                        {new Date(c.date + 'T00:00:00').toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </td>
+                      <td className="py-2 text-right text-violet-400 font-semibold">{c.event_views}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+
+        {/* Section 6: Quick Links */}
         <section>
           <h2 className="text-lg font-semibold text-white mb-4">Quick Links</h2>
           <div className="flex flex-wrap gap-3">
