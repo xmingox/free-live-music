@@ -332,7 +332,18 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
               </div>
               <div>
                 <p className="text-sm text-slate-400 mb-0.5">Source</p>
-                <p className="font-semibold text-white">via {concert.source_name}</p>
+                {concert.source_url ? (
+                  <a
+                    href={outboundUrl(concert.source_url, 'concert-detail')}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-white hover:text-emerald-400 transition-colors"
+                  >
+                    via {concert.source_name}
+                  </a>
+                ) : (
+                  <p className="font-semibold text-white">via {concert.source_name}</p>
+                )}
               </div>
             </div>
           )}
