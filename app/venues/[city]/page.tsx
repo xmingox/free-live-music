@@ -82,7 +82,11 @@ async function getVenuesForCity(metroCode: string): Promise<VenueWithCount[]> {
 
   return (venues as Venue[])
     .map(v => ({ ...v, upcoming_show_count: countMap[v.id] || 0 }))
-    .sort((a, b) => b.upcoming_show_count - a.upcoming_show_count || a.name.localeCompare(b.name))
+    .sort((a, b) =>
+      b.upcoming_show_count - a.upcoming_show_count ||
+      (b.music_score ?? -999) - (a.music_score ?? -999) ||
+      a.name.localeCompare(b.name)
+    )
 }
 
 export async function generateMetadata(

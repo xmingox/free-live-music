@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
+import { venueConfidence, CONFIDENCE_CONFIG } from '@/lib/venue-confidence'
 
 const venueTypeLabels: Record<string, string> = {
   park: 'Park',
@@ -48,6 +49,7 @@ type Venue = {
   venue_type: string | null
   indoor_outdoor: string | null
   upcoming_show_count: number
+  music_score: number | null
 }
 
 const FILTER_TYPES = ['bar', 'brewery', 'restaurant', 'coffee_shop', 'park', 'amphitheater', 'mall', 'rooftop', 'plaza']
@@ -170,11 +172,18 @@ export default function VenueListClient({
           {filtered.map((venue) => {
             const typeColor = venueTypeColors[venue.venue_type ?? 'other'] ?? venueTypeColors.other
             const typeLabel = venueTypeLabels[venue.venue_type ?? 'other'] ?? 'Venue'
+            const conf = venueConfidence({ upcoming_show_count: venue.upcoming_show_count, music_score: venue.music_score })
+            const confConfig = CONFIDENCE_CONFIG[conf]
+            const isUnverified = conf === 'unverified'
             return (
               <Link
                 key={venue.id}
                 href={`/venues/${citySlug}/${venue.slug}`}
-                className="group flex flex-col bg-slate-800/60 border border-slate-700/60 rounded-2xl overflow-hidden hover:border-slate-600 hover:bg-slate-800 transition-all duration-200 hover:shadow-xl hover:shadow-black/30 p-5"
+                className={`group flex flex-col rounded-2xl overflow-hidden transition-all duration-200 hover:shadow-xl hover:shadow-black/30 p-5 ${
+                  isUnverified
+                    ? 'bg-slate-800/40 border border-slate-700/40 hover:border-slate-600 hover:bg-slate-800/60'
+                    : 'bg-slate-800/60 border border-slate-700/60 hover:border-slate-600 hover:bg-slate-800'
+                }`}
               >
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${typeColor}`}>
@@ -184,19 +193,22 @@ export default function VenueListClient({
                     <span className="text-xs text-slate-500 capitalize">{venue.indoor_outdoor}</span>
                   )}
                 </div>
-                <h2 className="text-base font-bold text-white leading-tight group-hover:text-violet-200 transition-colors mb-1">
+                <h2 className={`text-base font-bold leading-tight group-hover:text-violet-200 transition-colors mb-1 ${isUnverified ? 'text-slate-300' : 'text-white'}`}>
                   {venue.name}
                 </h2>
                 {venue.neighborhood && (
                   <p className="text-sm text-slate-400 mb-3">{venue.neighborhood}</p>
                 )}
-                <div className="mt-auto">
+                <div className="mt-auto flex items-center gap-1.5">
                   {venue.upcoming_show_count > 0 ? (
                     <span className="text-xs font-semibold text-emerald-400">
                       {venue.upcoming_show_count} upcoming show{venue.upcoming_show_count !== 1 ? 's' : ''}
                     </span>
                   ) : (
-                    <span className="text-xs text-slate-600">No upcoming shows listed</span>
+                    <>
+                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${confConfig.dotColor}`} />
+                      <span className={`text-xs ${confConfig.cardText}`}>{confConfig.cardNote}</span>
+                    </>
                   )}
                 </div>
               </Link>

@@ -7,6 +7,7 @@ import { Metadata } from 'next'
 import { Venue, Concert } from '@/types'
 import { getCityCodeFromSlug, getMetroByCode, cityCodeToSlug, cityToSlug } from '@/lib/city-slugs'
 import { VENUE_TYPE_CONFIGS } from '../type-hub-page'
+import { venueConfidence, CONFIDENCE_CONFIG } from '@/lib/venue-confidence'
 import SiteNav from '@/components/SiteNav'
 import SiteFooter from '@/components/SiteFooter'
 
@@ -63,15 +64,22 @@ export async function generateMetadata(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
-  const { data } = await supabase.from('venues').select('name, neighborhood, city').eq('slug', slug).single()
+  const { data } = await supabase
+    .from('venues')
+    .select('name, neighborhood, city, music_schedule, music_score')
+    .eq('slug', slug)
+    .single()
   if (!data) return { title: 'Venue Not Found' }
 
   const metro = getMetroByCode(metroCode)
   const canonicalUrl = `https://www.freelivemusic.co/venues/${citySlug}/${slug}`
+  const noindex = !data.music_schedule && (data.music_score ?? 0) < -20
+
   return {
     title: `${data.name} — Free Live Music Venue in ${metro?.city ?? data.city} | Free Live Music`,
     description: `Find free live music concerts at ${data.name}${data.neighborhood ? ` in ${data.neighborhood}` : ''}, ${metro?.city ?? data.city}. See upcoming shows and recurring music events.`,
     alternates: { canonical: canonicalUrl },
+    ...(noindex ? { robots: { index: false, follow: false } } : {}),
     openGraph: {
       title: `${data.name} — Free Live Music in ${metro?.city ?? data.city}`,
       description: `Upcoming free shows at ${data.name}.`,
@@ -138,6 +146,8 @@ export default async function VenuePage(
   const typeLabel = venueTypeLabels[v.venue_type ?? 'other'] ?? 'Venue'
   const canonicalUrl = `https://www.freelivemusic.co/venues/${citySlug}/${slug}`
   const typeHubConfig = VENUE_TYPE_CONFIGS.find(c => c.type === v.venue_type)
+  const confidence = venueConfidence({ upcoming_show_count: shows.length, music_score: v.music_score })
+  const confConfig = CONFIDENCE_CONFIG[confidence]
 
   const localBusinessJsonLd = {
     '@context': 'https://schema.org',
@@ -190,6 +200,13 @@ export default async function VenuePage(
               Partner Venue
             </span>
           )}
+          <span
+            className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${confConfig.badgeColor}`}
+            title={confConfig.detail}
+          >
+            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${confConfig.dotColor} ${confidence === 'verified' ? 'animate-pulse' : ''}`} />
+            {confConfig.label}
+          </span>
         </div>
 
         {/* Name */}
@@ -249,7 +266,12 @@ export default async function VenuePage(
               <svg className="w-5 h-5 text-violet-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66a2.25 2.25 0 0 0 1.632-2.163Zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 0 1-.99-3.467l2.31-.66A2.25 2.25 0 0 0 9 15.553Z" />
               </svg>
-              <span className="text-slate-300 text-sm">{v.music_schedule}</span>
+              <span className="text-slate-300 text-sm">
+                {confidence === 'unverified' && (
+                  <span className="text-slate-500 text-xs block mb-0.5">Per their Google listing:</span>
+                )}
+                {v.music_schedule}
+              </span>
             </div>
           )}
 
@@ -272,69 +294,108 @@ export default async function VenuePage(
           )}
         </div>
 
-        {/* Upcoming shows */}
-        <section>
-          <h2 className="text-xl font-bold text-white mb-4">
-            {shows.length > 0
-              ? `${shows.length} Upcoming Free Show${shows.length !== 1 ? 's' : ''}`
-              : 'Upcoming Shows'}
-          </h2>
+        {/* Upcoming shows — suppressed for unverified venues with no data */}
+        {(shows.length > 0 || confidence !== 'unverified' || v.music_schedule) && (
+          <section>
+            {(shows.length > 0 || confidence !== 'unverified') && (
+              <h2 className="text-xl font-bold text-white mb-4">
+                {shows.length > 0
+                  ? `${shows.length} Upcoming Free Show${shows.length !== 1 ? 's' : ''}`
+                  : 'Upcoming Shows'}
+              </h2>
+            )}
 
-          {shows.length === 0 ? (
-            <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-6 text-center">
-              {v.music_schedule ? (
-                <>
-                  <p className="text-slate-400 text-sm">
-                    No shows on the calendar yet — but {v.name} hosts live music{' '}
-                    <span className="text-slate-300">{v.music_schedule.toLowerCase()}</span>.
-                  </p>
-                  {v.website && isValidUrl(v.website) && (
+            {shows.length === 0 ? (
+              <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-6 text-center">
+                {confidence === 'unverified' ? (
+                  <>
+                    {v.music_schedule && (
+                      <p className="text-slate-400 text-sm mb-3">
+                        <span className="text-slate-500 text-xs block mb-1">Per their Google listing:</span>
+                        {v.music_schedule}
+                      </p>
+                    )}
+                    {v.website && isValidUrl(v.website) ? (
+                      <a href={v.website} target="_blank" rel="noopener noreferrer"
+                        className="inline-block text-xs text-violet-400 hover:text-violet-300 transition-colors">
+                        Visit {v.name}&apos;s website for their current schedule →
+                      </a>
+                    ) : (
+                      <p className="text-slate-600 text-xs">Check their website or call ahead to confirm music events.</p>
+                    )}
+                  </>
+                ) : v.music_schedule ? (
+                  <>
+                    <p className="text-slate-400 text-sm">
+                      No shows on the calendar yet — but {v.name} hosts live music{' '}
+                      <span className="text-slate-300">{v.music_schedule.toLowerCase()}</span>.
+                    </p>
+                    {v.website && isValidUrl(v.website) && (
+                      <a href={v.website} target="_blank" rel="noopener noreferrer"
+                        className="mt-3 inline-block text-xs text-violet-400 hover:text-violet-300 transition-colors">
+                        Check their site for the latest lineup →
+                      </a>
+                    )}
+                  </>
+                ) : v.website && isValidUrl(v.website) ? (
+                  <>
+                    <p className="text-slate-500 text-sm">No upcoming shows confirmed yet.</p>
                     <a href={v.website} target="_blank" rel="noopener noreferrer"
                       className="mt-3 inline-block text-xs text-violet-400 hover:text-violet-300 transition-colors">
-                      Check their site for the latest lineup →
+                      Visit {v.name}&apos;s website for updates →
                     </a>
-                  )}
-                </>
-              ) : v.website && isValidUrl(v.website) ? (
-                <>
-                  <p className="text-slate-500 text-sm">No upcoming shows confirmed yet.</p>
-                  <a href={v.website} target="_blank" rel="noopener noreferrer"
-                    className="mt-3 inline-block text-xs text-violet-400 hover:text-violet-300 transition-colors">
-                    Visit {v.name}&apos;s website for updates →
-                  </a>
-                </>
-              ) : (
-                <>
-                  <p className="text-slate-500 text-sm">No upcoming shows listed for this venue.</p>
-                  <p className="text-slate-600 text-xs mt-1">Check back soon — we update regularly.</p>
-                </>
-              )}
+                  </>
+                ) : (
+                  <>
+                    <p className="text-slate-500 text-sm">No upcoming shows listed for this venue.</p>
+                    <p className="text-slate-600 text-xs mt-1">Check back soon — we update regularly.</p>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {shows.map((show) => (
+                  <Link
+                    key={show.id}
+                    href={`/concert/${show.slug}`}
+                    className="flex items-start justify-between gap-4 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 hover:border-slate-600 rounded-xl px-4 py-3 transition-all duration-150 group"
+                  >
+                    <div className="min-w-0">
+                      <p className="font-semibold text-white text-sm group-hover:text-violet-300 transition-colors truncate">
+                        {show.artist_name}
+                      </p>
+                      <p className="text-slate-400 text-xs mt-0.5">
+                        {show.admission_type === 'Free RSVP' ? 'Free RSVP' : 'Free admission'}
+                      </p>
+                    </div>
+                    <span className="text-xs text-slate-400 shrink-0 mt-0.5 text-right">
+                      {formatDate(show.date)}
+                      {show.time && <><br /><span className="text-slate-500">{show.time}</span></>}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* Elevated Claim CTA for unverified venues */}
+        {confidence === 'unverified' && (
+          <div className="mt-8 bg-violet-500/10 border border-violet-500/30 rounded-2xl p-5 flex items-center justify-between gap-4">
+            <div>
+              <p className="text-slate-300 text-sm font-medium">Own or manage this venue?</p>
+              <p className="text-slate-500 text-xs mt-0.5">
+                Claim your listing to add your music schedule and get verified — free forever.
+              </p>
             </div>
-          ) : (
-            <div className="flex flex-col gap-2">
-              {shows.map((show) => (
-                <Link
-                  key={show.id}
-                  href={`/concert/${show.slug}`}
-                  className="flex items-start justify-between gap-4 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 hover:border-slate-600 rounded-xl px-4 py-3 transition-all duration-150 group"
-                >
-                  <div className="min-w-0">
-                    <p className="font-semibold text-white text-sm group-hover:text-violet-300 transition-colors truncate">
-                      {show.artist_name}
-                    </p>
-                    <p className="text-slate-400 text-xs mt-0.5">
-                      {show.admission_type === 'Free RSVP' ? 'Free RSVP' : 'Free admission'}
-                    </p>
-                  </div>
-                  <span className="text-xs text-slate-400 shrink-0 mt-0.5 text-right">
-                    {formatDate(show.date)}
-                    {show.time && <><br /><span className="text-slate-500">{show.time}</span></>}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          )}
-        </section>
+            <Link
+              href={`/venues/claim?slug=${slug}`}
+              className="shrink-0 px-4 py-2 bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white text-xs font-semibold rounded-lg transition-all"
+            >
+              Claim Listing
+            </Link>
+          </div>
+        )}
 
         {/* Nearby venues */}
         {nearby.length > 0 && (

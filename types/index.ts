@@ -49,6 +49,8 @@ export interface Venue {
   is_partner: boolean
   partner_tier: string | null
   google_place_id: string | null
+  music_score: number | null
+  last_checked_at: string | null
   created_at: string
   updated_at: string
 }
