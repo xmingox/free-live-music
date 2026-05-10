@@ -161,14 +161,26 @@ Planned ⏳: Search Console submission, genre/date filtering, event page improve
 
 ## Data Pipeline
 
-### Adding Free Concert Data (6 Steps)
+### Adding Free Concert Data (8 Steps)
 
 1. **Research:** WebSearch for `"[CITY] free concert 2026"`
 2. **Identify Series:** Find recurring concerts with specific dates
 3. **Extract Data:** Get artist_name, venue, date, time, genre
 4. **Normalize:** Fix time format (→ 7:30pm), date format (→ YYYY-MM-DD)
 5. **SQL INSERT:** Add to concerts table
-6. **Redeploy:** Click "Redeploy" on Vercel to clear ISR cache
+6. **Add city to metros.json + types/index.ts** if new city code
+7. **Git commit + push** → triggers Vercel auto-deploy (busts ISR cache)
+8. **Post-insertion QA** — run all checks below before marking done
+
+### Post-Insertion QA Checklist (required after every batch)
+After every INSERT, verify with WebFetch:
+- [ ] City listing page loads: `freelivemusic.co/concerts/[city-slug]` — correct event count, no layout issues
+- [ ] Concert detail page loads for at least one new event — check artist, venue, date, time all present
+- [ ] Date is 2026 and admission is clearly "Free" / "no tickets needed"
+- [ ] Source name ("via X") is clickable and links to source URL
+- [ ] "View Official Listing ↗" button is present when source_url exists
+- [ ] `is_tbd` set correctly (true for placeholder artist names, false for named performers)
+- [ ] Crawl log updated: INSERT or UPDATE in `metro_crawl_log` with result, notes, revisit_after if partial
 
 ### Verification Query
 ```sql

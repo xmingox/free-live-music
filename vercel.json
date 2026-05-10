@@ -7,6 +7,22 @@
     {
       "path": "/api/import/search",
       "schedule": "0 8 * * 1"
+    },
+    {
+      "path": "/api/maintenance/past-events",
+      "schedule": "15 5 * * *"
+    },
+    {
+      "path": "/api/maintenance/venue-health",
+      "schedule": "0 4 * * 0"
+    },
+    {
+      "path": "/api/maintenance/warm",
+      "schedule": "30 6 * * *"
+    },
+    {
+      "path": "/api/maintenance/indexnow",
+      "schedule": "*/30 * * * *"
     }
   ]
 }
