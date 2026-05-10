@@ -47,12 +47,13 @@ try {
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-const LIMIT    = parseInt(process.argv.find(a => a.startsWith('--limit='))?.split('=')[1] ?? '1000', 10)
+const limitArg = process.argv.find(a => a.startsWith('--limit=') || a.startsWith('--limit'))
+const LIMIT    = parseInt(limitArg?.includes('=') ? limitArg.split('=')[1] : (process.argv[process.argv.indexOf('--limit') + 1] ?? '1000'), 10)
 const DRY_RUN  = process.argv.includes('--dry-run')
 const BATCH_SZ = 10   // concurrent geocode requests
 const DELAY_MS = 100  // ms between batches (stay under 50 QPS)
 
-const GOOGLE_KEY = process.env.GOOGLE_MAPS_API_KEY
+const GOOGLE_KEY = process.env.GOOGLE_MAPS_API_KEY ?? process.env.GOOGLE_PLACES_API_KEY
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 
@@ -119,22 +120,30 @@ async function main() {
   const suppressions = await loadSuppressedVenueNames()
   console.log(`Loaded ${suppressions.length} suppression rules\n`)
 
-  // Fetch venues missing neighborhood:
-  //   - has lat and lng
-  //   - neighborhood is null or empty string
-  //   - music_score not deeply negative (skip effectively-deleted venues)
-  const { data: venues, error } = await supabase
-    .from('venues')
-    .select('id, name, lat, lng, city')
-    .not('lat', 'is', null)
-    .not('lng', 'is', null)
-    .or('neighborhood.is.null,neighborhood.eq.')
-    .or('music_score.is.null,music_score.gt.-100')
-    .limit(LIMIT)
+  // Fetch all qualifying venues with pagination (Supabase caps at 1000/request)
+  const PAGE_SIZE = 1000
+  const venues = []
+  let offset = 0
 
-  if (error) {
-    console.error('Failed to fetch venues:', error.message)
-    process.exit(1)
+  while (venues.length < LIMIT) {
+    const fetchSize = Math.min(PAGE_SIZE, LIMIT - venues.length)
+    const { data, error } = await supabase
+      .from('venues')
+      .select('id, name, lat, lng, city')
+      .not('lat', 'is', null)
+      .not('lng', 'is', null)
+      .or('neighborhood.is.null,neighborhood.eq.')
+      .or('music_score.is.null,music_score.gt.-100')
+      .range(offset, offset + fetchSize - 1)
+
+    if (error) {
+      console.error('Failed to fetch venues:', error.message)
+      process.exit(1)
+    }
+    if (!data || data.length === 0) break
+    venues.push(...data)
+    offset += data.length
+    if (data.length < fetchSize) break
   }
 
   console.log(`Fetched ${venues.length} venues to enrich\n`)
