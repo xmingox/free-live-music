@@ -1,5 +1,7 @@
--- Free Live Music — Supabase schema v2
--- Run this in your Supabase SQL editor (Project → SQL Editor → New query)
+-- Free Live Music — Supabase schema v3
+-- Updated: May 2026
+-- Run against a fresh Supabase project to recreate the full schema.
+-- Live project: rxdutrcjkmfhonzpsthb (us-west-2)
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Extensions
@@ -7,48 +9,10 @@
 CREATE EXTENSION IF NOT EXISTS unaccent;
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- City-year sequences  (powers the display_id counter per city + year)
--- ─────────────────────────────────────────────────────────────────────────────
-CREATE TABLE city_year_sequences (
-  city_code TEXT    NOT NULL,
-  year      INTEGER NOT NULL,
-  last_val  INTEGER NOT NULL DEFAULT 0,
-  PRIMARY KEY (city_code, year)
-);
-
--- Returns the next display_id string, e.g. "NYC-2026-000007"
--- Uses an atomic upsert so concurrent inserts never collide.
-CREATE OR REPLACE FUNCTION next_concert_display_id(p_city TEXT, p_date DATE)
-RETURNS TEXT LANGUAGE plpgsql AS $$
-DECLARE
-  v_code TEXT;
-  v_year INT;
-  v_seq  INT;
-BEGIN
-  -- Map internal city name → airport-style code
-  v_code := CASE p_city
-    WHEN 'NYC' THEN 'NYC'
-    WHEN 'LA'  THEN 'LAX'
-    ELSE UPPER(p_city)
-  END;
-  v_year := EXTRACT(YEAR FROM p_date)::INT;
-
-  INSERT INTO city_year_sequences (city_code, year, last_val)
-  VALUES (v_code, v_year, 1)
-  ON CONFLICT (city_code, year)
-  DO UPDATE SET last_val = city_year_sequences.last_val + 1
-  RETURNING last_val INTO v_seq;
-
-  RETURN v_code || '-' || v_year || '-' || LPAD(v_seq::TEXT, 6, '0');
-END;
-$$;
-
--- ─────────────────────────────────────────────────────────────────────────────
--- Slug helpers
+-- Functions
 -- ─────────────────────────────────────────────────────────────────────────────
 
 -- Converts arbitrary text to a URL-safe slug segment.
--- Requires the unaccent extension for accent removal.
 CREATE OR REPLACE FUNCTION slugify(t TEXT)
 RETURNS TEXT LANGUAGE SQL IMMUTABLE STRICT AS $$
   SELECT TRIM(BOTH '-' FROM
@@ -62,7 +26,7 @@ RETURNS TEXT LANGUAGE SQL IMMUTABLE STRICT AS $$
 $$;
 
 -- Builds the base slug: {artist}-{venue_first_30_chars}-{mondd}
---   e.g. "samara-joy-bryant-park-lawn-apr28"
+-- e.g. "samara-joy-bryant-park-lawn-apr28"
 CREATE OR REPLACE FUNCTION concert_base_slug(
   p_artist TEXT,
   p_venue  TEXT,
@@ -80,7 +44,7 @@ CREATE OR REPLACE FUNCTION unique_concert_slug(
   p_artist TEXT,
   p_venue  TEXT,
   p_date   DATE,
-  p_id     UUID DEFAULT NULL   -- pass existing row id when updating
+  p_id     UUID DEFAULT NULL
 ) RETURNS TEXT LANGUAGE plpgsql AS $$
 DECLARE
   v_base TEXT := concert_base_slug(p_artist, p_venue, p_date);
@@ -101,61 +65,33 @@ BEGIN
 END;
 $$;
 
--- ─────────────────────────────────────────────────────────────────────────────
--- Main concerts table
--- ─────────────────────────────────────────────────────────────────────────────
-CREATE TABLE concerts (
-  -- ── Identity ──────────────────────────────────────────────────────────
-  id          UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+-- Returns the next display_id string, e.g. "NYC-2026-000007"
+-- Uses an atomic upsert so concurrent inserts never collide.
+CREATE OR REPLACE FUNCTION next_concert_display_id(p_city TEXT, p_date DATE)
+RETURNS TEXT LANGUAGE plpgsql AS $$
+DECLARE
+  v_code TEXT;
+  v_year INT;
+  v_seq  INT;
+BEGIN
+  v_code := CASE p_city
+    WHEN 'NYC' THEN 'NYC'
+    WHEN 'LA'  THEN 'LAX'
+    ELSE UPPER(p_city)
+  END;
+  v_year := EXTRACT(YEAR FROM p_date)::INT;
 
-  -- Human-readable ID per city + year, auto-populated by trigger.
-  -- Format: NYC-2026-000001 / LAX-2026-000001
-  display_id  TEXT UNIQUE,
+  INSERT INTO city_year_sequences (city_code, year, last_val)
+  VALUES (v_code, v_year, 1)
+  ON CONFLICT (city_code, year)
+  DO UPDATE SET last_val = city_year_sequences.last_val + 1
+  RETURNING last_val INTO v_seq;
 
-  -- SEO-friendly URL slug, auto-populated by trigger.
-  -- Used at: /shows/{city}/{slug}
-  slug        TEXT NOT NULL UNIQUE,
+  RETURN v_code || '-' || v_year || '-' || LPAD(v_seq::TEXT, 6, '0');
+END;
+$$;
 
-  -- ── Core show details ─────────────────────────────────────────────────
-  artist_name  TEXT NOT NULL,
-  venue        TEXT NOT NULL,
-  date         DATE NOT NULL,
-  time         TEXT,
-  neighborhood TEXT NOT NULL,
-  city         TEXT NOT NULL CHECK (city IN ('NYC', 'LA')),
-  genre        TEXT,
-  price        TEXT NOT NULL DEFAULT 'Free',
-  admission_type TEXT NOT NULL DEFAULT 'Walk-up free'
-    CHECK (admission_type IN ('Walk-up free', 'Free RSVP')),
-
-  -- ── Venue metadata ────────────────────────────────────────────────────
-  indoor_outdoor TEXT CHECK (indoor_outdoor IN ('Indoor', 'Outdoor', 'Both')),
-  image_url      TEXT,
-
-  -- Phase 2 moderation flag; unverified listings are shown but visually
-  -- distinguished until a curator approves them.
-  is_verified BOOLEAN NOT NULL DEFAULT false,
-
-  -- ── Source / deduplication ────────────────────────────────────────────
-  -- Canonical link back to the original event page (shown on the card).
-  source_url  TEXT,
-  -- Name of the data source (e.g. 'NYC Parks', 'Eventbrite', 'Bandsintown').
-  source_name TEXT,
-  -- Original event ID from the source system.
-  source_id   TEXT,
-
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- Deduplication: the (source_name, source_id) pair must be unique when both
--- are present.  Rows without a source (nulls) are excluded from this check.
-CREATE UNIQUE INDEX concerts_source_dedup_idx
-  ON concerts (source_name, source_id)
-  WHERE source_name IS NOT NULL AND source_id IS NOT NULL;
-
--- ─────────────────────────────────────────────────────────────────────────────
--- Before-insert trigger: auto-fill display_id and slug
--- ─────────────────────────────────────────────────────────────────────────────
+-- Trigger body: auto-fills display_id and slug on insert.
 CREATE OR REPLACE FUNCTION concerts_before_insert()
 RETURNS TRIGGER LANGUAGE plpgsql AS $$
 BEGIN
@@ -169,51 +105,299 @@ BEGIN
 END;
 $$;
 
+-- Called by the concert detail page to count page views.
+CREATE OR REPLACE FUNCTION increment_event_views(p_id UUID)
+RETURNS VOID LANGUAGE SQL AS $$
+  UPDATE concerts SET event_views = event_views + 1 WHERE id = p_id;
+$$;
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- city_year_sequences  (display_id counter per city + year)
+-- ─────────────────────────────────────────────────────────────────────────────
+CREATE TABLE city_year_sequences (
+  city_code TEXT    NOT NULL,
+  year      INTEGER NOT NULL,
+  last_val  INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (city_code, year)
+);
+
+ALTER TABLE city_year_sequences ENABLE ROW LEVEL SECURITY;
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- venues
+-- ─────────────────────────────────────────────────────────────────────────────
+CREATE TABLE venues (
+  id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug           TEXT NOT NULL UNIQUE,
+  name           TEXT NOT NULL,
+
+  venue_type     TEXT DEFAULT 'other'
+    CHECK (venue_type IN (
+      'park','amphitheater','plaza','bar','restaurant','brewery',
+      'mall','coffee_shop','farmers_market','church','library',
+      'school','museum','community_center','rooftop','other'
+    )),
+  indoor_outdoor TEXT DEFAULT 'outdoor'
+    CHECK (indoor_outdoor IN ('indoor','outdoor','both')),
+
+  address        TEXT,
+  neighborhood   TEXT,
+  city           TEXT NOT NULL,
+  state          TEXT,
+  zip            TEXT,
+  lat            NUMERIC,
+  lng            NUMERIC,
+
+  website        TEXT,
+  instagram      TEXT,
+  phone          TEXT,
+  description    TEXT,
+
+  music_genres   TEXT[],
+  music_frequency TEXT
+    CHECK (music_frequency IN ('weekly','biweekly','monthly','seasonal','occasional')),
+  music_schedule TEXT,
+
+  is_21_plus     BOOLEAN DEFAULT false,
+  is_verified    BOOLEAN DEFAULT false,
+  is_partner     BOOLEAN DEFAULT false,
+  partner_tier   TEXT CHECK (partner_tier IN ('basic','featured','premium')),
+
+  google_place_id TEXT,
+  submitted_by    TEXT,
+
+  music_score     INTEGER,
+  last_checked_at TIMESTAMPTZ,
+
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX venues_city_idx           ON venues (city);
+CREATE INDEX venues_venue_type_idx     ON venues (venue_type);
+CREATE INDEX venues_google_place_id_idx ON venues (google_place_id);
+
+ALTER TABLE venues ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read" ON venues FOR SELECT USING (true);
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- event_series  (recurring concert series linked to a venue)
+-- ─────────────────────────────────────────────────────────────────────────────
+CREATE TABLE event_series (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  venue_id        UUID REFERENCES venues (id),
+  series_name     TEXT NOT NULL,
+  description     TEXT,
+  default_artist  TEXT,
+  default_genre   TEXT,
+  default_price   TEXT DEFAULT 'Free',
+  default_time    TEXT,
+  recurrence_type TEXT CHECK (recurrence_type IN ('weekly','biweekly','monthly','annual','irregular')),
+  day_of_week     INTEGER CHECK (day_of_week BETWEEN 0 AND 6),
+  start_date      DATE,
+  end_date        DATE,
+  is_active       BOOLEAN DEFAULT true,
+  created_at      TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX event_series_venue_id_idx ON event_series (venue_id);
+CREATE INDEX event_series_active_idx   ON event_series (is_active);
+
+ALTER TABLE event_series ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read" ON event_series FOR SELECT USING (true);
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- concerts
+-- ─────────────────────────────────────────────────────────────────────────────
+CREATE TABLE concerts (
+  -- Identity
+  id          UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+  display_id  TEXT UNIQUE,
+  slug        TEXT NOT NULL UNIQUE,
+
+  -- Core show details
+  artist_name    TEXT NOT NULL,
+  venue          TEXT NOT NULL,
+  date           DATE NOT NULL,
+  time           TEXT,
+  neighborhood   TEXT NOT NULL,
+  city           TEXT NOT NULL,
+  genre          TEXT,
+  price          TEXT NOT NULL DEFAULT 'Free',
+  admission_type TEXT NOT NULL DEFAULT 'Walk-up free'
+    CHECK (admission_type IN ('Walk-up free', 'Free RSVP')),
+
+  -- Venue metadata
+  indoor_outdoor TEXT CHECK (indoor_outdoor IN ('Indoor', 'Outdoor', 'Both')),
+  image_url      TEXT,
+  description    TEXT,
+
+  -- Status flags
+  is_verified  BOOLEAN NOT NULL DEFAULT false,
+  is_tbd       BOOLEAN NOT NULL DEFAULT false,
+  is_cancelled BOOLEAN DEFAULT false,
+  is_archived  BOOLEAN DEFAULT false,
+
+  -- Analytics
+  event_views INTEGER NOT NULL DEFAULT 0,
+
+  -- Relationships
+  venue_id  UUID REFERENCES venues (id),
+  series_id UUID REFERENCES event_series (id),
+
+  -- Source / deduplication
+  source_url  TEXT,
+  source_name TEXT,
+  source_id   TEXT,
+
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Deduplication: (source_name, source_id) must be unique when both are non-null.
+CREATE UNIQUE INDEX concerts_source_dedup_idx
+  ON concerts (source_name, source_id)
+  WHERE source_name IS NOT NULL AND source_id IS NOT NULL;
+
+-- Filtered indexes for common query patterns
+CREATE INDEX concerts_city_date_idx     ON concerts (city, date);
+CREATE INDEX concerts_slug_idx          ON concerts (slug);
+CREATE INDEX concerts_venue_id_idx      ON concerts (venue_id);
+CREATE INDEX concerts_series_id_idx     ON concerts (series_id);
+CREATE INDEX concerts_active_idx        ON concerts (city, date) WHERE is_archived IS NOT TRUE;
+CREATE INDEX concerts_archive_sweep_idx ON concerts (date) WHERE is_archived IS NULL OR is_archived = false;
+CREATE INDEX idx_concerts_event_views   ON concerts (event_views DESC);
+
+ALTER TABLE concerts ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read"         ON concerts FOR SELECT USING (true);
+CREATE POLICY "Service role insert" ON concerts FOR INSERT WITH CHECK (true);
+
+-- Trigger: auto-fills display_id and slug before insert
 CREATE TRIGGER concerts_auto_fields
   BEFORE INSERT ON concerts
   FOR EACH ROW EXECUTE FUNCTION concerts_before_insert();
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- Indexes
+-- event_submissions  (user-submitted events pending curation)
 -- ─────────────────────────────────────────────────────────────────────────────
-CREATE INDEX concerts_city_date_idx ON concerts (city, date);
-CREATE INDEX concerts_slug_idx      ON concerts (slug);
+CREATE TABLE event_submissions (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  source_url TEXT NOT NULL,
+  source_name TEXT,
+  submitter_email TEXT NOT NULL,
+  submitted_city  TEXT,
+  submitted_state TEXT,
+  city_code       TEXT,
+
+  -- Extracted fields populated by the import pipeline
+  extracted_artist        TEXT,
+  extracted_venue         TEXT,
+  extracted_venue_address TEXT,
+  extracted_date          DATE,
+  extracted_time          TEXT,
+  extracted_city          TEXT,
+  extracted_state         TEXT,
+  extracted_neighborhood  TEXT,
+  extracted_genre         TEXT,
+  extracted_admission_type TEXT,
+  extracted_indoor_outdoor TEXT,
+  extracted_image_url     TEXT,
+  source_extractor        TEXT,
+
+  -- Review workflow
+  status           TEXT DEFAULT 'pending',
+  rejection_reason TEXT,
+  review_notes     TEXT,
+  reviewed_by      TEXT,
+  reviewed_at      TIMESTAMP,
+  auto_approve_eligible BOOLEAN DEFAULT false,
+
+  -- Link to published concert (set after approval)
+  concert_id  UUID,
+
+  submitted_at TIMESTAMP DEFAULT now(),
+  created_at   TIMESTAMP DEFAULT now(),
+  published_at TIMESTAMPTZ
+);
+
+CREATE INDEX event_submissions_status_idx       ON event_submissions (status);
+CREATE INDEX event_submissions_submitted_at_idx ON event_submissions (submitted_at DESC);
+CREATE INDEX event_submissions_extractor_idx    ON event_submissions (source_extractor)
+  WHERE source_extractor IS NOT NULL;
+CREATE INDEX idx_event_submissions_email        ON event_submissions (submitter_email);
+
+ALTER TABLE event_submissions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Anyone can submit"      ON event_submissions FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public read"            ON event_submissions FOR SELECT USING (true);
+CREATE POLICY "Service role full access" ON event_submissions FOR ALL USING (true) WITH CHECK (true);
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- Row Level Security  (read-only public access; writes via service role only)
+-- metro_crawl_log  (tracks which cities have been crawled and when)
 -- ─────────────────────────────────────────────────────────────────────────────
-ALTER TABLE concerts ENABLE ROW LEVEL SECURITY;
+CREATE TABLE metro_crawl_log (
+  id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  metro_code   TEXT NOT NULL,
+  metro_name   TEXT NOT NULL,
+  state        TEXT,
+  population   INTEGER,
+  crawled_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  events_found INTEGER DEFAULT 0,
+  events_added INTEGER DEFAULT 0,
+  result       TEXT,
+  notes        TEXT,
+  revisit_after  DATE,
+  revisit_reason TEXT
+);
 
-CREATE POLICY "Public read"
-  ON concerts FOR SELECT
-  USING (true);
+CREATE INDEX idx_metro_crawl_log_code ON metro_crawl_log (metro_code);
+
+ALTER TABLE metro_crawl_log ENABLE ROW LEVEL SECURITY;
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- Seed data  (display_id and slug auto-generated by trigger)
+-- sources  (tracks validated source URLs for the import pipeline)
 -- ─────────────────────────────────────────────────────────────────────────────
-INSERT INTO concerts
-  (artist_name, venue, date, time, neighborhood, city, genre,
-   admission_type, indoor_outdoor, is_verified, source_name, source_id, source_url)
-VALUES
-  -- NYC
-  ('Mutual Benefit',     'Naumburg Bandshell',          '2026-04-28', '7:00 PM', 'Central Park',     'NYC', 'Folk',        'Walk-up free', 'Outdoor', true,  'Naumburg Orchestral Concerts', 'naum-2026-001',   'https://www.naumburg.org'),
-  ('Samara Joy',         'Bryant Park Lawn',             '2026-04-28', '6:30 PM', 'Midtown',           'NYC', 'Jazz',        'Walk-up free', 'Outdoor', true,  'Bryant Park',                  'bp-2026-042',     'https://bryantpark.org/programs'),
-  ('Jeff Tweedy',        'SummerStage',                  '2026-04-30', '7:00 PM', 'Upper East Side',   'NYC', 'Indie Rock',  'Free RSVP',    'Outdoor', true,  'SummerStage',                  'ss-2026-019',     'https://cityparksfoundation.org/summerstage'),
-  ('Arooj Aftab',        'Lincoln Center Out of Doors',  '2026-05-01', '7:30 PM', 'Upper West Side',   'NYC', 'Neo-soul',    'Free RSVP',    'Outdoor', true,  'Lincoln Center',               'lc-2026-055',     'https://www.lincolncenter.org/series/out-of-doors'),
-  ('Hermanos Gutiérrez', 'Prospect Park Bandshell',      '2026-05-02', '7:00 PM', 'Prospect Heights',  'NYC', 'Latin Folk',  'Free RSVP',    'Outdoor', true,  'Celebrate Brooklyn!',          'cb-2026-007',     'https://bricartsmedia.org/celebrate-brooklyn'),
-  ('Cautious Clay',      'Brooklyn Bridge Park Pier 1',  '2026-05-03', '6:00 PM', 'Brooklyn Heights',  'NYC', 'R&B',         'Free RSVP',    'Outdoor', false, 'Brooklyn Bridge Park',         'bbp-2026-033',    'https://brooklynbridgepark.org/events'),
-  ('Ezra Collective',    'Fort Tryon Park',              '2026-05-09', '5:30 PM', 'Washington Heights','NYC', 'Jazz',        'Free RSVP',    'Outdoor', true,  'Fort Tryon Park Trust',        'ftp-2026-011',    'https://forttryon.org'),
-  ('Faye Webster',       'Rockaway Beach Boardwalk',     '2026-05-10', '4:00 PM', 'Rockaway',          'NYC', 'Indie Pop',   'Walk-up free', 'Outdoor', false, 'NYC Parks',                    'nycparks-26-0812','https://www.nycgovparks.org/events'),
-  ('Wednesday',          'McCarren Park',                '2026-05-14', '7:00 PM', 'Williamsburg',      'NYC', 'Alt-country', 'Walk-up free', 'Outdoor', false, 'NYC Parks',                    'nycparks-26-0891','https://www.nycgovparks.org/events'),
-  ('Mdou Moctar',        'East River Park Amphitheater', '2026-05-16', '6:00 PM', 'Lower East Side',   'NYC', 'Psychedelic', 'Walk-up free', 'Outdoor', false, 'NYC Parks',                    'nycparks-26-0922','https://www.nycgovparks.org/events'),
-  -- LA
-  ('Gillian Welch',       'The Getty Center',    '2026-04-28', '6:00 PM', 'Brentwood',      'LA', 'Folk',        'Free RSVP',    'Outdoor', true,  'The Getty',          'getty-2026-018',  'https://www.getty.edu/visit/events'),
-  ('Thundercat',          'Grand Performances',  '2026-04-28', '8:00 PM', 'DTLA',           'LA', 'Jazz/Funk',   'Walk-up free', 'Outdoor', true,  'Grand Performances', 'gp-2026-004',     'https://grandperformances.org'),
-  ('Bedouine',            'Barnsdall Art Park',  '2026-04-29', '7:00 PM', 'Los Feliz',      'LA', 'Folk',        'Walk-up free', 'Outdoor', true,  'LA Parks',           'laparks-26-0221', 'https://www.laparks.org'),
-  ('Nick Hakim',          'LACMA Jazz',          '2026-05-01', '6:30 PM', 'Mid-Wilshire',   'LA', 'Soul',        'Free RSVP',    'Outdoor', true,  'LACMA',              'lacma-2026-083',  'https://www.lacma.org/programs/free-jazz-sundays'),
-  ('Cuco',                'Santa Monica Pier',   '2026-05-02', '7:30 PM', 'Santa Monica',   'LA', 'Dream Pop',   'Walk-up free', 'Outdoor', false, 'Santa Monica Pier',  'smp-2026-015',    'https://santamonicapier.org/events'),
-  ('Khruangbin',          'The Hammer Museum',   '2026-05-03', '5:00 PM', 'Westwood',       'LA', 'Psychedelic', 'Free RSVP',    'Outdoor', true,  'The Hammer Museum',  'hammer-2026-029', 'https://hammer.ucla.edu/programs'),
-  ('illuminati hotties',  'Levitt Pavilion',     '2026-05-07', '7:00 PM', 'MacArthur Park', 'LA', 'Indie Rock',  'Walk-up free', 'Outdoor', false, 'Levitt Foundation',  'levitt-2026-041', 'https://levittla.org'),
-  ('Moonchild',           'Grand Performances',  '2026-05-09', '8:00 PM', 'DTLA',           'LA', 'Neo-soul',    'Walk-up free', 'Outdoor', true,  'Grand Performances', 'gp-2026-017',     'https://grandperformances.org'),
-  ('Valerie June',        'The Getty Center',    '2026-05-14', '6:00 PM', 'Brentwood',      'LA', 'Folk',        'Free RSVP',    'Outdoor', true,  'The Getty',          'getty-2026-031',  'https://www.getty.edu/visit/events'),
-  ('Sudan Archives',      'Levitt Pavilion',     '2026-05-16', '7:30 PM', 'MacArthur Park', 'LA', 'Electronic',  'Walk-up free', 'Outdoor', false, 'Levitt Foundation',  'levitt-2026-058', 'https://levittla.org');
+CREATE TABLE sources (
+  url            TEXT PRIMARY KEY,
+  source_name    TEXT,
+  last_validated DATE,
+  year_confirmed INTEGER,
+  notes          TEXT,
+  created_at     TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE sources ENABLE ROW LEVEL SECURITY;
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- cron_runs  (audit log for all scheduled maintenance jobs)
+-- ─────────────────────────────────────────────────────────────────────────────
+CREATE TABLE cron_runs (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name          TEXT NOT NULL,
+  started_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  finished_at   TIMESTAMPTZ,
+  success       BOOLEAN,
+  stats_json    JSONB,
+  error_message TEXT
+);
+
+CREATE INDEX cron_runs_name_idx ON cron_runs (name, started_at DESC);
+
+ALTER TABLE cron_runs ENABLE ROW LEVEL SECURITY;
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- crawl_suppressions  (blocks the import pipeline from re-ingesting bad URLs)
+-- ─────────────────────────────────────────────────────────────────────────────
+CREATE TABLE crawl_suppressions (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  pattern     TEXT NOT NULL,
+  match_field TEXT NOT NULL DEFAULT 'any'
+    CHECK (match_field IN ('artist_name','venue','source_name','source_url','any')),
+  match_type  TEXT NOT NULL DEFAULT 'contains'
+    CHECK (match_type IN ('contains','exact','starts_with')),
+  reason      TEXT NOT NULL,
+  added_by    TEXT NOT NULL DEFAULT 'manual',
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_crawl_suppressions_pattern ON crawl_suppressions (lower(pattern));
+
+ALTER TABLE crawl_suppressions ENABLE ROW LEVEL SECURITY;
