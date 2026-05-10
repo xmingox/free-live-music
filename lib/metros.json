@@ -1359,6 +1359,104 @@
       "state": "NC",
       "region": "Southeast",
       "aliases": ["ILM", "Wilmington", "Wrightsville Beach", "Carolina Beach", "Brunswick County"]
+    },
+    {
+      "code": "GNV",
+      "city": "Gainesville",
+      "state": "FL",
+      "region": "Southeast",
+      "aliases": ["GNV", "Gainesville"]
+    },
+    {
+      "code": "COE",
+      "city": "Coeur d'Alene",
+      "state": "ID",
+      "region": "Pacific Northwest",
+      "aliases": ["COE", "Coeur d'Alene", "Hayden", "Post Falls"]
+    },
+    {
+      "code": "RAP",
+      "city": "Rapid City",
+      "state": "SD",
+      "region": "Mountain",
+      "aliases": ["RAP", "Rapid City", "Box Elder", "Ellsworth"]
+    },
+    {
+      "code": "CID",
+      "city": "Cedar Rapids",
+      "state": "IA",
+      "region": "Midwest",
+      "aliases": ["CID", "Cedar Rapids", "Marion", "Hiawatha"]
+    },
+    {
+      "code": "FWA",
+      "city": "Fort Wayne",
+      "state": "IN",
+      "region": "Midwest",
+      "aliases": ["FWA", "Fort Wayne", "Allen County"]
+    },
+    {
+      "code": "GRB",
+      "city": "Green Bay",
+      "state": "WI",
+      "region": "Midwest",
+      "aliases": ["GRB", "Green Bay", "Ashwaubenon", "De Pere", "Brown County"]
+    },
+    {
+      "code": "DLH",
+      "city": "Duluth",
+      "state": "MN",
+      "region": "Midwest",
+      "aliases": ["DLH", "Duluth", "Superior", "Hermantown"]
+    },
+    {
+      "code": "AHN",
+      "city": "Athens",
+      "state": "GA",
+      "region": "Southeast",
+      "aliases": ["AHN", "Athens", "Clarke County"]
+    },
+    {
+      "code": "TRI",
+      "city": "Johnson City",
+      "state": "TN",
+      "region": "Southeast",
+      "aliases": ["TRI", "Johnson City", "Bristol", "Kingsport", "Tri-Cities", "Elizabethton"]
+    },
+    {
+      "code": "MCN",
+      "city": "Macon",
+      "state": "GA",
+      "region": "Southeast",
+      "aliases": ["MCN", "Macon", "Bibb County", "Warner Robins"]
+    },
+    {
+      "code": "CHY",
+      "city": "Cheyenne",
+      "state": "WY",
+      "region": "Mountain",
+      "aliases": ["CHY", "Cheyenne", "Laramie County"]
+    },
+    {
+      "code": "ERI",
+      "city": "Erie",
+      "state": "PA",
+      "region": "Northeast",
+      "aliases": ["ERI", "Erie", "Erie County"]
+    },
+    {
+      "code": "ROA",
+      "city": "Roanoke",
+      "state": "VA",
+      "region": "Southeast",
+      "aliases": ["ROA", "Roanoke", "Salem", "Vinton", "Roanoke County"]
+    },
+    {
+      "code": "LNK",
+      "city": "Lincoln",
+      "state": "NE",
+      "region": "Midwest",
+      "aliases": ["LNK", "Lincoln", "Lancaster County"]
     }
   ]
 }
