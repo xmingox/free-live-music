@@ -27,6 +27,8 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const concerts = await getConcerts('NYC')
-  // Match SSR payload to initial page size — client fetches more on scroll/city-switch.
-  return <ConcertsClient initialConcerts={concerts.slice(0, 24)} defaultCity="NYC" />
+  // Pass all NYC concerts so the client cache is pre-seeded and no API fetch is
+  // needed on initial load. The client renders only PAGE_SIZE cards at a time;
+  // "Show more" pages through the in-memory array instantly (no network round-trip).
+  return <ConcertsClient initialConcerts={concerts} defaultCity="NYC" />
 }
