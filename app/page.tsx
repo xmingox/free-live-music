@@ -30,6 +30,28 @@ function resolveMetroCode(cityParam: string | undefined): City {
   return (getMetroByCode(code) ? code : 'NYC') as City
 }
 
+const siteJsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': 'https://www.freelivemusic.co/#website',
+      name: 'Free Live Music',
+      url: 'https://www.freelivemusic.co',
+    },
+    {
+      '@type': 'Organization',
+      '@id': 'https://www.freelivemusic.co/#organization',
+      name: 'Free Live Music',
+      url: 'https://www.freelivemusic.co',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://www.freelivemusic.co/icon-512.png',
+      },
+    },
+  ],
+}
+
 export default async function Home({
   searchParams,
 }: {
@@ -38,5 +60,13 @@ export default async function Home({
   const { city: cityParam } = await searchParams
   const metroCode = resolveMetroCode(cityParam)
   const concerts = await getConcerts(metroCode)
-  return <ConcertsClient initialConcerts={concerts.slice(0, 24)} defaultCity={metroCode} />
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
+      />
+      <ConcertsClient initialConcerts={concerts.slice(0, 24)} defaultCity={metroCode} />
+    </>
+  )
 }
