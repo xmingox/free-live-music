@@ -104,7 +104,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const tonightUrls: MetadataRoute.Sitemap = GUIDE_CITIES.map((c) => ({
     url: `https://www.freelivemusic.co/tonight/${c.slug}`,
     lastModified: new Date(),
-    changeFrequency: 'hourly',
+    changeFrequency: 'daily',
     priority: 0.6,
   }))
 

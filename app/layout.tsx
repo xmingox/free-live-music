@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/react'
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.freelivemusic.co'),
   title: 'Free Live Music — Free Concerts Nationwide',
   description: 'Find free live music concerts across the USA. Browse concerts in 173+ cities including New York, Los Angeles, Chicago, San Francisco, Austin, Seattle, Denver, Boston, Miami, Atlanta, and more. Always free, no tickets needed.',
   keywords: 'free concerts, free live music, outdoor concerts, free shows, free music near me, live music USA',

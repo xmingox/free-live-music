@@ -144,6 +144,16 @@ export default async function ThisWeekCityPage({
     byDate.set(c.date, arr)
   }
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Free Live Music', item: 'https://www.freelivemusic.co' },
+      { '@type': 'ListItem', position: 2, name: `Free Concerts in ${metro.city}`, item: `https://www.freelivemusic.co/concerts/${concertsSlug}` },
+      { '@type': 'ListItem', position: 3, name: 'This Week' },
+    ],
+  }
+
   const eventJsonLd = concerts.length > 0 ? {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -171,6 +181,10 @@ export default async function ThisWeekCityPage({
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {eventJsonLd && (
         <script
           type="application/ld+json"

@@ -68,6 +68,9 @@ export async function generateMetadata({
     },
     alternates: {
       canonical: `https://www.freelivemusic.co/concerts/${city}`,
+      types: {
+        'application/atom+xml': `https://www.freelivemusic.co/concerts/${city}/feed.xml`,
+      },
     },
     robots: {
       index: true,
@@ -449,7 +452,7 @@ export default async function CityPage({
               <ul className="space-y-4">
                 <li>
                   <Link
-                    href={`/concerts/${cityParam}/tonight`}
+                    href={`/tonight/${citySlug}`}
                     className="font-semibold text-blue-600 hover:underline"
                   >
                     Free concerts in {metro.city} tonight →
@@ -460,13 +463,24 @@ export default async function CityPage({
                 </li>
                 <li>
                   <Link
-                    href={`/concerts/${cityParam}/this-weekend`}
+                    href={`/this-week/${citySlug}`}
+                    className="font-semibold text-blue-600 hover:underline"
+                  >
+                    Free concerts this week in {metro.city} →
+                  </Link>
+                  <p className="text-slate-600 text-sm mt-1">
+                    Monday through Friday shows — weekday free music.
+                  </p>
+                </li>
+                <li>
+                  <Link
+                    href={`/this-weekend/${citySlug}`}
                     className="font-semibold text-blue-600 hover:underline"
                   >
                     Free concerts this weekend in {metro.city} →
                   </Link>
                   <p className="text-slate-600 text-sm mt-1">
-                    Friday through Sunday shows — plan your weekend.
+                    Saturday and Sunday shows — plan your weekend.
                   </p>
                 </li>
                 <li>
