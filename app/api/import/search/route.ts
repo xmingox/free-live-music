@@ -47,8 +47,8 @@ const STRUCTURED_IMPORTER_CODES = new Set([
   //  playa-vista, manhattan-beach, el-segundo, redondo-beach, long-beach,
   //  pasadena, marina-del-rey, santa-clarita, oc-cities, oc-parks,
   //  huntington-beach-pier, mission-viejo, rancho-santa-margarita, brea,
-  //  costa-mesa, dana-point, san-clemente, la-palma, irvine-concerts,
-  //  irvine-symphony, pacific-symphony — all under the LA / ANA metro codes)
+  //  costa-mesa, dana-point, san-clemente, la-palma, irvine-symphony,
+  //  pacific-symphony — all under the LA / ANA metro codes)
   'ANA',
 ])
 

@@ -298,6 +298,27 @@ async function filterAgainstConcerts(
   })
 }
 
+// ── Auto-approve eligibility ──────────────────────────────────────────────────
+
+/**
+ * An event is auto-approve eligible when all three conditions hold:
+ *  1. Walk-up free (no RSVP required — lowest friction, lowest risk of bad data)
+ *  2. At least 3 days out (allows time for a human to catch errors before ISR caches it)
+ *  3. Artist name is known (not a TBA placeholder)
+ */
+function isAutoApproveEligible(e: ExtractedEvent): boolean {
+  const threeDaysOut = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .split('T')[0]
+  const artistLower = e.artist_name.toLowerCase()
+  return (
+    e.admission_type === 'Walk-up free' &&
+    e.date >= threeDaysOut &&
+    !artistLower.includes('tba') &&
+    !artistLower.startsWith('tbd')
+  )
+}
+
 // ── Supabase insert ───────────────────────────────────────────────────────────
 
 async function insertSubmissions(
@@ -322,7 +343,7 @@ async function insertSubmissions(
     source_name: e.source_name,
     source_url: e.source_url,
     status: 'pending',
-    auto_approve_eligible: false,
+    auto_approve_eligible: isAutoApproveEligible(e),
     submitted_at: new Date().toISOString(),
   }))
 

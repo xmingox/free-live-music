@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidateTag } from 'next/cache'
 import { extractEventDetails } from '@/lib/extract-event-details'
-import { Concert, City } from '@/types'
+import { City } from '@/types'
 import metros from '@/lib/metros.json'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -28,6 +28,14 @@ const getMetroCodeFromCity = (cityName: string): City | null => {
 const getMetroCodeFromState = (state: string): City | null => {
   const metro = metros.metros.find(m => m.state.toUpperCase() === state.toUpperCase())
   return metro ? (metro.code as City) : null
+}
+
+function slugify(str: string): string {
+  return str.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim()
+}
+
+function generateSlug(artist: string, venue: string, date: string): string {
+  return `${slugify(artist)}-${slugify(venue)}-${date}`
 }
 
 const detectCityFromUrl = (url: string): string | null => {
@@ -123,22 +131,80 @@ export async function POST(request: NextRequest) {
 
       if (existingConcert) {
         return NextResponse.json(
-          {
-            message: 'This event is already in the database',
-            existingConcertSlug: existingConcert.slug,
-          },
+          { message: 'This event is already in the database', existingConcertSlug: existingConcert.slug },
           { status: 409 }
         )
       }
 
+      // ── Pipeline fast path ────────────────────────────────────────────────
+      // Pipeline submissions have all fields pre-extracted by Haiku; skip the
+      // live re-scrape and build the concert directly from stored data.
+      if (submission.source_extractor && submission.extracted_artist && submission.extracted_date) {
+        const city: City = (manualCity && getMetroCodeFromCity(manualCity))
+          ? getMetroCodeFromCity(manualCity) as City
+          : (submission.city_code as City) || 'NYC'
+
+        const neighborhood =
+          submission.extracted_neighborhood ||
+          submission.extracted_city ||
+          city
+
+        const slug = generateSlug(
+          submission.extracted_artist,
+          submission.extracted_venue || 'Venue TBD',
+          submission.extracted_date,
+        )
+
+        const concertData = {
+          artist_name: submission.extracted_artist,
+          venue: submission.extracted_venue || 'Venue TBD',
+          date: submission.extracted_date,
+          time: submission.extracted_time ?? null,
+          neighborhood,
+          city,
+          genre: submission.extracted_genre ?? null,
+          price: 'Free',
+          admission_type: (submission.extracted_admission_type || 'Walk-up free') as 'Walk-up free' | 'Free RSVP',
+          indoor_outdoor: submission.extracted_indoor_outdoor ?? null,
+          image_url: submission.extracted_image_url ?? null,
+          is_verified: true,
+          source_url: submission.source_url,
+          source_name: submission.source_name ?? submission.source_extractor,
+          source_id: `pipeline-${submissionId}`,
+          slug,
+        }
+
+        const { data: concert, error: concertError } = await supabase
+          .from('concerts')
+          .insert([concertData])
+          .select()
+          .single()
+
+        if (concertError) {
+          console.error('Error creating concert (pipeline):', concertError)
+          return NextResponse.json({ message: 'Failed to add concert to database' }, { status: 500 })
+        }
+
+        await supabase
+          .from('event_submissions')
+          .update({
+            status: 'approved',
+            reviewed_at: new Date().toISOString(),
+            published_at: new Date().toISOString(),
+            concert_id: concert.id,
+          })
+          .eq('id', submissionId)
+
+        revalidateTag('concerts')
+        return NextResponse.json({ message: 'Submission approved and concert published', concert })
+      }
+
+      // ── User submission path: re-scrape the URL for details ───────────────
       const extracted = await extractEventDetails(submission.source_url)
 
       if (!extracted.artist || !extracted.date) {
         return NextResponse.json(
-          {
-            message: 'Could not extract enough details from the URL',
-            extracted,
-          },
+          { message: 'Could not extract enough details from the URL', extracted },
           { status: 400 }
         )
       }
@@ -185,10 +251,7 @@ export async function POST(request: NextRequest) {
 
       if (concertError) {
         console.error('Error creating concert:', concertError)
-        return NextResponse.json(
-          { message: 'Failed to add concert to database' },
-          { status: 500 }
-        )
+        return NextResponse.json({ message: 'Failed to add concert to database' }, { status: 500 })
       }
 
       const { error: updateError } = await supabase
@@ -211,19 +274,11 @@ export async function POST(request: NextRequest) {
 
       if (updateError) {
         console.error('Error updating submission:', updateError)
-        return NextResponse.json(
-          { message: 'Failed to update submission' },
-          { status: 500 }
-        )
+        return NextResponse.json({ message: 'Failed to update submission' }, { status: 500 })
       }
 
       revalidateTag('concerts')
-
-      return NextResponse.json({
-        message: 'Submission approved and concert published',
-        concert,
-        extracted,
-      })
+      return NextResponse.json({ message: 'Submission approved and concert published', concert, extracted })
     }
 
     return NextResponse.json(
