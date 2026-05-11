@@ -20,6 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .from('concerts')
       .select('slug, date, created_at')
       .eq('is_verified', true)
+      .eq('is_tbd', false)
       .gte('date', today)
       .order('date', { ascending: true })
       .range(offset, offset + pageSize - 1)
@@ -71,6 +72,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
 
     for (const [slug, aliasCity] of Object.entries(aliasSlugMap)) {
+      // Skip code-identical aliases (e.g. CHI, NYC, DAL) — they show subset/duplicate
+      // content of the parent metro page and waste crawl budget.
+      if (aliasCity.cityName === aliasCity.parentMetroCode) continue
       if ((cityCounts[aliasCity.cityName] || 0) >= 5) {
         aliasUrls.push({
           url: `https://www.freelivemusic.co/concerts/city/${slug}`,

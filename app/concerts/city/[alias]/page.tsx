@@ -54,6 +54,14 @@ export async function generateMetadata({
   const aliasCity = getAliasCityFromSlug(alias)
   if (!aliasCity) return { title: 'City Not Found' }
 
+  // Code-identical aliases redirect to parent metro — signal noindex in metadata
+  if (aliasCity.cityName === aliasCity.parentMetroCode) {
+    return {
+      robots: { index: false, follow: false },
+      alternates: { canonical: `https://www.freelivemusic.co/concerts/${cityCodeToSlug[aliasCity.parentMetroCode]}` },
+    }
+  }
+
   const concerts = await getConcertsByAliasCity(aliasCity.cityName)
   const belowThreshold = concerts.length < CITY_PAGE_THRESHOLD
 
@@ -84,6 +92,13 @@ export default async function AliasCityPage({
 
   if (!aliasCity) {
     redirect('/')
+    throw new Error()
+  }
+
+  // Code-identical aliases (e.g. /concerts/city/chi for Chicago) duplicate
+  // the parent metro page — redirect permanently to the canonical.
+  if (aliasCity.cityName === aliasCity.parentMetroCode) {
+    redirect(`/concerts/${cityCodeToSlug[aliasCity.parentMetroCode]}`)
     throw new Error()
   }
 
