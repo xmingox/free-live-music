@@ -384,7 +384,7 @@ export default function ConcertsClient({
                 { name: 'Omaha',          slug: 'omaha' },
                 { name: 'Honolulu',       slug: 'honolulu' },
               ].map(c => (
-                <Link key={c.slug} href={`/concerts/${c.slug}`} className="text-sm text-slate-400 hover:text-violet-300 transition-colors">
+                <Link key={c.slug} href={`/concerts/${c.slug}`} prefetch={false} className="text-sm text-slate-400 hover:text-violet-300 transition-colors">
                   {c.name}
                 </Link>
               ))}
@@ -403,7 +403,7 @@ export default function ConcertsClient({
                 { label: 'Restaurants',   slug: 'restaurants' },
                 { label: 'Amphitheaters', slug: 'amphitheaters' },
               ].map(t => (
-                <Link key={t.slug} href={`/venues/new-york/${t.slug}`} className="text-sm text-slate-400 hover:text-violet-300 transition-colors">
+                <Link key={t.slug} href={`/venues/new-york/${t.slug}`} prefetch={false} className="text-sm text-slate-400 hover:text-violet-300 transition-colors">
                   {t.label}
                 </Link>
               ))}
@@ -414,7 +414,7 @@ export default function ConcertsClient({
             <div className="flex items-center gap-4">
               <span className="text-sm font-bold text-slate-300">Free Live Music</span>
               <span className="text-slate-700">·</span>
-              <Link href="/venues/new-york" className="text-sm text-slate-500 hover:text-slate-300 transition-colors">
+              <Link href="/venues/new-york" prefetch={false} className="text-sm text-slate-500 hover:text-slate-300 transition-colors">
                 Venues
               </Link>
             </div>

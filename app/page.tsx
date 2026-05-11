@@ -81,15 +81,15 @@ export default async function Home({
           <ul className="flex flex-wrap gap-x-2 gap-y-1">
             {GUIDE_CITIES.map((c) => (
               <li key={c.slug} className="flex items-center gap-1 text-xs text-slate-600">
-                <Link href={`/concerts/${c.slug}`} className="hover:text-slate-400 transition-colors">
+                <Link href={`/concerts/${c.slug}`} prefetch={false} className="hover:text-slate-400 transition-colors">
                   {c.name}
                 </Link>
                 <span className="text-slate-800">·</span>
-                <Link href={`/tonight/${c.slug}`} className="hover:text-slate-400 transition-colors">
+                <Link href={`/tonight/${c.slug}`} prefetch={false} className="hover:text-slate-400 transition-colors">
                   Tonight
                 </Link>
                 <span className="text-slate-800">·</span>
-                <Link href={`/this-weekend/${c.slug}`} className="hover:text-slate-400 transition-colors">
+                <Link href={`/this-weekend/${c.slug}`} prefetch={false} className="hover:text-slate-400 transition-colors">
                   Weekend
                 </Link>
                 <span className="text-slate-800 mx-1">|</span>
