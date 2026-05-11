@@ -9,11 +9,13 @@
  *   +20  any upcoming concert (date >= today) references this venue
  *   -30  venue_type is bar/restaurant/brewery/coffee_shop AND zero concerts in last 365 days
  *   +5   venue.music_schedule IS NOT NULL
- *
- * Website health (up to 500 venues per run, nulls first then oldest-checked):
  *   +10  HEAD returns 2xx or 3xx within 5s
- *   -20  HEAD returns 4xx or 5xx AND last_checked_at was already set (repeat failure)
- *        first failure: update last_checked_at only, no score penalty
+ *   -20  HEAD returns 4xx or 5xx (repeat failure)
+ *   -10  Google Places businessStatus = CLOSED_TEMPORARILY
+ *   -50  Google Places businessStatus = CLOSED_PERMANENTLY
+ *
+ * score_factors JSONB is written alongside music_score for auditability.
+ * business_status is polled for up to 100 venues/run (nulls first).
  *
  * Writes a cron_runs record on completion.
  */
@@ -23,12 +25,14 @@ import { createClient } from '@supabase/supabase-js'
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-const VENUE_BATCH_SIZE      = 200
-const WEBSITE_CHECK_LIMIT   = 500
-const HEAD_TIMEOUT_MS       = 5000
-const HEAD_CONCURRENCY      = 10
-const HEAD_BATCH_DELAY_MS   = 200
-const USER_AGENT            = 'freelivemusic-healthcheck/1.0'
+const VENUE_BATCH_SIZE       = 200
+const WEBSITE_CHECK_LIMIT    = 500
+const STATUS_CHECK_LIMIT     = 100   // Google Places API calls per run
+const HEAD_TIMEOUT_MS        = 5000
+const HEAD_CONCURRENCY       = 10
+const HEAD_BATCH_DELAY_MS    = 200
+const PLACES_CONCURRENCY     = 5
+const USER_AGENT             = 'freelivemusic-healthcheck/1.0'
 
 const CASUAL_VENUE_TYPES = new Set(['bar', 'restaurant', 'brewery', 'coffee_shop'])
 
@@ -49,6 +53,8 @@ const supabase = createClient(
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
+type BusinessStatus = 'OPERATIONAL' | 'CLOSED_TEMPORARILY' | 'CLOSED_PERMANENTLY'
+
 interface Venue {
   id: string
   name: string
@@ -56,6 +62,9 @@ interface Venue {
   website: string | null
   music_schedule: string | null
   last_checked_at: string | null
+  google_place_id: string | null
+  business_status: BusinessStatus | null
+  status_checked_at: string | null
 }
 
 interface ConcertRef {
@@ -65,6 +74,33 @@ interface ConcertRef {
 }
 
 // ── Website health check ──────────────────────────────────────────────────────
+
+/** Fetch businessStatus from Google Places API (New) for a place_id. */
+async function fetchBusinessStatus(placeId: string): Promise<BusinessStatus | null> {
+  const apiKey = process.env.GOOGLE_PLACES_API_KEY
+  if (!apiKey) return null
+  try {
+    const res = await fetch(
+      `https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`,
+      {
+        headers: {
+          'X-Goog-Api-Key': apiKey,
+          'X-Goog-FieldMask': 'businessStatus',
+        },
+        signal: AbortSignal.timeout(8000),
+      }
+    )
+    if (!res.ok) return null
+    const data = await res.json() as { businessStatus?: string }
+    const s = data.businessStatus
+    if (s === 'OPERATIONAL' || s === 'CLOSED_TEMPORARILY' || s === 'CLOSED_PERMANENTLY') {
+      return s
+    }
+    return null
+  } catch {
+    return null
+  }
+}
 
 /** Returns the HTTP status of a HEAD request, or null on network error. */
 async function headStatus(url: string): Promise<number | null> {
@@ -148,7 +184,7 @@ async function handle(req: NextRequest) {
     // ── 1. Load all venues (ordered for website-check priority) ──────────────
     const { data: venues, error: venueErr } = await supabase
       .from('venues')
-      .select('id, name, venue_type, website, music_schedule, last_checked_at')
+      .select('id, name, venue_type, website, music_schedule, last_checked_at, google_place_id, business_status, status_checked_at')
       .order('last_checked_at', { ascending: true, nullsFirst: true })
 
     if (venueErr) throw venueErr
@@ -245,6 +281,41 @@ async function handle(req: NextRequest) {
       }
     })
 
+    // ── 3b. Poll Google Places businessStatus ────────────────────────────────
+    // Check venues that have a place_id but no status yet (nulls first),
+    // capped at STATUS_CHECK_LIMIT per run to stay within API quotas.
+    const statusCandidates = venues
+      .filter(v => v.google_place_id)
+      .sort((a, b) => {
+        // nulls first, then oldest checked first
+        if (!a.status_checked_at && b.status_checked_at) return -1
+        if (a.status_checked_at && !b.status_checked_at) return 1
+        return (a.status_checked_at ?? '').localeCompare(b.status_checked_at ?? '')
+      })
+      .slice(0, STATUS_CHECK_LIMIT)
+
+    // Map venue.id → fetched business status (for score computation below)
+    const businessStatusMap = new Map<string, BusinessStatus | null>()
+    let statuses_checked = 0
+
+    await batchSettled(statusCandidates, PLACES_CONCURRENCY, 100, async (venue) => {
+      const status = await fetchBusinessStatus(venue.google_place_id!)
+      businessStatusMap.set(venue.id, status)
+      statuses_checked++
+
+      try {
+        await supabase
+          .from('venues')
+          .update({
+            business_status: status,
+            status_checked_at: new Date().toISOString(),
+          })
+          .eq('id', venue.id)
+      } catch (err) {
+        console.error(`[venue-health] business_status update failed for ${venue.id}:`, err)
+      }
+    })
+
     // ── 4. Compute final score per venue and batch-update ───────────────────
     let venues_processed = 0
 
@@ -256,16 +327,24 @@ async function handle(req: NextRequest) {
           const vid  = venue.id
           const vnam = venue.name ? venue.name.toLowerCase().trim() : ''
 
-          let score = 0
+          // Build score_factors for auditability
+          const factors: Record<string, number> = {
+            recent:          0,
+            upcoming:        0,
+            casual_penalty:  0,
+            schedule:        0,
+            website:         0,
+            status:          0,
+          }
 
           // +30 if any concert in last 90 days
           if (venueIdRecent.has(vid) || nameRecent.has(vnam)) {
-            score += 30
+            factors.recent = 30
           }
 
           // +20 if any upcoming concert
           if (venueIdUpcoming.has(vid) || nameUpcoming.has(vnam)) {
-            score += 20
+            factors.upcoming = 20
           }
 
           // -30 if casual type AND zero concerts in last 365 days
@@ -273,26 +352,37 @@ async function handle(req: NextRequest) {
             venue.venue_type && CASUAL_VENUE_TYPES.has(venue.venue_type) &&
             !venueIdPastYear.has(vid) && !namePastYear.has(vnam)
           ) {
-            score -= 30
+            factors.casual_penalty = -30
           }
 
           // +5 if has music schedule description
           if (venue.music_schedule !== null) {
-            score += 5
+            factors.schedule = 5
           }
 
           // Apply website score delta (only for venues that were checked)
-          const delta = websiteScoreDelta.get(vid)
-          if (delta !== undefined) {
-            score += delta
+          const wDelta = websiteScoreDelta.get(vid)
+          if (wDelta !== undefined) {
+            factors.website = wDelta
           }
 
+          // Apply business_status penalty using freshly-fetched or cached value
+          const bStatus = businessStatusMap.has(vid)
+            ? businessStatusMap.get(vid)
+            : venue.business_status
+          if (bStatus === 'CLOSED_PERMANENTLY') {
+            factors.status = -50
+          } else if (bStatus === 'CLOSED_TEMPORARILY') {
+            factors.status = -10
+          }
+
+          const score = Object.values(factors).reduce((a, b) => a + b, 0)
           bucket(scoreDist, score)
 
           try {
             await supabase
               .from('venues')
-              .update({ music_score: score })
+              .update({ music_score: score, score_factors: factors })
               .eq('id', vid)
             venues_processed++
           } catch (err) {
@@ -307,6 +397,7 @@ async function handle(req: NextRequest) {
     const stats = {
       venues_processed,
       websites_checked,
+      statuses_checked,
       score_distribution: scoreDist,
     }
 
