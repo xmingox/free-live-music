@@ -166,8 +166,11 @@ CREATE TABLE venues (
   google_place_id TEXT,
   submitted_by    TEXT,
 
-  music_score     INTEGER,
-  last_checked_at TIMESTAMPTZ,
+  music_score      INTEGER,
+  score_factors    JSONB,
+  last_checked_at  TIMESTAMPTZ,
+  business_status  TEXT,
+  status_checked_at TIMESTAMPTZ,
 
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
