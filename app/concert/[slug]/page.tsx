@@ -1,4 +1,4 @@
-import { notFound, permanentRedirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { Concert } from '@/types'
 import Link from 'next/link'
 import { cityCodeToSlug, getMetroByCode } from '@/lib/city-slugs'
@@ -112,7 +112,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   const city = getMetroByCode(concert.city)?.city ?? concert.city
   const canonicalUrl = `https://www.freelivemusic.co/concert/${slug}`
-  const normalMetadata = {
+
+  if (concert.date < new Date().toISOString().split('T')[0]) {
+    return {
+      title: `${concert.artist_name} — Past Concert | Free Live Music`,
+      robots: { index: false, follow: true },
+    }
+  }
+
+  return {
     title: `${concert.artist_name} — Free Concert in ${city} | Free Live Music`,
     description: `${concert.artist_name} performs free at ${concert.venue} in ${concert.neighborhood}, ${city} on ${formatDate(concert.date)}. Free admission.`,
     alternates: { canonical: canonicalUrl },
@@ -124,8 +132,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       type: 'website',
     },
   }
-
-  return normalMetadata
 }
 
 export default async function ConcertPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -135,10 +141,25 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
 
   const today = new Date().toISOString().split('T')[0]
 
-  // Past concerts redirect to the city listing — 308 permanent so crawlers follow
   if (concert.date < today) {
     const citySlug = cityCodeToSlug[concert.city]
-    permanentRedirect(citySlug ? `/concerts/${citySlug}` : '/')
+    const city = getMetroByCode(concert.city)?.city ?? concert.city
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center px-4 text-center">
+        <meta name="robots" content="noindex,follow" />
+        <div className="text-5xl mb-4">🎵</div>
+        <h1 className="text-2xl font-bold mb-2">This show has passed</h1>
+        <p className="text-slate-400 mb-6 max-w-sm">
+          {concert.artist_name} at {concert.venue} was on {formatDate(concert.date)}.
+        </p>
+        <Link
+          href={citySlug ? `/concerts/${citySlug}` : '/'}
+          className="px-6 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold transition-colors"
+        >
+          Find upcoming free music in {city} →
+        </Link>
+      </div>
+    )
   }
 
   const [venueSlug, related, venueConcerts, neighborhoodConcerts] = await Promise.all([

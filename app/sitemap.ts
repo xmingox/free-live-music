@@ -2,6 +2,8 @@ import { MetadataRoute } from 'next'
 import { createClient } from '@supabase/supabase-js'
 import { getAllMetros, cityCodeToSlug, aliasSlugMap } from '@/lib/city-slugs'
 import { GUIDE_CITIES } from '@/lib/city-guides'
+import { getActiveStateSlugs, stateCodeToSlug } from '@/lib/state-slugs'
+import { seriesSlug } from '@/lib/series'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createClient(
@@ -115,6 +117,39 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }))
 
+  const stateUrls: MetadataRoute.Sitemap = getActiveStateSlugs().map((slug) => ({
+    url: `https://www.freelivemusic.co/free-concerts/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  }))
+
+  // Artist pages: 3+ shows AND at least one show >= 14 days out
+  const fourteenDaysOut = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  const { data: artistRows } = await supabase
+    .from('concerts')
+    .select('artist_name, date')
+    .eq('is_verified', true)
+    .gte('date', today)
+    .not('artist_name', 'is', null)
+
+  const artistMap = new Map<string, { count: number; hasFuture14: boolean }>()
+  for (const row of artistRows ?? []) {
+    const entry = artistMap.get(row.artist_name) ?? { count: 0, hasFuture14: false }
+    entry.count++
+    if (row.date >= fourteenDaysOut) entry.hasFuture14 = true
+    artistMap.set(row.artist_name, entry)
+  }
+
+  const artistUrls: MetadataRoute.Sitemap = [...artistMap.entries()]
+    .filter(([, v]) => v.count >= 3 && v.hasFuture14)
+    .map(([name]) => ({
+      url: `https://www.freelivemusic.co/artist/${seriesSlug(name)}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.5,
+    }))
+
   return [
     {
       url: 'https://www.freelivemusic.co',
@@ -123,11 +158,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     ...cityUrls,
+    ...stateUrls,
     ...tonightUrls,
     ...weekendUrls,
     ...thisWeekUrls,
     ...venueListUrls,
     ...aliasUrls,
+    ...artistUrls,
     ...concertUrls,
     ...venueDetailUrls,
   ]
