@@ -68,8 +68,8 @@ export async function generateMetadata({
       : { index: true, follow: true },
     alternates: {
       canonical: belowThreshold
-        ? `https://freelivemusic.co/concerts/${cityCodeToSlug[aliasCity.parentMetroCode]}`
-        : `https://freelivemusic.co/concerts/city/${alias}`,
+        ? `https://www.freelivemusic.co/concerts/${cityCodeToSlug[aliasCity.parentMetroCode]}`
+        : `https://www.freelivemusic.co/concerts/city/${alias}`,
     },
   }
 }

@@ -66,14 +66,23 @@ export async function generateMetadata(
   )
   const { data } = await supabase
     .from('venues')
-    .select('name, neighborhood, city, music_schedule, music_score')
+    .select('id, name, neighborhood, city, music_schedule, music_score')
     .eq('slug', slug)
     .single()
   if (!data) return { title: 'Venue Not Found' }
 
   const metro = getMetroByCode(metroCode)
   const canonicalUrl = `https://www.freelivemusic.co/venues/${citySlug}/${slug}`
-  const noindex = !data.music_schedule && (data.music_score ?? 0) < -20
+
+  const today = new Date().toISOString().split('T')[0]
+  const { count: upcomingCount } = await supabase
+    .from('concerts')
+    .select('id', { count: 'exact', head: true })
+    .eq('venue_id', data.id)
+    .gte('date', today)
+    .eq('is_verified', true)
+
+  const noindex = (upcomingCount === 0 && !data.music_schedule) || (data.music_score ?? 0) < -20
 
   return {
     title: `${data.name} — Free Live Music Venue in ${metro?.city ?? data.city} | Free Live Music`,
