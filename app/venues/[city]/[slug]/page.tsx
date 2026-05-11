@@ -161,6 +161,25 @@ export default async function VenuePage(
     } : undefined,
     url: v.website ?? canonicalUrl,
     ...(v.lat && v.lng ? { geo: { '@type': 'GeoCoordinates', latitude: v.lat, longitude: v.lng } } : {}),
+    ...(shows.length > 0 ? {
+      event: shows.slice(0, 10).map((c) => ({
+        '@type': 'MusicEvent',
+        name: c.artist_name,
+        startDate: c.time ? `${c.date}T${c.time}` : c.date,
+        location: {
+          '@type': 'Place',
+          name: v.name,
+          address: v.address ? {
+            '@type': 'PostalAddress',
+            streetAddress: v.address,
+            addressLocality: metro.city,
+            addressRegion: metro.state,
+          } : undefined,
+        },
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', availability: 'https://schema.org/InStock' },
+        url: `https://www.freelivemusic.co/concert/${c.slug}`,
+      })),
+    } : {}),
   }
 
   return (

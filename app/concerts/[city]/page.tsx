@@ -308,14 +308,14 @@ export default async function CityPage({
       <main className="max-w-6xl mx-auto px-4 py-12">
         {/* Quick date filter links */}
         <div className="flex flex-wrap gap-3 mb-8">
-          <Link
-            href={`/concerts/${cityParam}/tonight`}
+          <a
+            href="#tonight"
             className="px-4 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-sm font-medium hover:bg-blue-100 transition"
           >
             Tonight
-          </Link>
+          </a>
           <Link
-            href={`/concerts/${cityParam}/this-weekend`}
+            href={`/this-weekend/${citySlug}`}
             className="px-4 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-sm font-medium hover:bg-blue-100 transition"
           >
             This Weekend
@@ -324,6 +324,30 @@ export default async function CityPage({
 
         {concerts && concerts.length > 0 ? (
           <>
+            {/* Tonight strip */}
+            {(() => {
+              const today = new Date().toISOString().split('T')[0]
+              const tonightShows = concerts.filter((c) => c.date === today)
+              if (!tonightShows.length) return null
+              return (
+                <section id="tonight" className="mb-10 scroll-mt-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <h2 className="text-lg font-bold text-slate-900">
+                      Live Tonight in {metro!.city}
+                    </h2>
+                    <span className="text-sm text-slate-500">({tonightShows.length} show{tonightShows.length !== 1 ? 's' : ''})</span>
+                  </div>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                    {tonightShows.map((c) => (
+                      <ConcertCard key={c.id} concert={c} />
+                    ))}
+                  </div>
+                  <div className="border-t border-slate-200" />
+                </section>
+              )
+            })()}
+
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
               {concerts.map((concert) => (
                 <ConcertCard key={concert.id} concert={concert} />

@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { createClient } from '@supabase/supabase-js'
 import { getAllMetros, cityCodeToSlug, aliasSlugMap } from '@/lib/city-slugs'
+import { GUIDE_CITIES } from '@/lib/city-guides'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createClient(
@@ -93,6 +94,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }))
 
+  const weekendUrls: MetadataRoute.Sitemap = GUIDE_CITIES.map((c) => ({
+    url: `https://www.freelivemusic.co/this-weekend/${c.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  }))
+
   return [
     {
       url: 'https://www.freelivemusic.co',
@@ -101,6 +109,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     ...cityUrls,
+    ...weekendUrls,
     ...venueListUrls,
     ...aliasUrls,
     ...concertUrls,
