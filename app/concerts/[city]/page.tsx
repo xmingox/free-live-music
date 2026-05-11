@@ -12,6 +12,7 @@ import {
   cityToSlug,
   getAliasCityFromSlug,
 } from '@/lib/city-slugs'
+import { computeRecurringSeries } from '@/lib/series'
 
 export const revalidate = 3600 // Revalidate every hour
 
@@ -208,6 +209,7 @@ export default async function CityPage({
 
   const concerts = await getConcertsByCity(metro)
   const insights = getCityInsights(concerts, metro)
+  const recurringSeries = computeRecurringSeries(concerts)
 
   // FAQPage structured data — answers vary by city based on real concert data
   const faqItems: { q: string; a: string }[] = [
@@ -375,6 +377,29 @@ export default async function CityPage({
               Back to Home
             </Link>
           </div>
+        )}
+
+        {/* Recurring Series */}
+        {recurringSeries.length > 0 && (
+          <section className="mt-8 pt-8 border-t border-slate-200">
+            <h2 className="text-lg font-bold text-slate-900 mb-4">
+              Recurring Concert Series in {metro.city}
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {recurringSeries.map((s) => (
+                <Link
+                  key={s.slug}
+                  href={`/series/${citySlug}/${s.slug}`}
+                  className="group flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition text-sm"
+                >
+                  <span className="font-medium text-slate-800 group-hover:text-blue-700">
+                    {s.artistName}
+                  </span>
+                  <span className="text-slate-400 text-xs">{s.count} shows</span>
+                </Link>
+              ))}
+            </div>
+          </section>
         )}
       </main>
 
