@@ -92,6 +92,17 @@ async function getNeighborhoodsForType(metroCode: string, venueType: string): Pr
     .map(([name]) => name)
 }
 
+// Minimum venues to show before triggering the low-score fallback
+const MIN_DISPLAY = 8
+
+function isQualified(v: VenueWithCount): boolean {
+  return (
+    v.upcoming_show_count > 0 ||
+    (v.music_score ?? -999) > 0 ||
+    v.music_schedule != null
+  )
+}
+
 async function getVenuesByType(metroCode: string, venueType: string): Promise<VenueWithCount[]> {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -121,13 +132,26 @@ async function getVenuesByType(metroCode: string, venueType: string): Promise<Ve
     if (row.venue_id) countMap[row.venue_id] = (countMap[row.venue_id] || 0) + 1
   }
 
-  return (venues as Venue[])
+  const all = (venues as Venue[])
     .map(v => ({ ...v, upcoming_show_count: countMap[v.id] || 0 }))
     .sort((a, b) =>
       b.upcoming_show_count - a.upcoming_show_count ||
       (b.music_score ?? -999) - (a.music_score ?? -999) ||
       a.name.localeCompare(b.name)
     )
+
+  // Apply confidence-tier filter: upcoming shows → score > 0 → has schedule
+  const qualified = all.filter(isQualified)
+
+  // Fallback: if too few pass the filter, fill up to MIN_DISPLAY with the
+  // highest-scoring remaining venues so the page never goes empty
+  if (qualified.length < MIN_DISPLAY) {
+    const excluded = all.filter(v => !isQualified(v))
+    const needed = MIN_DISPLAY - qualified.length
+    return [...qualified, ...excluded.slice(0, needed)]
+  }
+
+  return qualified
 }
 
 export async function generateTypeHubMetadata(

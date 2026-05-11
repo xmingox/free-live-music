@@ -26,9 +26,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     offset += pageSize
   }
 
-  const { data: venues } = await supabase
+  const { data: venueRows } = await supabase
     .from('venues')
-    .select('slug, city, updated_at')
+    .select('slug, city, updated_at, music_score, music_schedule')
+
+  // Exclude venues with negative score AND no music schedule — these are
+  // Google Places entries with no evidence of live music (Opus recommendation).
+  // Venues with upcoming shows won't have negative scores (weekly cron adds +20).
+  const venues = (venueRows ?? []).filter(v =>
+    (v.music_score ?? 0) >= 0 || v.music_schedule != null
+  )
 
   const concertUrls: MetadataRoute.Sitemap = allConcerts.map((c) => ({
     url: `https://www.freelivemusic.co/concert/${c.slug}`,
