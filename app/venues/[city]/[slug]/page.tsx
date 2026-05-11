@@ -10,6 +10,7 @@ import { VENUE_TYPE_CONFIGS } from '../type-hub-page'
 import { venueConfidence, CONFIDENCE_CONFIG } from '@/lib/venue-confidence'
 import SiteNav from '@/components/SiteNav'
 import SiteFooter from '@/components/SiteFooter'
+import { bookingSearchUrl } from '@/lib/affiliate'
 
 export async function generateStaticParams() {
   const supabase = createClient(
@@ -406,6 +407,29 @@ export default async function VenuePage(
             )}
           </section>
         )}
+
+        {/* Hotel affiliate */}
+        {(() => {
+          const hotelDate = shows.length > 0
+            ? shows[0].date
+            : new Date(Date.now() + 86400000).toISOString().split('T')[0]
+          const hotelUrl = bookingSearchUrl(metro.city, metro.state, hotelDate)
+          return (
+            <a
+              href={hotelUrl}
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              className="flex items-center justify-between w-full bg-slate-900 border border-slate-700/50 hover:border-slate-600 rounded-xl px-4 py-3 mt-8 mb-2 transition-colors group"
+            >
+              <span className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
+                Visiting {metro.city}? Find hotels near this venue
+              </span>
+              <span className="text-xs text-slate-500 group-hover:text-violet-400 transition-colors shrink-0 ml-2">
+                Hotels ↗
+              </span>
+            </a>
+          )
+        })()}
 
         {/* Elevated Claim CTA for unverified venues */}
         {confidence === 'unverified' && (

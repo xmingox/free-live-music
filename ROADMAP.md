@@ -1,36 +1,52 @@
 # freelivemusic.co — Strategic Roadmap
 > Generated: May 10, 2026 | Source: Claude Opus strategic review
+> Last updated: May 10, 2026 (end of session 5)
 
 ---
 
-## Current State (as of May 10, 2026)
+## Current State (as of May 10, 2026 — end of session 5)
 
 ### What's built ✅
 - **57 structured importers** in `lib/importers/` (NYC Parks, SummerStage, Getty, LACMA, Grand Performances, Lincoln Center, Levitt LA, Naumburg, Bryant Park, NY Phil, Hudson Yards, Stern Grove, SF/Chicago/Austin/DC/Boston/Denver/Portland/Seattle city importers, 30+ OC/LA city importers)
 - **Daily cron** at 06:00 UTC via `vercel.json` → `/api/import` (all importers, direct write to `concerts`)
+- **9 cron jobs** in `vercel.json` — endpoints exist at `/api/maintenance/*` and `/api/import/search`; untested end-to-end
 - **`event_submissions` table** — exists, currently only for user-submitted events
 - **`/moderation` page** — exists, password-protected, handles user submissions only
 - **`metro_crawl_log` table** — exists in DB
-- **`sources` + `event_series` tables** — exist in DB
-- **`music_frequency` column** on venues — sparsely populated
-- **57+ venue type hub pages** (bars, breweries, parks, restaurants, amphitheaters, coffee-shops per city)
-- **Neighborhood hub pages** — on-demand rendering
-- **`Event` JSON-LD** on concert detail pages, **`MusicVenue` JSON-LD** on venue detail pages
-- **Sitemap** — 4-tier (concerts, cities, venues, type-hubs)
-- **PageSpeed: 91/100 mobile** (was 99 May 8 — likely variance; LCP 3.1s vs 2.0s)
+- **`music_score` column on venues** — exists in DB (referenced in sitemap filter and venue noindex logic)
+- **57+ venue type hub pages** (bars, breweries, parks, restaurants, amphitheaters, coffee-shops per city) with `ItemList` JSON-LD
+- **Neighborhood hub pages** — on-demand rendering, with `ItemList` JSON-LD
+- **`MusicEvent` JSON-LD** on concert detail pages, **`MusicVenue` JSON-LD** on venue detail pages
+- **`FAQPage` JSON-LD** on city listing pages
+- **`ItemList` JSON-LD** on city listing pages (top 20 events), type-hub pages, neighborhood hub pages
+- **`BreadcrumbList` JSON-LD** on tonight/this-week/this-weekend/artist/concert pages
+- **`MusicGroup` JSON-LD** on artist pages
+- **Sitemap** — 5-tier: concerts, cities, state hubs, venues, type-hubs + artist entries (gated 3+ shows, 14+ days out)
+- **`/tonight/[city]`**, **`/this-week/[city]`**, **`/this-weekend/[city]`** — timezone-aware (city-local date via IANA tz)
+- **`/this-week/[city]`** — Mon–Fri window, grouped by day, ISR 1h
+- **`/concerts/[city]/feed.xml`** — Atom 1.0 feed, RSS autodiscovery in city page metadata
+- **`/artist/[slug]`** — artist schedule pages, on-demand ISR, resolves by slug→name
+- **`/free-concerts/[state]`** — 47 state hub pages, city grid sorted by show count, `ItemList` JSON-LD
+- **Internal linking** on concert detail: "More at this venue", "More in {neighborhood}", "More in {city}" sections
+- **Past concerts** — noindex + "show has passed" page (replaced 308 redirect)
+- **Venue noindex** — venues with 0 upcoming shows + no music_schedule now get `robots: noindex`
+- **PageSpeed: 99/100 mobile** (May 10, 2026)
+- **non-www → www** — 308 permanent redirect in `next.config.ts`
 
-### Key gaps
+### Key gaps (as of May 10, 2026)
 - `event_submissions` queue not used by automated pipeline (importers write directly to `concerts`)
 - `scrape-concerts.ts` outputs JSON file instead of writing to submissions queue
-- `music_score` doesn't exist on venues (only `music_frequency`)
-- No `cron_runs` audit table
+- No `cron_runs` audit table (crons run blind — no success/failure tracking)
+- `last_checked_at` column missing from venues
 - `ImportRow.city` type only covers 10 cities (`'NYC' | 'LA' | 'SF' | ...`)
-- `supabase/schema.sql` is stale (only NYC/LA, not 177 metros)
+- `supabase/schema.sql` is stale
 - No per-event analytics (views, outbound clicks)
 - Home page deep links (`/?city=NYC&date=tonight`) not server-rendered → uncrawlable
-- No `ItemList` JSON-LD on city/type-hub/venue-list pages
-- Past concerts return 404 not 410 Gone
-- Internal link density is low
+- Footer only links to 12 cities (roadmap calls for 30)
+- 551 venue pages "crawled not indexed" (thin content) — venue noindex fix deployed, will take weeks to reflect
+- 2,090 pages "discovered not indexed" — non-www URLs in Google's crawl queue, resolving via 308 redirect
+- Top-25 city evergreen pages not built
+- PWA service worker not built
 
 ---
 
@@ -123,6 +139,28 @@ Add 7 more crons to `vercel.json`:
 ---
 
 ## Ongoing / Backlog
+
+### Concert Detail Page — Trust Signals + User Reporting
+> Reviewed with Opus, May 10, 2026. Do not build yet — archive for implementation reference.
+
+#### Source verification nudge (quick, ~15 min)
+Add inline muted text **directly below the "View Official Listing" button**:
+- Default: *"Schedules can change. Confirm with the official source before heading out."*
+- If `last_verified_at` > 7 days old: *"Last verified [N days] ago — double-check the official listing."*
+- If `artist_name` contains "TBA": *"Performer not yet announced — check source for updates."*
+- Not a banner or footer disclaimer — inline with the CTA, smaller muted text only
+
+#### User event reporting form (medium, ~2 hours)
+- **"Report an issue" text link** at bottom of concert detail page (not floating)
+- Opens inline form/dialog with:
+  - Issue type (radio): `Cancelled` / `Wrong date or time` / `Wrong artist` / `Source link broken` / `Other`
+  - Optional comment (textarea, 280 chars max)
+  - Optional email (anonymous fine — requiring email cuts submissions ~70%)
+- **DB storage**: new `event_reports` table — `(id, concert_id, issue_type, comment, reporter_email, created_at, status, ip_hash)`
+- **Notifications**: Resend API → email to owner on each insert (or daily digest if volume grows). Env var: `RESEND_API_KEY`
+- **No admin UI yet** — query Supabase directly until >20 reports/week
+- **Anti-spam**: honeypot field + 3 reports/hour/IP rate limit. Skip CAPTCHA until abuse appears
+- **Do not use Gmail as a destination** — use Resend to forward to existing email; reports live in DB
 
 ### Analytics
 - [ ] Add `event_views` and `outbound_click_count` to `concerts` table
