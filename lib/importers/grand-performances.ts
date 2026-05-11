@@ -3,6 +3,20 @@ import type { ImportRow } from './types'
 const SOURCE_NAME = 'Grand Performances'
 const EVENTS_URL = 'https://www.grandperformances.org/events?format=json'
 
+// GP occasionally lists partnership events at paid venues (e.g. LA County Fair).
+// These are not free-admission concerts — skip them.
+const PAID_VENUE_SIGNALS = [
+  'county fair',
+  'la county fair',
+  'fairplex',
+  'ticketed',
+]
+
+function isPaidEvent(title: string): boolean {
+  const lower = title.toLowerCase()
+  return PAID_VENUE_SIGNALS.some(signal => lower.includes(signal))
+}
+
 export async function scrapeGrandPerformances(): Promise<ImportRow[]> {
   const res = await fetch(EVENTS_URL)
   const data = await res.json()
@@ -14,6 +28,8 @@ export async function scrapeGrandPerformances(): Promise<ImportRow[]> {
     const title = item.title ?? item.fullTitle
     const startDate = item.startDate ?? item.publishOn
     if (!title || !startDate) continue
+
+    if (isPaidEvent(title)) continue
 
     const date = new Date(typeof startDate === 'number' ? startDate : Number(startDate))
     const dateStr = date.toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' })
