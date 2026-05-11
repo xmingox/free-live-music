@@ -45,6 +45,7 @@ type VenueTier = 'verified' | 'scored' | 'scheduled' | 'thin' | 'soft' | 'noinde
 interface AuditStats {
   total: number
   byTier: Record<VenueTier, number>
+  reclaimable: number   // soft/noindexed venues that got a new upcoming show in last 7 days
   noindexedByCity: Record<string, number>
   softByCity: Record<string, number>
   sitemap: { included: number; excluded: number }
@@ -79,9 +80,22 @@ async function run() {
 
     const venuesWithShows = new Set((upcomingRows ?? []).map(r => r.venue_id as string))
 
+    // Fetch venue IDs that got a new upcoming show in the last 7 days (reclaimable)
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    const { data: recentlyAddedRows } = await supabase
+      .from('concerts')
+      .select('venue_id')
+      .gte('date', today)
+      .gte('created_at', sevenDaysAgo)
+      .eq('is_verified', true)
+      .not('venue_id', 'is', null)
+
+    const recentlyAddedVenues = new Set((recentlyAddedRows ?? []).map(r => r.venue_id as string))
+
     const stats: AuditStats = {
       total: venues.length,
       byTier: { verified: 0, scored: 0, scheduled: 0, thin: 0, soft: 0, noindexed: 0 },
+      reclaimable: 0,
       noindexedByCity: {},
       softByCity: {},
       sitemap: { included: 0, excluded: 0 },
@@ -125,6 +139,12 @@ async function run() {
       } else if (tier === 'soft') {
         stats.softByCity[v.city] = (stats.softByCity[v.city] ?? 0) + 1
       }
+
+      // Reclaimable: currently below-par but got a new upcoming show in last 7 days
+      // — venue-health cron should promote these on next Sunday run
+      if ((tier === 'soft' || tier === 'noindexed') && recentlyAddedVenues.has(v.id)) {
+        stats.reclaimable++
+      }
     }
 
     // Sort city maps by count for readability
@@ -160,7 +180,7 @@ async function run() {
 }
 
 async function sendAuditEmail(stats: AuditStats) {
-  const { byTier, sitemap, total, noindexedByCity } = stats
+  const { byTier, sitemap, total, noindexedByCity, reclaimable } = stats
   const topNoindexed = Object.entries(noindexedByCity)
     .slice(0, 10)
     .map(([city, n]) => `${city}: ${n}`)
@@ -180,6 +200,9 @@ Tier breakdown:
   noindexed  (score < -20):         ${byTier.noindexed}
 
 Sitemap: ${sitemap.included} included / ${sitemap.excluded} excluded
+
+Reclaimable (soft/noindexed + new show in last 7 days): ${reclaimable}
+  → These will auto-promote to verified tier on next Sunday's venue-health run.
 
 Top cities by noindexed venues:
   ${topNoindexed || 'none'}

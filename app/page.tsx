@@ -1,8 +1,10 @@
 import { Metadata } from 'next'
+import Link from 'next/link'
 import ConcertsClient from './concerts-client'
 import { getConcerts } from '@/lib/data'
 import { getMetroByCode } from '@/lib/city-slugs'
 import { City } from '@/types'
+import { GUIDE_CITIES } from '@/lib/city-guides'
 
 export const metadata: Metadata = {
   title: 'Free Live Music Near You | freelivemusic.co',
@@ -67,6 +69,35 @@ export default async function Home({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
       />
       <ConcertsClient initialConcerts={concerts.slice(0, 24)} defaultCity={metroCode} />
+      {/* Server-rendered city directory — crawlable canonical links for all city pages */}
+      <nav
+        aria-label="Browse free concerts by city"
+        className="bg-slate-950 border-t border-slate-800/50 px-4 py-8"
+      >
+        <div className="max-w-7xl mx-auto">
+          <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-4">
+            Free Concerts by City — All shows free admission
+          </p>
+          <ul className="flex flex-wrap gap-x-2 gap-y-1">
+            {GUIDE_CITIES.map((c) => (
+              <li key={c.slug} className="flex items-center gap-1 text-xs text-slate-600">
+                <Link href={`/concerts/${c.slug}`} className="hover:text-slate-400 transition-colors">
+                  {c.name}
+                </Link>
+                <span className="text-slate-800">·</span>
+                <Link href={`/tonight/${c.slug}`} className="hover:text-slate-400 transition-colors">
+                  Tonight
+                </Link>
+                <span className="text-slate-800">·</span>
+                <Link href={`/this-weekend/${c.slug}`} className="hover:text-slate-400 transition-colors">
+                  Weekend
+                </Link>
+                <span className="text-slate-800 mx-1">|</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </nav>
     </>
   )
 }
