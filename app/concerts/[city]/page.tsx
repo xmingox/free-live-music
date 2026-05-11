@@ -310,12 +310,12 @@ export default async function CityPage({
       <main className="max-w-6xl mx-auto px-4 py-12">
         {/* Quick date filter links */}
         <div className="flex flex-wrap gap-3 mb-8">
-          <a
-            href="#tonight"
+          <Link
+            href={`/tonight/${citySlug}`}
             className="px-4 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-sm font-medium hover:bg-blue-100 transition"
           >
             Tonight
-          </a>
+          </Link>
           <Link
             href={`/this-weekend/${citySlug}`}
             className="px-4 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-sm font-medium hover:bg-blue-100 transition"
