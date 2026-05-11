@@ -15,12 +15,14 @@
     "@types/mapbox-gl": "^3.4.1",
     "@vercel/analytics": "^2.0.1",
     "cheerio": "^1.2.0",
+    "googleapis": "^171.4.0",
     "lucide-react": "^1.14.0",
     "mapbox-gl": "^3.23.1",
     "next": "^15.3.1",
     "puppeteer": "^24.42.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "resend": "^6.12.3"
   },
   "browserslist": [
     "last 2 chrome versions",

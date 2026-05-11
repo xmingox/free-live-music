@@ -17,6 +17,7 @@ export interface Concert {
   image_url: string | null
   is_verified: boolean
   is_cancelled: boolean
+  is_tbd?: boolean
   source_url: string | null
   source_name: string | null
   source_id: string | null

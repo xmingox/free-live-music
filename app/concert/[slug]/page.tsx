@@ -6,6 +6,7 @@ import SiteNav from '@/components/SiteNav'
 import SiteFooter from '@/components/SiteFooter'
 import { outboundUrl, bookingSearchUrl } from '@/lib/affiliate'
 import TrackView from '@/components/TrackView'
+import ReportForm from '@/components/ReportForm'
 
 // Use fetch() with next: { revalidate } so Next.js treats this route as ISR.
 // The Supabase JS client uses its own internal fetch that Next.js can't track,
@@ -388,11 +389,18 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
             href={outboundUrl(concert.source_url, 'concert-detail')}
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full text-center bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-semibold py-3 rounded-xl transition-all duration-200 mb-6 text-sm"
+            className="block w-full text-center bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-semibold py-3 rounded-xl transition-all duration-200 mb-2 text-sm"
           >
             View Official Listing ↗
           </a>
         )}
+
+        {/* Trust nudge */}
+        <p className="text-xs text-slate-500 mb-6 leading-relaxed">
+          {concert.is_tbd
+            ? 'Performer not yet announced — check the official source for updates.'
+            : 'Schedules can change. Confirm with the official source before heading out.'}
+        </p>
 
         {/* Hotel affiliate — shown only for destination metros */}
         {(() => {
@@ -509,6 +517,10 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
             )}
           </section>
         )}
+        {/* Report an issue */}
+        <div className="mt-10 pt-6 border-t border-slate-800">
+          <ReportForm concertId={concert.id} concertSlug={slug} />
+        </div>
       </main>
       <SiteFooter cityLine={`Free live music in ${city} · No tickets needed`} />
     </div>
