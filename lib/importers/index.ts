@@ -42,7 +42,6 @@ import { getCulverCityShows } from './culver-city'
 import { getManhattanBeachShows } from './manhattan-beach'
 import { getElSegundoShows } from './el-segundo'
 import { getRedondoBeachShows } from './redondo-beach'
-import { getIrvineConcertShows } from './irvine-concerts'
 import { getIrvineSymphonyShows } from './irvine-symphony'
 import { getPacificSymphonyShows, getSymphonyInTheCitiesShows } from './pacific-symphony'
 import { scrapeLincolnCenter } from './lincoln-center'
@@ -58,7 +57,7 @@ import type { ImportRow } from './types'
 import { loadSuppressions, filterSuppressed } from './suppression'
 
 const ASYNC_SOURCES = [fetchNYCParks, scrapeGrandPerformances, getLevittLAShows, getLaPalmaShows]
-const SYNC_SOURCES  = [getWashingtonDCShows, getBostonShows, getDenverShows, getPortlandShows, getAustinShows, getSeattleShows, getChicagoShows, getSternGroveShows, getMarinaDelReyShows, getTorranceShows, getSantaClaritaShows, getGlendaleShows, getBeverlyHillsShows, getAlhambraShows, getNoHoShows, getArcadiaShows, getThousandOaksShows, getSimiValleyShows, getCamarilloShows, getHermosaBeachShows, getPlayaVistaShows, getSantaMonicaShows, getCulverCityShows, getManhattanBeachShows, getElSegundoShows, getRedondoBeachShows, getIrvineConcertShows, getIrvineSymphonyShows, getHuntingtonBeachPierShows, getMissionViejoShows, getRanchoSantaMargaritaShows, getBreaConcertShows, getCostaMesaShows, getDanaPointShows, getSanClementeShows, getPacificSymphonyShows, getSymphonyInTheCitiesShows, scrapeLincolnCenter, getOCCitiesShows, getSkirballShows, getPasadenaShows, getLongBeachShows, getOCParksShows, getSummerStageShows, getGettyShows, getLACMAShows, getLACMALatinShows, getNaumburgShows, getCelebrateBrooklynShows, getNYPhilShows, getBryantParkShows, getHudsonYardsShows]
+const SYNC_SOURCES  = [getWashingtonDCShows, getBostonShows, getDenverShows, getPortlandShows, getAustinShows, getSeattleShows, getChicagoShows, getSternGroveShows, getMarinaDelReyShows, getTorranceShows, getSantaClaritaShows, getGlendaleShows, getBeverlyHillsShows, getAlhambraShows, getNoHoShows, getArcadiaShows, getThousandOaksShows, getSimiValleyShows, getCamarilloShows, getHermosaBeachShows, getPlayaVistaShows, getSantaMonicaShows, getCulverCityShows, getManhattanBeachShows, getElSegundoShows, getRedondoBeachShows, getIrvineSymphonyShows, getHuntingtonBeachPierShows, getMissionViejoShows, getRanchoSantaMargaritaShows, getBreaConcertShows, getCostaMesaShows, getDanaPointShows, getSanClementeShows, getPacificSymphonyShows, getSymphonyInTheCitiesShows, scrapeLincolnCenter, getOCCitiesShows, getSkirballShows, getPasadenaShows, getLongBeachShows, getOCParksShows, getSummerStageShows, getGettyShows, getLACMAShows, getLACMALatinShows, getNaumburgShows, getCelebrateBrooklynShows, getNYPhilShows, getBryantParkShows, getHudsonYardsShows]
 
 export async function runImport(): Promise<{ inserted: number; skipped: number; suppressed: number; errors: string[] }> {
   const supabase = createClient(
