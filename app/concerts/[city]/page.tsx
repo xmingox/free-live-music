@@ -4,6 +4,7 @@ import { Concert } from '@/types'
 import ConcertCard from '@/components/ConcertCard'
 import { createClient } from '@supabase/supabase-js'
 import { MOCK_CONCERTS } from '@/lib/mock-data'
+import { notFound } from 'next/navigation'
 import {
   getCityCodeFromSlug,
   getMetroByCode,
@@ -172,43 +173,10 @@ export default async function CityPage({
   const citySlug = cityParam.toLowerCase()
   const cityCode = getCityCodeFromSlug(citySlug)
 
-  // Handle invalid city
-  if (!cityCode) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-        <div className="max-w-4xl mx-auto px-4 py-20">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4 text-slate-900">City Not Found</h1>
-            <p className="text-lg text-slate-600 mb-8">
-              We don't have listings for that city yet. Try one of these:
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-              {getAllCityCodes().map((code) => {
-                const metro = getMetroByCode(code)
-                const slug = cityCodeToSlug[code]
-                if (!metro || !slug) return null
-
-                return (
-                  <Link
-                    key={code}
-                    href={`/concerts/${slug}`}
-                    className="px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition"
-                  >
-                    {metro.city}
-                  </Link>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  if (!cityCode) notFound()
 
   const metro = getMetroByCode(cityCode)
-  if (!metro) {
-    return <div className="text-center py-20">City data not found</div>
-  }
+  if (!metro) notFound()
 
   const concerts = await getConcertsByCity(metro)
   const insights = getCityInsights(concerts, metro)

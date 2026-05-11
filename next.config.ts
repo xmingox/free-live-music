@@ -7,6 +7,17 @@ const nextConfig: NextConfig = {
   // Permanent redirects: strip trailing slashes for canonical consistency
   trailingSlash: false,
 
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'freelivemusic.co' }],
+        destination: 'https://www.freelivemusic.co/:path*',
+        permanent: true,
+      },
+    ]
+  },
+
   async headers() {
     return [
       {
