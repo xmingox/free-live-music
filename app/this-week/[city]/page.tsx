@@ -13,6 +13,7 @@ import {
 } from '@/lib/city-slugs'
 import SiteNav from '@/components/SiteNav'
 import SiteFooter from '@/components/SiteFooter'
+import { getMetroTimezone, getLocalDateStr, getLocalDow, addDays, formatDateLabel } from '@/lib/timezone'
 
 export async function generateStaticParams() {
   return GUIDE_CITIES.map((c) => ({ city: c.slug }))
@@ -27,44 +28,32 @@ interface WeekInfo {
   isNextWeek: boolean
 }
 
-function getThisWeekDates(): WeekInfo {
-  const today = new Date()
-  const todayStr = today.toISOString().split('T')[0]
-  const dow = today.getDay() // 0=Sun…6=Sat
+function getThisWeekDates(tz: string): WeekInfo {
+  const todayStr = getLocalDateStr(tz)
+  const dow = getLocalDow(tz) // 0=Sun…6=Sat
 
   // If weekend, advance to next Monday; otherwise step back to this Monday
   const daysToMonday = dow === 0 ? 1 : dow === 6 ? 2 : 1 - dow
-  const monday = new Date(today)
-  monday.setDate(today.getDate() + daysToMonday)
-
-  const friday = new Date(monday)
-  friday.setDate(monday.getDate() + 4)
-
-  const fmt = (d: Date) => d.toISOString().split('T')[0]
-  const monStr = fmt(monday)
-  const friStr = fmt(friday)
+  const monStr = addDays(todayStr, daysToMonday)
+  const friStr = addDays(monStr, 4)
   const queryFrom = todayStr > monStr ? todayStr : monStr
 
+  const labelOpts: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' }
   const weekdays: { date: string; label: string }[] = []
   for (let i = 0; i < 5; i++) {
-    const d = new Date(monday)
-    d.setDate(monday.getDate() + i)
-    const dateStr = fmt(d)
+    const dateStr = addDays(monStr, i)
     if (dateStr >= queryFrom) {
-      weekdays.push({
-        date: dateStr,
-        label: d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }),
-      })
+      weekdays.push({ date: dateStr, label: formatDateLabel(dateStr, labelOpts) })
     }
   }
 
-  const dayLabel = (d: Date) => d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
+  const shortOpts: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' }
   return {
     monday: monStr,
     friday: friStr,
     queryFrom,
     weekdays,
-    weekLabel: `${dayLabel(monday)} – ${dayLabel(friday)}`,
+    weekLabel: `${formatDateLabel(monStr, shortOpts)} – ${formatDateLabel(friStr, shortOpts)}`,
     isNextWeek: dow === 0 || dow === 6,
   }
 }
@@ -107,7 +96,7 @@ export async function generateMetadata({
   const metro = getMetroByCode(cityCode)
   if (!metro) return { title: 'City Not Found' }
 
-  const { weekLabel } = getThisWeekDates()
+  const { weekLabel } = getThisWeekDates(getMetroTimezone(metro.state))
   const title = `Free Concerts This Week in ${metro.city} — ${weekLabel}`
   const description = `Find free live music happening this week (Monday–Friday) in ${metro.city}, ${metro.state}. Browse weekday concerts with no cover charge.`
   const url = `https://www.freelivemusic.co/this-week/${city}`
@@ -132,7 +121,7 @@ export default async function ThisWeekCityPage({
   const metro = getMetroByCode(cityCode)
   if (!metro) return null
 
-  const { monday, friday, queryFrom, weekdays, weekLabel, isNextWeek } = getThisWeekDates()
+  const { monday, friday, queryFrom, weekdays, weekLabel, isNextWeek } = getThisWeekDates(getMetroTimezone(metro.state))
   const concerts = await getWeekConcerts(metro, queryFrom, friday)
   const concertsSlug = cityCodeToSlug[cityCode] ?? citySlug
 

@@ -13,25 +13,20 @@ import {
 } from '@/lib/city-slugs'
 import SiteNav from '@/components/SiteNav'
 import SiteFooter from '@/components/SiteFooter'
+import { getMetroTimezone, getLocalDateStr, getLocalDow, addDays, formatDateLabel } from '@/lib/timezone'
 
 export async function generateStaticParams() {
   return GUIDE_CITIES.map((c) => ({ city: c.slug }))
 }
 
-function getWeekendDates(): { sat: string; sun: string; satLabel: string; sunLabel: string } {
-  const today = new Date()
-  const dow = today.getDay() // 0=Sun … 6=Sat
+function getWeekendDates(tz: string): { sat: string; sun: string; satLabel: string; sunLabel: string } {
+  const todayStr = getLocalDateStr(tz)
+  const dow = getLocalDow(tz) // 0=Sun … 6=Sat
   const daysToSat = dow === 6 ? 0 : dow === 0 ? 6 : 6 - dow
-  const sat = new Date(today)
-  sat.setDate(today.getDate() + daysToSat)
-  const sun = new Date(sat)
-  sun.setDate(sat.getDate() + 1)
-
-  const fmt = (d: Date) => d.toISOString().split('T')[0]
-  const label = (d: Date) =>
-    d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
-
-  return { sat: fmt(sat), sun: fmt(sun), satLabel: label(sat), sunLabel: label(sun) }
+  const sat = addDays(todayStr, daysToSat)
+  const sun = addDays(sat, 1)
+  const labelOpts: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' }
+  return { sat, sun, satLabel: formatDateLabel(sat, labelOpts), sunLabel: formatDateLabel(sun, labelOpts) }
 }
 
 async function getWeekendConcerts(
@@ -74,9 +69,10 @@ export async function generateMetadata({
   const metro = getMetroByCode(cityCode)
   if (!metro) return { title: 'City Not Found' }
 
-  const { sat, sun } = getWeekendDates()
-  const satLabel = new Date(sat + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
-  const sunLabel = new Date(sun + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
+  const tz = getMetroTimezone(metro.state)
+  const { sat, sun } = getWeekendDates(tz)
+  const satLabel = formatDateLabel(sat, { month: 'long', day: 'numeric' })
+  const sunLabel = formatDateLabel(sun, { month: 'long', day: 'numeric' })
 
   const title = `Free Concerts This Weekend in ${metro.city} — ${satLabel} & ${sunLabel}`
   const description = `Find free live music this weekend in ${metro.city}, ${metro.state}. Browse Saturday & Sunday concerts with no cover charge.`
@@ -108,7 +104,8 @@ export default async function ThisWeekendCityPage({
   const metro = getMetroByCode(cityCode)
   if (!metro) return null
 
-  const { sat, sun, satLabel, sunLabel } = getWeekendDates()
+  const tz = getMetroTimezone(metro.state)
+  const { sat, sun, satLabel, sunLabel } = getWeekendDates(tz)
   const concerts = await getWeekendConcerts(metro, sat, sun)
 
   const satConcerts = concerts.filter((c) => c.date === sat)

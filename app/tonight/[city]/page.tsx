@@ -13,6 +13,7 @@ import {
 } from '@/lib/city-slugs'
 import SiteNav from '@/components/SiteNav'
 import SiteFooter from '@/components/SiteFooter'
+import { getMetroTimezone, getLocalDateStr } from '@/lib/timezone'
 
 export async function generateStaticParams() {
   return GUIDE_CITIES.map((c) => ({ city: c.slug }))
@@ -53,8 +54,9 @@ export async function generateMetadata({
   const metro = getMetroByCode(cityCode)
   if (!metro) return { title: 'City Not Found' }
 
-  const today = new Date()
-  const dayLabel = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+  const tz = getMetroTimezone(metro.state)
+  const todayStr = getLocalDateStr(tz)
+  const dayLabel = new Date(todayStr + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' })
   const title = `Free Concerts Tonight in ${metro.city} — ${dayLabel}`
   const description = `Find free live music happening tonight in ${metro.city}, ${metro.state}. Browse tonight's free shows — no cover charge or tickets needed.`
   const url = `https://www.freelivemusic.co/tonight/${city}`
@@ -85,9 +87,10 @@ export default async function TonightCityPage({
   const metro = getMetroByCode(cityCode)
   if (!metro) return null
 
-  const today = new Date().toISOString().split('T')[0]
-  const dayLabel = new Date().toLocaleDateString('en-US', {
-    weekday: 'long', month: 'long', day: 'numeric',
+  const tz = getMetroTimezone(metro.state)
+  const today = getLocalDateStr(tz)
+  const dayLabel = new Date(today + 'T12:00:00Z').toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC',
   })
 
   const concerts = await getTonightConcerts(metro, today)
