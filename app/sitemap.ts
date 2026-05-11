@@ -108,6 +108,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }))
 
+  const thisWeekUrls: MetadataRoute.Sitemap = GUIDE_CITIES.map((c) => ({
+    url: `https://www.freelivemusic.co/this-week/${c.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.5,
+  }))
+
   return [
     {
       url: 'https://www.freelivemusic.co',
@@ -118,6 +125,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...cityUrls,
     ...tonightUrls,
     ...weekendUrls,
+    ...thisWeekUrls,
     ...venueListUrls,
     ...aliasUrls,
     ...concertUrls,

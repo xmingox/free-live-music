@@ -5,6 +5,7 @@ import { cityCodeToSlug, getMetroByCode } from '@/lib/city-slugs'
 import SiteNav from '@/components/SiteNav'
 import SiteFooter from '@/components/SiteFooter'
 import { outboundUrl, bookingSearchUrl } from '@/lib/affiliate'
+import { seriesSlug } from '@/lib/series'
 import TrackView from '@/components/TrackView'
 import ReportForm from '@/components/ReportForm'
 
@@ -255,9 +256,17 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
         </div>
 
         {/* Artist name */}
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4 bg-gradient-to-r from-violet-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2 bg-gradient-to-r from-violet-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
           {concert.artist_name}
         </h1>
+        {!concert.is_tbd && (
+          <Link
+            href={`/artist/${seriesSlug(concert.artist_name)}`}
+            className="text-sm text-violet-400 hover:text-violet-300 transition-colors inline-block mb-4"
+          >
+            All shows by this artist →
+          </Link>
+        )}
 
         {/* Description */}
         <p className="text-slate-300 text-base leading-relaxed mb-8">

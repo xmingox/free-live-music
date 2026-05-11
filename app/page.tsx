@@ -89,6 +89,10 @@ export default async function Home({
                   Tonight
                 </Link>
                 <span className="text-slate-800">·</span>
+                <Link href={`/this-week/${c.slug}`} prefetch={false} className="hover:text-slate-400 transition-colors">
+                  This Week
+                </Link>
+                <span className="text-slate-800">·</span>
                 <Link href={`/this-weekend/${c.slug}`} prefetch={false} className="hover:text-slate-400 transition-colors">
                   Weekend
                 </Link>
