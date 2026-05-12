@@ -77,14 +77,32 @@ export async function generateMetadata(
   const canonicalUrl = `https://www.freelivemusic.co/venues/${citySlug}/${slug}`
 
   const today = new Date().toISOString().split('T')[0]
-  const { count: upcomingCount } = await supabase
-    .from('concerts')
-    .select('id', { count: 'exact', head: true })
-    .eq('venue_id', data.id)
-    .gte('date', today)
-    .eq('is_verified', true)
+  const sixtyDaysAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 
-  const noindex = (upcomingCount === 0 && !data.music_schedule) || (data.music_score ?? 0) < -20
+  const [{ count: upcomingCount }, { data: lastShow }] = await Promise.all([
+    supabase
+      .from('concerts')
+      .select('id', { count: 'exact', head: true })
+      .eq('venue_id', data.id)
+      .gte('date', today)
+      .eq('is_verified', true),
+    supabase
+      .from('concerts')
+      .select('date')
+      .eq('venue_id', data.id)
+      .eq('is_verified', true)
+      .lt('date', today)
+      .order('date', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ])
+
+  const lastShowDate = lastShow?.date ?? null
+  const noindex = (
+    upcomingCount === 0 &&
+    (!lastShowDate || lastShowDate < sixtyDaysAgo) &&
+    !data.music_schedule
+  ) || (data.music_score ?? 0) < -20
 
   return {
     title: `${data.name} — Free Live Music Venue in ${metro?.city ?? data.city} | Free Live Music`,

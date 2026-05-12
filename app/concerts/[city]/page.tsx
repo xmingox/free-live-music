@@ -47,6 +47,20 @@ export async function generateMetadata({
   const title = `Free Live Music & Concerts in ${metro.city}, ${metro.state}`
   const description = `Discover free live music events and concerts in ${metro.city}. Find upcoming shows, venues, and performers. Updated daily.`
 
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  )
+  const today = new Date().toISOString().split('T')[0]
+  const { count: upcomingCount } = await supabase
+    .from('concerts')
+    .select('id', { count: 'exact', head: true })
+    .eq('city', cityCode)
+    .gte('date', today)
+    .eq('is_verified', true)
+
+  const sparse = (upcomingCount ?? 0) < 10
+
   return {
     title,
     description,
@@ -76,7 +90,7 @@ export async function generateMetadata({
       },
     },
     robots: {
-      index: true,
+      index: !sparse,
       follow: true,
     },
   }

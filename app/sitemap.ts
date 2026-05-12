@@ -13,13 +13,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   )
 
   const today = new Date().toISOString().split('T')[0]
-  const allConcerts: { slug: string; date: string; created_at: string }[] = []
+  const allConcerts: { slug: string; date: string; created_at: string; city: string }[] = []
   const pageSize = 1000
   let offset = 0
   while (true) {
     const { data, error } = await supabase
       .from('concerts')
-      .select('slug, date, created_at')
+      .select('slug, date, created_at, city')
       .eq('is_verified', true)
       .eq('is_tbd', false)
       .gte('date', today)
@@ -30,6 +30,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (data.length < pageSize) break
     offset += pageSize
   }
+
+  const cityCountMap: Record<string, number> = {}
+  for (const c of allConcerts) {
+    if (c.city) cityCountMap[c.city] = (cityCountMap[c.city] ?? 0) + 1
+  }
+  const CITY_MIN_CONCERTS = 10
 
   const { data: venueRows } = await supabase
     .from('venues')
@@ -49,12 +55,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }))
 
-  const cityUrls: MetadataRoute.Sitemap = getAllMetros().map((metro) => ({
-    url: `https://www.freelivemusic.co/concerts/${cityCodeToSlug[metro.code]}`,
-    lastModified: new Date(),
-    changeFrequency: 'daily',
-    priority: 0.8,
-  }))
+  const cityUrls: MetadataRoute.Sitemap = getAllMetros()
+    .filter((metro) => (cityCountMap[metro.code] ?? 0) >= CITY_MIN_CONCERTS)
+    .map((metro) => ({
+      url: `https://www.freelivemusic.co/concerts/${cityCodeToSlug[metro.code]}`,
+      lastModified: new Date(),
+      changeFrequency: 'daily' as const,
+      priority: 0.8,
+    }))
 
   // Include alias city pages that have >= 5 upcoming events
   const aliasCityNames = Object.values(aliasSlugMap).map((a) => a.cityName)
