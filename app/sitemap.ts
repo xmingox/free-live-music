@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next'
 import { createClient } from '@supabase/supabase-js'
 import { getAllMetros, cityCodeToSlug, aliasSlugMap } from '@/lib/city-slugs'
 import { GUIDE_CITIES } from '@/lib/city-guides'
+import { GUIDE_SLUGS } from '@/lib/city-guides-data'
 import { getActiveStateSlugs, stateCodeToSlug } from '@/lib/state-slugs'
 import { seriesSlug } from '@/lib/series'
 
@@ -128,6 +129,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
+  const guideUrls: MetadataRoute.Sitemap = GUIDE_SLUGS.map((slug) => ({
+    url: `https://www.freelivemusic.co/free-live-music/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }))
+
   // Artist pages: 3+ shows AND at least one show >= 14 days out
   const fourteenDaysOut = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
   const { data: artistRows } = await supabase
@@ -161,6 +169,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 1,
     },
+    ...guideUrls,
     ...cityUrls,
     ...stateUrls,
     ...tonightUrls,

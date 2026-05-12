@@ -735,6 +735,238 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
       },
     ],
   },
+
+  'san-diego': {
+    slug: 'san-diego',
+    code: 'SD',
+    cityName: 'San Diego',
+    state: 'CA',
+    intro:
+      "San Diego's ideal Mediterranean climate and deeply community-oriented parks culture make it one of the most consistent cities in the country for free outdoor music. With summer concert series running across Balboa Park, Coronado, Santee, and El Cajon simultaneously, and dozens of neighborhood parks hosting their own programs, San Diego delivers high-quality free shows from late spring through early fall with a regularity that larger cities struggle to match.",
+    neighborhoods:
+      "Balboa Park is the undisputed center of San Diego's free music world. The park's outdoor venues host the Twilight in the Park concert series each summer — a long-running program with Tuesday, Wednesday, and Thursday evening shows from June through August. The series draws performers across genres from folk and jazz to big band and world music, all on the park's open-air stages with no tickets or admission required.\n\nCoronado's Spreckels Park is home to the Coronado Promenade Concerts, a Sunday-evening series running from late May through early September. The intimate park setting, with the Victorian Spreckels bandshell as backdrop and neighborhood families spread across the lawn, is one of the most charming free concert settings in California. It fills up early — bring a blanket.\n\nIn the East County, El Cajon's Prescott Promenade hosts the Music on Main series on Friday evenings through summer, while Santee's Town Center Community Park East runs its own Thursday-evening program. North County communities including Carlsbad and Oceanside run their own parallel series, giving San Diego County residents multiple free concert options on any given weekend.",
+    seasons:
+      "The core free concert season runs from late May through early September, when every major series is active simultaneously. Twilight in the Park, the Coronado Promenade, Music on Main, and Santee's series all overlap, creating a summer calendar with multiple free options nearly every evening. June and July offer the densest scheduling.\n\nOutside summer, the Balboa Park museums host free community events with music on museum-free days (second Tuesday of each month). The year-round temperate climate means outdoor performance rarely gets weathered out, even in the off-season.",
+    howToFind:
+      "Balboa Park's event calendar (balboapark.org) covers Twilight in the Park and all other park programming. The City of Coronado lists Promenade concert schedules at coronado.ca.us. San Diego's Parks and Recreation department (sandiego.gov) maintains a city-wide free events calendar. The San Diego Reader publishes weekly free show guides. Our listings page is updated daily with verified upcoming free concerts across all San Diego neighborhoods.",
+    faqs: [
+      {
+        q: 'Is Twilight in the Park at Balboa Park really free?',
+        a: "Yes — Twilight in the Park is completely free with no tickets required. The series runs Tuesday, Wednesday, and Thursday evenings from mid-June through late August on outdoor stages in Balboa Park. Just show up before the show starts (usually around 6:15 pm) and find a spot. Popular nights fill up fast, so arriving 20–30 minutes early is recommended.",
+      },
+      {
+        q: 'What is the Coronado Promenade Concert Series?',
+        a: "The Coronado Promenade Concerts are free Sunday-evening performances at Spreckels Park on the island of Coronado, running from late May through early September. The shows feature local and regional bands covering a variety of genres. Bring a blanket or low-back chair — the park fills with families and neighbors for a classic small-town concert atmosphere. No tickets, no cover, just show up.",
+      },
+      {
+        q: 'When is the best time to catch free music in San Diego?',
+        a: "June and July are the peak months, with Twilight in the Park, the Coronado Promenade, Music on Main in El Cajon, and multiple other series all running concurrently. On a typical Friday or Saturday in July you'll have three or four free concerts happening across the county simultaneously. The season winds down in late August and September as most series wrap their final shows.",
+      },
+    ],
+  },
+
+  'cincinnati': {
+    slug: 'cincinnati',
+    code: 'CIN',
+    cityName: 'Cincinnati',
+    state: 'OH',
+    intro:
+      "Cincinnati has quietly built one of the Midwest's most impressive free concert infrastructures, anchored by Fountain Square in the heart of downtown and the sprawling Smale Riverfront Park along the Ohio. The city's commitment to public music has produced a dense summer calendar with multiple simultaneous series running across neighborhoods — from downtown's iconic square to suburban park amphitheaters in Blue Ash and beyond.",
+    neighborhoods:
+      "Fountain Square is Cincinnati's living room and its free music anchor. The square hosts a busy schedule of free concerts throughout the warm-weather months, from lunchtime shows to evening performances, spanning genres from jazz and blues to country and pop. The square's central location in the heart of downtown makes it a natural gathering point — surrounded by restaurants and bars, it's easy to make a concert the start of an evening rather than the whole plan.\n\nSmale Riverfront Park along the Ohio River hosts two of the city's most popular summer series. The Schmidlapp Event Lawn and the Castellini Esplanade stage draw large crowds for evening shows against a backdrop of the Ohio and the Kentucky hills beyond. The setting is arguably the most scenic of any free concert venue in Cincinnati, and the park's walking paths and family-friendly amenities make it a full afternoon destination.\n\nBlue Ash, just north of the city, runs its own parallel free music infrastructure. Blue Ash Nature Park and Blue Ash Towne Square both host regular summer concert series with diverse programming. The Cincinnati Parks system also operates free concerts at venues including Beech Acres Park Amphitheater, Colerain Park Amphitheater, and the Schott Amphitheater at Sawyer Point — giving every corner of the metro its own neighborhood series.",
+    seasons:
+      "Cincinnati's free concert season runs from May through September, with June, July, and August being the most active months. Fountain Square programming starts as early as April for special events. The Smale Riverfront and Blue Ash series peak in midsummer. Sawyer Point and Eden Park's Seasongood Pavilion host free Cincinnati Symphony Orchestra performances in summer.\n\nWinter brings indoor free music at Cincinnati Art Museum's monthly Art After Dark events and at various neighborhood bars. The Over-the-Rhine neighborhood, Cincinnati's main music district, has multiple venues with regular free live music on weeknights throughout the year.",
+    howToFind:
+      "Cincinnati Parks (cincinnatiparks.com) lists all city-run concert series. Fountain Square's events calendar (myfountainsquare.com) covers downtown programming. Blue Ash's event listings are at blueash.com. The Cincinnati Enquirer and Cincinnati Magazine both publish free event guides. For the Over-the-Rhine bar music scene, CityBeat is the local go-to. Our listings page is updated daily with verified free concerts across the Cincinnati metro.",
+    faqs: [
+      {
+        q: 'Are the Cincinnati Symphony Orchestra outdoor concerts really free?',
+        a: "Yes — the Cincinnati Symphony Orchestra and Cincinnati Pops perform free outdoor concerts in Cincinnati parks each summer, most notably at Sawyer Point and Smale Riverfront Park. These are among the most attended free events in the city. Check the CSO's website (cincinnatisymphony.org) for the specific dates each season. Bring a blanket or low chairs.",
+      },
+      {
+        q: 'What is the best free music venue in Cincinnati?',
+        a: "Smale Riverfront Park is widely considered the most beautiful setting, with Ohio River views and the Kentucky skyline as backdrop. Fountain Square is the most convenient — central, surrounded by bars and restaurants, and active from spring through fall. For neighborhood atmosphere, Hyde Park Square's summer series offers a quieter alternative.",
+      },
+      {
+        q: 'Is there free live music in Cincinnati year-round?',
+        a: "The outdoor concert series run May through September. Year-round, the Over-the-Rhine neighborhood is the best source of free live music, with bars and small venues hosting no-cover shows regularly, especially on weekday evenings. The Cincinnati Art Museum hosts free Art After Dark events monthly with live music.",
+      },
+    ],
+  },
+
+  'pittsburgh': {
+    slug: 'pittsburgh',
+    code: 'PIT',
+    cityName: 'Pittsburgh',
+    state: 'PA',
+    intro:
+      "Pittsburgh punches well above its weight for free live music, leveraging Allegheny County's extensive park system and a strong civic commitment to public arts. The county's two flagship amphitheaters — Hartwood Acres Park and South Park Amphitheater — offer full-scale concert productions at no charge, while downtown's Three Rivers Arts Festival and the Arts Landing stage bring major regional acts to the riverfront.",
+    neighborhoods:
+      "Hartwood Acres Park, a 629-acre estate in the North Hills, hosts one of western Pennsylvania's most beloved summer concert series. The Hartwood Acres Summer Concert Series runs on Sunday evenings from June through August, with productions ranging from classical to country to rock. The pastoral estate setting — formal gardens, a historic Tudor mansion, and rolling lawns — makes it one of the most distinctive free concert destinations in the region. Arrive early for good lawn positions.\n\nSouth Park Amphitheater in South Hills hosts another major summer series with comparable production quality and a diverse lineup. The two county park series together deliver more than 25 free concert nights per summer, often on the same Sunday.\n\nDowntown Pittsburgh's Three Rivers Arts Festival each June brings free outdoor stages and performances to Point State Park and the Cultural District. Arts Landing at the Dollar Bank Stage on the North Shore hosts free concerts on summer weekday evenings. Schenley Plaza in Oakland hosts free outdoor performances through summer, with the city skyline visible on clear days.",
+    seasons:
+      "June through August is Pittsburgh's prime free concert season. The Hartwood Acres and South Park series run simultaneously on Sunday evenings, and the Three Rivers Arts Festival (early June) opens the season with multiple free outdoor stages.\n\nPittsburgh's springs and falls bring occasional free outdoor events through May and September. In winter, free music retreats to indoor venues in the Strip District, Lawrenceville, and South Side — neighborhoods with active bar music scenes that feature no-cover shows on weeknights.",
+    howToFind:
+      "Allegheny County Parks (alleghenycounty.us/parks) lists all Hartwood Acres and South Park concert schedules. The Three Rivers Arts Festival (3riversartsfest.org) publishes its full lineup in spring. Arts Landing schedules are at pointspark.org. Pittsburgh Post-Gazette and NEXTpittsburgh publish regular free-event guides. Our listings page is updated daily with verified upcoming free concerts across the Pittsburgh metro.",
+    faqs: [
+      {
+        q: 'Are the Hartwood Acres concerts really free?',
+        a: "Yes — the Hartwood Acres Summer Concert Series is completely free with no admission charge. Concerts are held on Sunday evenings from June through August at the outdoor amphitheater in Hartwood Acres Park (Butler Pike, Allison Park). Parking is free. The park fills up for popular performances, so arriving 45–60 minutes early to claim a good lawn spot is recommended. Bring blankets and low chairs.",
+      },
+      {
+        q: 'What is the Three Rivers Arts Festival?',
+        a: "The Three Rivers Arts Festival is Pittsburgh's largest annual arts event, held each June over ten days in downtown Pittsburgh and Point State Park. The festival features free outdoor music stages with regional and national acts alongside visual arts exhibitions, food, and craft vendors. All music performances are free. Organized by the Pittsburgh Cultural Trust.",
+      },
+      {
+        q: 'Where do locals go for free live music in Pittsburgh?',
+        a: "For outdoor summer shows, Hartwood Acres and South Park amphitheaters are the local favorites. For year-round no-cover music, Lawrenceville and the South Side have the most active bar scenes with free live music on weekend nights. The Arts Landing stage on the North Shore is a reliable summer weeknight spot close to downtown.",
+      },
+    ],
+  },
+
+  'san-antonio': {
+    slug: 'san-antonio',
+    code: 'SAT',
+    cityName: 'San Antonio',
+    state: 'TX',
+    intro:
+      "San Antonio's identity as a city defined by public space — the River Walk, historic plazas, and a year-round festival culture — makes it naturally hospitable to free live music. The Arneson River Theatre on the River Walk is one of the country's most distinctive free concert settings, with an audience seated on grass terraces across the river from a stage set into the opposite bank. San Antonio's free music scene is woven into daily life in a way that feels less like a program and more like a city tradition.",
+    neighborhoods:
+      "The River Walk is San Antonio's most visited corridor and its most consistent free music zone. The Arneson River Theatre, built into the riverbank at La Villita, hosts free performances on its outdoor stage throughout the year, with the audience watching from the grass steps on the opposite bank — riverboats pass behind performers mid-show. Nearby, La Villita Historic Arts Village and HemisFair Park host free music during major festivals.\n\nDowntown San Antonio's network of historic plazas supports frequent free music. Main Plaza (Plaza de las Islas) adjacent to San Fernando Cathedral stages regular free concerts, particularly during First Fridays and major city celebrations. Alamo Plaza, Milam Park, and Travis Park each host free public performances tied to city events and cultural festivals.\n\nThe Pearl District, San Antonio's fashionable mixed-use development on the northern River Walk, hosts free Saturday and Sunday farmers market music and occasional free concerts at its outdoor amphitheater space. The Wonderland of the Americas mall amphitheatre on the northwest side also hosts free community concert series.",
+    seasons:
+      "San Antonio's mild winters mean free outdoor music is truly a year-round proposition. The biggest free concert season is October through April, when weather is ideal. Fiesta San Antonio each April is the city's major free music blowout — a ten-day event with dozens of free outdoor stages across the city. Summer shows continue but shift to evening hours.\n\nThe holiday season brings particularly rich free programming. Fiesta de las Luminarias on the River Walk features caroling and cultural music performances on candlelit evenings each December, drawing enormous crowds.",
+    howToFind:
+      "The San Antonio River Authority (thesanantonioriver.org) posts River Walk event schedules. Visit San Antonio (visitsanantonio.com) maintains a comprehensive free events calendar. The San Antonio Express-News and San Antonio Current publish weekly free event guides. The City of San Antonio's Parks and Recreation calendar lists neighborhood park programming. Our listings page is updated daily with verified upcoming free concerts across San Antonio.",
+    faqs: [
+      {
+        q: 'What is the Arneson River Theatre and are shows free?',
+        a: "The Arneson River Theatre is a historic open-air venue built directly into the San Antonio River Walk at La Villita, with a stage on one bank and tiered grass seating on the opposite bank. Many performances at the Arneson are free — particularly cultural shows, folk dance performances, and city-sponsored events. The venue is operational year-round. Check with La Villita (lavillita.com) for current free programming.",
+      },
+      {
+        q: 'When is Fiesta San Antonio and is it free?',
+        a: "Fiesta San Antonio typically takes place over ten days in late April. Many Fiesta events are free, including outdoor music stages at multiple park and plaza locations throughout the city. Some specific events require a Fiesta button (a small annual pin). The free outdoor stages are open to anyone.",
+      },
+      {
+        q: 'Is there free music on the River Walk year-round?',
+        a: "Yes — the River Walk hosts free music and cultural performances throughout the year, with the heaviest programming in spring and fall. The Arneson River Theatre stages free shows tied to city events and cultural festivals. In December, Fiesta de las Luminarias brings evening candlelight walks with free musical performances along the river.",
+      },
+    ],
+  },
+
+  'omaha': {
+    slug: 'omaha',
+    code: 'OMA',
+    cityName: 'Omaha',
+    state: 'NE',
+    intro:
+      "Omaha has developed a robust free music scene centered on its revitalized downtown parks and the Midtown Crossing district. The city's investment in public space — particularly Gene Leahy Mall's transformation and the parks along the Missouri River corridor — has created an infrastructure for free outdoor concerts that rivals much larger cities. Omaha's music community is tightly knit, with the Slowdown and Dundee neighborhood bar scene adding year-round no-cover options to the summer park calendar.",
+    neighborhoods:
+      "Turner Park at Midtown Crossing is Omaha's summer music hub. The park hosts multiple free concert series through the warm months, drawing neighbors from the surrounding residential streets and workers from nearby offices. The Slowdown, one of Omaha's most beloved independent music venues, is a short walk away and occasionally hosts free or low-cost shows.\n\nDowntown Omaha's Gene Leahy Mall, recently renovated, hosts free events as part of the city's downtown activation. Heartwood Park in Millard is another active free concert venue, with the Rock the C! series and other summer programming drawing families from Omaha's southwest side.\n\nThe Dundee neighborhood hosts Music in Dundee — a summer series of free outdoor concerts in the neighborhood's pocket park at 50th and Underwood. The setting is intimate and neighborhood-scaled. Miller Park on the north side runs its own summer concert series, extending free music reach across the metro.",
+    seasons:
+      "Omaha's free concert season runs from late May through early September, peaking in July and August. Turner Park, Heartwood Park, and the Dundee series all operate concurrently in midsummer, giving residents multiple options most weekends. The Nebraska Wind Symphony performs free outdoor concerts in summer.\n\nWinter in Omaha drives free music indoors. The Slowdown, Reverb Lounge, and O'Leaver's are the main venues for no-cover or low-cost live music through the colder months.",
+    howToFind:
+      "Omaha Parks and Recreation (cityofomaha.org/parks) posts city-run concert series. Midtown Crossing's website (midtowncrossing.com) lists Turner Park events. The Omaha World-Herald and Omaha Magazine publish free event roundups. For bar music, the Omaha Reader's weekly calendar is the best source. Our listings page is updated daily with verified upcoming free concerts across the Omaha metro.",
+    faqs: [
+      {
+        q: 'What is Music in Dundee?',
+        a: "Music in Dundee is a free summer outdoor concert series held in the Dundee neighborhood's park at 50th and Underwood. The series typically runs on Thursday or Friday evenings through the summer months, featuring local and regional bands across a range of genres. The neighborhood setting is intimate and family-friendly. No tickets required.",
+      },
+      {
+        q: 'Where do Omaha locals go for free live music?',
+        a: "In summer, Turner Park at Midtown Crossing and Heartwood Park are the go-to spots for free outdoor concerts. Year-round, the Dundee neighborhood and the bars along Saddle Creek Road (The Slowdown area) have the most active no-cover music scene. O'Leaver's in Midtown and Reverb Lounge also host regular free or low-cost shows.",
+      },
+      {
+        q: 'Are there free concerts on the Fourth of July in Omaha?',
+        a: "Yes — Omaha typically hosts free outdoor music as part of Fourth of July celebrations at multiple parks across the metro, often culminating in fireworks. Gene Leahy Mall and Heartwood Park have both hosted free July 4th concerts. Check visitomaha.com in June for confirmed details.",
+      },
+    ],
+  },
+
+  'salt-lake-city': {
+    slug: 'salt-lake-city',
+    code: 'SLC',
+    cityName: 'Salt Lake City',
+    state: 'UT',
+    intro:
+      "Salt Lake City's free music scene benefits from a city government deeply invested in public programming and a community that turns out enthusiastically for outdoor events against the dramatic Wasatch Front backdrop. The Gallivan Center downtown, Liberty Park's Chase Home Museum stage, and Holladay's city hall park are the primary anchors of a summer concert calendar that gives SLC residents genuine options every week from June through August.",
+    neighborhoods:
+      "The Gallivan Center in downtown Salt Lake City is the city's premier free outdoor entertainment venue. The plaza hosts the Gallivan Center Concerts on Fridays, a summer series that has been running for decades and draws office workers, tourists, and locals for evening shows spanning jazz, blues, folk, and world music, with consistently high production quality.\n\nLiberty Park on the east side hosts the Chase Home Museum of Utah Folk Arts, which programs free folk music concerts and cultural performances through summer. Liberty Park itself — SLC's largest city park — is also the site of various free community concerts tied to city events, including larger performances during Pioneer Day celebrations in July.\n\nHolladay, a suburb on the east bench below the Wasatch Front, runs its own summer concert series at City Hall Park — a family-friendly weekly or biweekly program. The mountain backdrop visible from the park is among the most dramatic settings of any free concert series in Utah.",
+    seasons:
+      "Salt Lake City's free outdoor concert season is June through August. The Gallivan Friday concerts and the Liberty Park folk series run concurrently, giving the city consistent weekly options. July 24th (Pioneer Day) is a major Utah holiday with free outdoor music citywide.\n\nWinter concerts are sparse. The Utah Arts Festival in late June is the season opener and features free outdoor stages alongside ticketed programming.",
+    howToFind:
+      "The Gallivan Center (thegallivancenter.com) publishes its concert schedule in late spring. Salt Lake City Arts Council (saltlakeartscouncil.org) lists city-supported free events. Liberty Park programming is at slc.gov/parks. Holladay City Hall concert schedules are at holladaycity.com. The Salt Lake Tribune and City Weekly are the main sources for free-event guides. Our listings page is updated daily with verified upcoming free concerts across the Salt Lake City metro.",
+    faqs: [
+      {
+        q: 'What is the Gallivan Center Concert series?',
+        a: "The Gallivan Center Concerts are free Friday-evening shows held at the Gallivan Center plaza in downtown Salt Lake City, typically running from June through August. The series features a wide range of musical genres and has been a Salt Lake City summer institution for many years. Shows start in the early evening, and the plaza fills up with lawn chairs and blankets. No tickets required.",
+      },
+      {
+        q: 'Are there free concerts in Salt Lake City beyond downtown?',
+        a: "Yes — Holladay's City Hall Park hosts a well-attended summer series in the east-bench suburbs. Liberty Park in the central city hosts folk music programming at the Chase Home Museum stage. Various neighborhood parks across the valley run summer series as part of Salt Lake County and city parks programming. The Utah Arts Festival in late June also has free outdoor stages.",
+      },
+      {
+        q: 'When is the best time to catch free outdoor music in Salt Lake City?',
+        a: "July is the peak month — the Gallivan Center, Liberty Park, and Holladay series all run simultaneously, and Pioneer Day on July 24th adds additional free programming citywide. June is also active, with the Utah Arts Festival kicking things off. The Wasatch Mountains provide a spectacular backdrop on clear evenings.",
+      },
+    ],
+  },
+
+  'jacksonville': {
+    slug: 'jacksonville',
+    code: 'JAX',
+    cityName: 'Jacksonville',
+    state: 'FL',
+    intro:
+      "Jacksonville is Florida's largest city by area, and its free music scene reflects that sprawl — spread across the Riverside arts corridor, the downtown waterfront, and Jacksonville Beach on the Atlantic coast. The city's free concert calendar peaks around the Jacksonville Jazz Festival each May, one of the largest free jazz events in the Southeast, and sustains itself through the summer with the Riverside Arts Market and beach-community series.",
+    neighborhoods:
+      "The Riverside neighborhood on the St. Johns River is Jacksonville's cultural core and its most reliable source of year-round free music. The Riverside Arts Market at 715 Riverside Avenue runs every Saturday morning from May through October, combining an outdoor market with live music on an open stage — one of the most pleasant free weekly music experiences in Florida.\n\nDowntown Jacksonville's waterfront has hosted the Jacksonville Jazz Festival at Ford on Bay, a May event that has drawn major jazz headliners and tens of thousands of attendees as a completely free outdoor festival. The city's Riverfront Parks system stages free music tied to major events and holiday celebrations throughout the year.\n\nJacksonville Beach, 20 miles east on the Atlantic, hosts the Seawalk Pavilion — an open-air amphitheater on the oceanfront that stages free and ticketed concerts through summer. Free beach-adjacent music events happen regularly through the warmer months, particularly tied to events like the Florida Fin Fest in September.",
+    seasons:
+      "Jacksonville's free concert calendar is most active from May through October, though Florida's mild winters allow for occasional year-round events. May is the marquee month thanks to the Jacksonville Jazz Festival. Summer brings the Riverside Arts Market weekly, and beach community events through August. September sees events like Florida Fin Fest at Seawalk Pavilion.\n\nWinter free music in Jacksonville leans toward bars and smaller venues in Riverside and Five Points. The Riverside Ave corridor and King Street in Avondale have consistent no-cover music at bars on weekends.",
+    howToFind:
+      "The Jacksonville Jazz Festival (jaxjazzfest.com) publishes lineup details in March–April. The Riverside Arts Market (riversideartsmarket.com) lists weekly music performers on their site and social media. Visit Jacksonville (visitjacksonville.com) maintains a comprehensive free events guide. The Florida Times-Union and Folio Weekly cover free shows across the city. Our listings page is updated daily with verified upcoming free concerts across Jacksonville.",
+    faqs: [
+      {
+        q: 'Is the Jacksonville Jazz Festival really free?',
+        a: "Yes — the Jacksonville Jazz Festival is one of the largest free jazz festivals in the southeastern United States, typically held over multiple days in May at venues along the downtown waterfront. All performances are free and open to the public. The festival has featured Grammy-winning artists and major jazz headliners. Check jaxjazzfest.com each spring for exact dates and lineup.",
+      },
+      {
+        q: 'What is the Riverside Arts Market?',
+        a: "The Riverside Arts Market is a weekly Saturday outdoor market along the river at 715 Riverside Ave in the Riverside neighborhood, featuring local artists, produce, food vendors, and live music. The market runs from roughly May through October on Saturday mornings. Admission is free, and the live music is consistently good — local and regional acts cover everything from folk and jazz to indie and world music.",
+      },
+      {
+        q: 'Where can I find free live music at Jacksonville Beach?',
+        a: "The Seawalk Pavilion in Jacksonville Beach is the main outdoor venue, hosting both free and ticketed shows on the oceanfront. Free community events and beach festivals tied to the pavilion happen through summer and fall. The beach's bar scene along 1st Street North and Beach Blvd has no-cover live music on weekend nights at bars and restaurants year-round.",
+      },
+    ],
+  },
+
+  'baltimore': {
+    slug: 'baltimore',
+    code: 'BAL',
+    cityName: 'Baltimore',
+    state: 'MD',
+    intro:
+      "Baltimore's free music scene draws on a rich tradition of neighborhood programming and public arts investment, with Patterson Park, Canton Waterfront, and the Inner Harbor area serving as the geographic anchors. The city's summer concert calendar is filled by a network of neighborhood series — from the Patterson Park Observatory to Belvedere Square Market in North Baltimore — that give each corner of the city its own musical identity. Artscape, Baltimore's massive annual free arts festival, is the headline event.",
+    neighborhoods:
+      "Patterson Park in East Baltimore is home to one of the city's most beloved summer series, held on the hill below the historic Park Observatory. The concerts draw a mix of park regulars and music lovers from across the east side for evening shows spanning genres from bluegrass and jazz to contemporary folk and world music.\n\nCanton Waterfront Park hosts WTMD's First Thursday concert series, a monthly free outdoor concert from June through September on the waterfront. WTMD (89.7 FM) is Baltimore's independent public radio station, and its First Thursday series reflects the station's musical sensibility — eclectic, high-quality, and free. The waterfront setting with views of the harbor makes it one of the most atmospheric free music experiences in the city.\n\nBelvedere Square Market in North Baltimore runs free summer concerts at its outdoor market space — a local favorite for families in the Roland Park and Govans areas. Downtown, Artscape (typically in July near Mount Royal) is the city's largest free arts festival, transforming the area around the Maryland Institute College of Art into a free outdoor music zone for three days, with multiple stages and national acts.",
+    seasons:
+      "Baltimore's free concert season runs from late May through September, with Artscape in July as the year's signature event. The Patterson Park series, WTMD First Thursdays, and Belvedere Square run concurrently through summer.\n\nFall and winter see free music move indoors. The Charles Village and Station North neighborhoods have the most active bar-music scenes with no-cover shows on weekends. The Ottobar, Sidebar, and various bars along Charles Street host free or very low-cost shows regularly through the colder months.",
+    howToFind:
+      "Baltimore City Recreation and Parks (bcrp.baltimorecity.gov) lists city-run free events. WTMD's First Thursday schedule is at wtmd.org. Artscape information is at artscape.org. The Baltimore Banner and Baltimore Fishbowl publish free event calendars. For bar and club free shows, Baltimore Beat is the essential guide. Our listings page is updated daily with verified upcoming free concerts across Baltimore.",
+    faqs: [
+      {
+        q: 'What is Artscape in Baltimore and is it free?',
+        a: "Artscape is one of the largest free arts festivals in the United States, typically held over three days in mid-July in the arts district near the Maryland Institute College of Art on Mount Royal Ave. The festival is completely free and open to the public, featuring multiple outdoor music stages with regional and national acts, visual art exhibitions, and food vendors. No tickets or wristbands required.",
+      },
+      {
+        q: 'What is the WTMD First Thursday concert series?',
+        a: "WTMD First Thursdays are free monthly outdoor concerts held at Canton Waterfront Park from June through September, produced by Baltimore's independent public radio station WTMD (89.7 FM). Shows feature local, regional, and national artists across indie, folk, Americana, and alternative genres. Concerts run from approximately 5 to 8 pm. Bring a lawn chair or blanket. No tickets required.",
+      },
+      {
+        q: 'Where is the best neighborhood for free live music in Baltimore?',
+        a: "For summer outdoor concerts, the Patterson Park area, Canton Waterfront, and Belvedere Square each offer distinct neighborhood vibes. For year-round no-cover bar music, Station North and Charles Village are the most active. The Ottobar on Howard Street hosts regular free or low-cost shows. The Federal Hill neighborhood around Cross Street Market also has bars with regular live music.",
+      },
+    ],
+  },
 }
 
 export const GUIDE_SLUGS = Object.keys(CITY_GUIDES)

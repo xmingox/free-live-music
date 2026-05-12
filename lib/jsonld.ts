@@ -6,6 +6,7 @@ import type {
   BreadcrumbList,
   ItemList,
   FAQPage,
+  Article,
 } from 'schema-dts'
 
 // ── Shared sub-shapes ──────────────────────────────────────────────────────────
@@ -301,5 +302,34 @@ export function buildFaqPageJsonLd(items: FaqItem[]): WithContext<FAQPage> {
       name: question,
       acceptedAnswer: { '@type': 'Answer', text: answer },
     })),
+  }
+}
+
+// ── Article (city guide pages) ─────────────────────────────────────────────────
+
+export interface ArticleParams {
+  headline: string
+  description: string
+  url: string
+  datePublished?: string
+}
+
+export function buildArticleJsonLd(p: ArticleParams): WithContext<Article> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: p.headline,
+    description: p.description,
+    url: p.url,
+    ...(p.datePublished ? { datePublished: p.datePublished } : {}),
+    publisher: {
+      '@type': 'Organization',
+      name: 'Free Live Music',
+      url: 'https://www.freelivemusic.co',
+    },
+    author: {
+      '@type': 'Organization',
+      name: 'Free Live Music',
+    },
   }
 }

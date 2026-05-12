@@ -15,6 +15,7 @@ import {
 } from '@/lib/city-slugs'
 import { computeRecurringSeries } from '@/lib/series'
 import { buildFaqPageJsonLd, buildItemListJsonLd } from '@/lib/jsonld'
+import { CITY_GUIDES } from '@/lib/city-guides-data'
 
 export const revalidate = 3600 // Revalidate every hour
 
@@ -279,6 +280,14 @@ export default async function CityPage({
           >
             This Weekend
           </Link>
+          {CITY_GUIDES[citySlug] && (
+            <Link
+              href={`/free-live-music/${citySlug}`}
+              className="px-4 py-2 bg-slate-50 text-slate-600 border border-slate-200 rounded-full text-sm font-medium hover:bg-slate-100 transition"
+            >
+              Year-Round Guide →
+            </Link>
+          )}
         </div>
 
         {concerts && concerts.length > 0 ? (

@@ -2,7 +2,9 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import SiteNav from '@/components/SiteNav'
+import SiteFooter from '@/components/SiteFooter'
 import { CITY_GUIDES, GUIDE_SLUGS } from '@/lib/city-guides-data'
+import { buildArticleJsonLd, buildBreadcrumbJsonLd, buildFaqPageJsonLd } from '@/lib/jsonld'
 
 export const revalidate = 86400
 
@@ -55,9 +57,30 @@ export default async function CityGuidePage({
 
   const concertSlug = guide.slug
   const concertHref = `/concerts/${concertSlug}`
+  const canonicalUrl = `https://www.freelivemusic.co/free-live-music/${citySlug}`
+  const title = `Free Live Music in ${guide.cityName} — Where to Find It Year-Round`
+
+  const articleJsonLd = buildArticleJsonLd({
+    headline: title,
+    description: guide.intro.slice(0, 160).trimEnd() + (guide.intro.length > 160 ? '…' : ''),
+    url: canonicalUrl,
+  })
+
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: 'Free Live Music', item: 'https://www.freelivemusic.co' },
+    { name: `Free Music in ${guide.cityName}`, item: canonicalUrl },
+  ])
+
+  const faqJsonLd = buildFaqPageJsonLd(
+    guide.faqs.map(({ q, a }) => ({ question: q, answer: a }))
+  )
 
   return (
     <div className="min-h-screen bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+
       <header className="border-b border-slate-200 bg-white">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <SiteNav
@@ -180,6 +203,8 @@ export default async function CityGuidePage({
           </Link>
         </div>
       </div>
+
+      <SiteFooter />
     </div>
   )
 }
