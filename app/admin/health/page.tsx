@@ -55,6 +55,18 @@ interface GscQuery {
   date: string
 }
 
+interface QaFlag {
+  id: string
+  concert_id: string
+  flagged_at: string
+  flag_type: 'source_gone' | 'field_mismatch' | 'price_changed'
+  field_name: string | null
+  stored_value: string | null
+  fetched_value: string | null
+  source_url: string
+  resolved: boolean
+}
+
 interface HealthData {
   cronRuns: CronRun[]
   submissionStats: SubmissionStat[]
@@ -63,6 +75,7 @@ interface HealthData {
   suppressions: Suppression[]
   topConcerts: TopConcert[]
   gscQueries: GscQuery[]
+  qaFlags: QaFlag[]
 }
 
 function approvalRate(stat: SubmissionStat): number {
@@ -556,7 +569,61 @@ export default function AdminHealthPage() {
           )}
         </section>
 
-        {/* Section 6: Search Console Top Queries */}
+        {/* Section 6: QA Flags */}
+        <section>
+          <h2 className="text-lg font-semibold text-white mb-1">
+            QA Flags
+            <span className="ml-2 text-sm font-normal text-slate-400">
+              ({data?.qaFlags.filter((f) => !f.resolved).length ?? 0} open)
+            </span>
+          </h2>
+          <p className="text-slate-400 text-xs mb-4">
+            Nightly re-validation of pipeline concerts. Flags auto-deduplicated — resolve in Supabase once confirmed.
+          </p>
+          {!data?.qaFlags?.length ? (
+            <p className="text-slate-500 text-sm">
+              {loading ? 'Loading...' : 'No open QA flags.'}
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-slate-400 border-b border-slate-700">
+                    <th className="pb-2 pr-4 font-medium">Type</th>
+                    <th className="pb-2 pr-4 font-medium">Stored value</th>
+                    <th className="pb-2 pr-4 font-medium">Fetched value</th>
+                    <th className="pb-2 pr-4 font-medium">Source URL</th>
+                    <th className="pb-2 font-medium">Flagged</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.qaFlags.map((f) => (
+                    <tr key={f.id} className={`border-b border-slate-800/60 ${f.resolved ? 'opacity-40' : ''}`}>
+                      <td className="py-2 pr-4">
+                        <span className={`text-xs font-mono px-1.5 py-0.5 rounded ${
+                          f.flag_type === 'source_gone' ? 'bg-red-900/50 text-red-300' : 'bg-yellow-900/50 text-yellow-300'
+                        }`}>
+                          {f.flag_type}
+                        </span>
+                      </td>
+                      <td className="py-2 pr-4 text-slate-300 max-w-[180px] truncate" title={f.stored_value ?? ''}>{f.stored_value ?? '—'}</td>
+                      <td className="py-2 pr-4 text-slate-400 max-w-[160px] truncate" title={f.fetched_value ?? ''}>{f.fetched_value ?? '—'}</td>
+                      <td className="py-2 pr-4 max-w-[200px] truncate">
+                        <a href={f.source_url} target="_blank" rel="noopener noreferrer"
+                          className="text-blue-400 hover:underline text-xs">{f.source_url}</a>
+                      </td>
+                      <td className="py-2 text-slate-500 text-xs whitespace-nowrap">
+                        {new Date(f.flagged_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+
+        {/* Section 7: Search Console Top Queries */}
         <section>
           <h2 className="text-lg font-semibold text-white mb-1">Search Console</h2>
           <p className="text-slate-400 text-xs mb-4">
