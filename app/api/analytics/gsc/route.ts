@@ -9,14 +9,10 @@
  *
  * Required env vars:
  *   CRON_SECRET
- *   GOOGLE_SERVICE_ACCOUNT_JSON   — full JSON of the service account key file
- *   GSC_SITE_URL                  — e.g. "sc-domain:freelivemusic.co"
- *
- * Service account setup:
- *   1. Create a service account in Google Cloud Console
- *   2. Enable the Google Search Console API
- *   3. Add the service account email as a "Full" user in GSC → Settings → Users
- *   4. Download the JSON key and set GOOGLE_SERVICE_ACCOUNT_JSON to its contents
+ *   GOOGLE_CLIENT_ID       — OAuth 2.0 Desktop app client ID
+ *   GOOGLE_CLIENT_SECRET   — OAuth 2.0 Desktop app client secret
+ *   GOOGLE_REFRESH_TOKEN   — long-lived refresh token for the GSC property owner
+ *   GSC_SITE_URL           — e.g. "sc-domain:freelivemusic.co"
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -35,15 +31,17 @@ function isAuthorized(req: NextRequest): boolean {
 }
 
 async function getGscClient() {
-  const keyJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON
-  if (!keyJson) throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON not set')
+  const clientId     = process.env.GOOGLE_CLIENT_ID
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET
+  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN
 
-  const credentials = JSON.parse(keyJson)
-  const auth = new google.auth.GoogleAuth({
-    credentials,
-    scopes: ['https://www.googleapis.com/auth/webmasters.readonly'],
-  })
-  return google.searchconsole({ version: 'v1', auth })
+  if (!clientId || !clientSecret || !refreshToken) {
+    throw new Error('Missing GSC OAuth2 env vars: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN')
+  }
+
+  const oauth2 = new google.auth.OAuth2(clientId, clientSecret)
+  oauth2.setCredentials({ refresh_token: refreshToken })
+  return google.searchconsole({ version: 'v1', auth: oauth2 })
 }
 
 export async function GET(req: NextRequest) {
