@@ -8,6 +8,7 @@ import { outboundUrl, bookingSearchUrl } from '@/lib/affiliate'
 import { seriesSlug } from '@/lib/series'
 import TrackView from '@/components/TrackView'
 import ReportForm from '@/components/ReportForm'
+import { buildMusicEventJsonLd, buildBreadcrumbJsonLd } from '@/lib/jsonld'
 
 // Use fetch() with next: { revalidate } so Next.js treats this route as ISR.
 // The Supabase JS client uses its own internal fetch that Next.js can't track,
@@ -176,65 +177,30 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
   const ogImageUrl = `https://www.freelivemusic.co/concert/${slug}/opengraph-image`
   const eventDescription = `${concert.artist_name} performs free at ${concert.venue} in ${concert.neighborhood}, ${city} on ${formatDate(concert.date)}${concert.time ? ` at ${formatTime(concert.time)}` : ''}. ${concert.admission_type === 'Free RSVP' ? 'Free admission with RSVP — check the official listing to reserve your spot.' : 'Free admission — no tickets or cover charge needed, just show up and enjoy.'}`
 
-  const eventJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'MusicEvent',
+  const eventJsonLd = buildMusicEventJsonLd({
     name: concert.artist_name,
     description: eventDescription,
     image: concert.image_url ?? ogImageUrl,
     startDate: concert.time ? `${concert.date}T${parseTimeToIso(concert.time)}` : concert.date,
     endDate: concert.time ? `${concert.date}T${parseEndTimeIso(concert.time)}` : concert.date,
-    eventStatus: 'https://schema.org/EventScheduled',
-    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-    performer: { '@type': 'MusicGroup', name: concert.artist_name },
-    location: {
-      '@type': 'Place',
-      name: concert.venue,
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: city,
-      },
-    },
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
-      availability: 'https://schema.org/InStock',
+    performer: concert.artist_name,
+    venueName: concert.venue,
+    venueCity: city,
+    offer: {
       validFrom: concert.created_at.split('T')[0],
       url: offerUrl,
     },
     organizer: {
-      '@type': 'Organization',
       name: concert.source_name ?? 'Free Live Music',
       url: isValidUrl(concert.source_url ?? '') ? concert.source_url! : 'https://www.freelivemusic.co',
     },
-  }
+  })
 
-  // BreadcrumbList helps Google display breadcrumbs in search results
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Free Live Music',
-        item: 'https://www.freelivemusic.co',
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: `Free Concerts in ${city}`,
-        item: `https://www.freelivemusic.co/?city=${concert.city}`,
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: concert.artist_name,
-        item: canonicalUrl,
-      },
-    ],
-  }
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: 'Free Live Music', item: 'https://www.freelivemusic.co' },
+    { name: `Free Concerts in ${city}`, item: `https://www.freelivemusic.co/?city=${concert.city}` },
+    { name: concert.artist_name, item: canonicalUrl },
+  ])
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">

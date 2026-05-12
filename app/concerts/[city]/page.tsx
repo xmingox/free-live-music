@@ -14,6 +14,7 @@ import {
   getAliasCityFromSlug,
 } from '@/lib/city-slugs'
 import { computeRecurringSeries } from '@/lib/series'
+import { buildFaqPageJsonLd, buildItemListJsonLd } from '@/lib/jsonld'
 
 export const revalidate = 3600 // Revalidate every hour
 
@@ -210,47 +211,32 @@ export default async function CityPage({
     },
   ]
 
-  const faqJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqItems.map(({ q, a }) => ({
-      '@type': 'Question',
-      name: q,
-      acceptedAnswer: { '@type': 'Answer', text: a },
-    })),
-  }
+  const faqJsonLd = buildFaqPageJsonLd(
+    faqItems.map(({ q, a }) => ({ question: q, answer: a }))
+  )
 
   const itemListConcerts = concerts.slice(0, 20)
-  const itemListJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
+  const itemListJsonLd = buildItemListJsonLd({
     name: `Free Live Music in ${metro.city}`,
     description: `Upcoming free concerts in ${metro.city}, ${metro.state}`,
     url: `https://www.freelivemusic.co/concerts/${citySlug}`,
     numberOfItems: itemListConcerts.length,
-    itemListElement: itemListConcerts.map((concert, index) => ({
-      '@type': 'ListItem',
+    items: itemListConcerts.map((concert, index) => ({
+      type: 'MusicEvent' as const,
       position: index + 1,
-      item: {
-        '@type': 'MusicEvent',
+      event: {
         name: concert.artist_name,
         startDate: concert.time
           ? `${concert.date}T${concert.time}`
           : `${concert.date}T18:00:00`,
         location: {
-          '@type': 'Place',
           name: concert.venue ?? metro.city,
           address: `${metro.city}, ${metro.state}`,
         },
-        offers: {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'USD',
-          availability: 'https://schema.org/InStock',
-        },
+        offers: { price: '0' as const, priceCurrency: 'USD', availability: 'https://schema.org/InStock' as const },
       },
     })),
-  }
+  })
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">

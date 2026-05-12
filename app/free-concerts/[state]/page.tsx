@@ -13,6 +13,7 @@ import {
 } from '@/lib/state-slugs'
 import { cityCodeToSlug } from '@/lib/city-slugs'
 import SiteNav from '@/components/SiteNav'
+import { buildBreadcrumbJsonLd, buildItemListJsonLd } from '@/lib/jsonld'
 import SiteFooter from '@/components/SiteFooter'
 
 export async function generateStaticParams() {
@@ -95,32 +96,25 @@ export default async function StatePage({
   const totalShows = Object.values(counts).reduce((s, n) => s + n, 0)
   const citiesWithShows = sorted.filter((m) => (counts[m.city] ?? 0) > 0)
 
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Free Live Music', item: 'https://www.freelivemusic.co' },
-      { '@type': 'ListItem', position: 2, name: `Free Concerts in ${stateName}` },
-    ],
-  }
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: 'Free Live Music', item: 'https://www.freelivemusic.co' },
+    { name: `Free Concerts in ${stateName}` },
+  ])
 
-  const itemListJsonLd = citiesWithShows.length > 0 ? {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    name: `Free Live Music in ${stateName}`,
-    description: `Cities with free concerts in ${stateName}`,
-    url: `https://www.freelivemusic.co/free-concerts/${stateSlug}`,
-    numberOfItems: citiesWithShows.length,
-    itemListElement: citiesWithShows.map((m, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      item: {
-        '@type': 'City',
-        name: m.city,
-        url: `https://www.freelivemusic.co/concerts/${cityCodeToSlug[m.code] ?? ''}`,
-      },
-    })),
-  } : null
+  const itemListJsonLd = citiesWithShows.length > 0
+    ? buildItemListJsonLd({
+        name: `Free Live Music in ${stateName}`,
+        description: `Cities with free concerts in ${stateName}`,
+        url: `https://www.freelivemusic.co/free-concerts/${stateSlug}`,
+        numberOfItems: citiesWithShows.length,
+        items: citiesWithShows.map((m, i) => ({
+          type: 'City' as const,
+          position: i + 1,
+          name: m.city,
+          url: `https://www.freelivemusic.co/concerts/${cityCodeToSlug[m.code] ?? ''}`,
+        })),
+      })
+    : null
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">

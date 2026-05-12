@@ -11,6 +11,7 @@ import { cityCodeToSlug, getMetroByCode } from '@/lib/city-slugs'
 import { seriesSlug } from '@/lib/series'
 import SiteNav from '@/components/SiteNav'
 import SiteFooter from '@/components/SiteFooter'
+import { buildMusicGroupJsonLd } from '@/lib/jsonld'
 
 async function resolveArtist(slug: string): Promise<{ artistName: string; concerts: Concert[] } | null> {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return null
@@ -115,36 +116,26 @@ export default async function ArtistPage({
   const primaryCitySlug = primaryCity ? cityCodeToSlug[primaryCity] ?? 'new-york' : 'new-york'
   const primaryMetro = primaryCity ? getMetroByCode(primaryCity) : null
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'MusicGroup',
+  const jsonLd = buildMusicGroupJsonLd({
     name: artistName,
     url: `https://www.freelivemusic.co/artist/${slug}`,
-    event: concerts.slice(0, 10).map((c) => {
+    events: concerts.slice(0, 10).map((c) => {
       const metro = getMetroByCode(c.city)
       return {
-        '@type': 'MusicEvent',
         name: c.artist_name,
         startDate: c.time ? `${c.date}T${c.time}` : c.date,
         location: {
-          '@type': 'Place',
           name: c.venue ?? undefined,
           address: {
-            '@type': 'PostalAddress',
             addressLocality: metro?.city ?? c.city,
             addressRegion: metro?.state,
           },
         },
-        offers: {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'USD',
-          availability: 'https://schema.org/InStock',
-        },
+        offers: { price: '0' as const, priceCurrency: 'USD', availability: 'https://schema.org/InStock' as const },
         url: `https://www.freelivemusic.co/concert/${c.slug}`,
       }
     }),
-  }
+  })
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
