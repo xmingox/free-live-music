@@ -25,6 +25,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import metros from '@/lib/metros.json'
 import { genericSearchImport } from '@/lib/importers/_generic-search'
+import { sendCronAlert } from '@/lib/alerts'
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
@@ -168,6 +169,8 @@ async function handle(req: NextRequest) {
     stats_json:    stats,
     error_message: success ? null : allErrors.slice(0, 3).join('; '),
   })
+
+  if (!success) await sendCronAlert('/api/import/search', allErrors.join('; '))
 
   return NextResponse.json(stats)
 }

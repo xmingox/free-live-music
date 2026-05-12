@@ -13,7 +13,7 @@ const supabase = createClient(
 
 export async function GET() {
   try {
-    const [cronRunsResult, submissionStatsResult, pendingCountResult, venueHealthResult, suppressionsResult, topConcertsResult] =
+    const [cronRunsResult, submissionStatsResult, pendingCountResult, venueHealthResult, suppressionsResult, topConcertsResult, gscQueriesResult] =
       await Promise.all([
         supabase
           .from('cron_runs')
@@ -47,6 +47,14 @@ export async function GET() {
           .gt('event_views', 0)
           .order('event_views', { ascending: false })
           .limit(10),
+
+        supabase
+          .from('search_metrics')
+          .select('query, clicks, impressions, ctr, position, date')
+          .gte('date', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+          .order('clicks', { ascending: false })
+          .limit(50)
+          .then((r) => r, () => ({ data: null, error: null })),
       ])
 
     // If RPCs don't exist yet, fall back to raw queries
@@ -101,6 +109,7 @@ export async function GET() {
       venueHealth: venueHealth ?? { unscored: 0, high: 0, medium: 0, low: 0, negative: 0 },
       suppressions: suppressionsResult.data ?? [],
       topConcerts: topConcertsResult.data ?? [],
+      gscQueries: gscQueriesResult.data ?? [],
     })
   } catch (error) {
     console.error('Health API error:', error)

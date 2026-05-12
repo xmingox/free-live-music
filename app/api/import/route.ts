@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { runImport } from '@/lib/importers/index'
+import { sendCronAlert } from '@/lib/alerts'
 
 // Used by Vercel Cron (GET) and manual triggers (POST).
 // Both require: Authorization: Bearer {CRON_SECRET}
@@ -47,6 +48,7 @@ async function handle(req: NextRequest) {
   } catch (err) {
     console.error('[/api/import]', err)
     await writeCronRun({ started_at, success: false, stats_json: {}, error_message: String(err) })
+    await sendCronAlert('/api/import', err)
     return NextResponse.json({ error: String(err) }, { status: 500 })
   }
 }

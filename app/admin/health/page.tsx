@@ -46,6 +46,15 @@ interface TopConcert {
   event_views: number
 }
 
+interface GscQuery {
+  query: string
+  clicks: number
+  impressions: number
+  ctr: number
+  position: number
+  date: string
+}
+
 interface HealthData {
   cronRuns: CronRun[]
   submissionStats: SubmissionStat[]
@@ -53,6 +62,7 @@ interface HealthData {
   venueHealth: VenueHealth
   suppressions: Suppression[]
   topConcerts: TopConcert[]
+  gscQueries: GscQuery[]
 }
 
 function approvalRate(stat: SubmissionStat): number {
@@ -546,7 +556,46 @@ export default function AdminHealthPage() {
           )}
         </section>
 
-        {/* Section 6: Quick Links */}
+        {/* Section 6: Search Console Top Queries */}
+        <section>
+          <h2 className="text-lg font-semibold text-white mb-1">Search Console</h2>
+          <p className="text-slate-400 text-xs mb-4">
+            Top queries by clicks — last 7 days. Data synced daily at noon UTC via{' '}
+            <span className="font-mono text-slate-500">/api/analytics/gsc</span>.
+          </p>
+          {!data?.gscQueries?.length ? (
+            <p className="text-slate-500 text-sm">
+              {loading ? 'Loading...' : 'No GSC data yet — add GOOGLE_SERVICE_ACCOUNT_JSON + GSC_SITE_URL to Vercel env vars to enable.'}
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-slate-400 border-b border-slate-700">
+                    <th className="pb-2 pr-4 font-medium">Query</th>
+                    <th className="pb-2 pr-4 font-medium text-right">Clicks</th>
+                    <th className="pb-2 pr-4 font-medium text-right">Impressions</th>
+                    <th className="pb-2 pr-4 font-medium text-right">CTR</th>
+                    <th className="pb-2 font-medium text-right">Position</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.gscQueries.map((q, i) => (
+                    <tr key={i} className="border-b border-slate-800/60 hover:bg-slate-800/30 transition">
+                      <td className="py-2 pr-4 text-white max-w-xs truncate" title={q.query}>{q.query}</td>
+                      <td className="py-2 pr-4 text-right text-violet-400 font-semibold">{q.clicks}</td>
+                      <td className="py-2 pr-4 text-right text-slate-300">{q.impressions}</td>
+                      <td className="py-2 pr-4 text-right text-slate-400">{(q.ctr * 100).toFixed(1)}%</td>
+                      <td className="py-2 text-right text-slate-400">{q.position.toFixed(1)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+
+        {/* Section 7: Quick Links */}
         <section>
           <h2 className="text-lg font-semibold text-white mb-4">Quick Links</h2>
           <div className="flex flex-wrap gap-3">
