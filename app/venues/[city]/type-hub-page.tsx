@@ -167,9 +167,23 @@ export async function generateTypeHubMetadata(
   const description = `Find ${config.description} in ${metro.city}, ${metro.state} with free admission. Discover venues with upcoming free shows.`
   const url = `https://www.freelivemusic.co/venues/${citySlug}/${config.slug}`
 
+  // Noindex type hubs with fewer than 5 venues — too thin to be useful
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  )
+  const { count: venueCount } = await supabase
+    .from('venues')
+    .select('id', { count: 'exact', head: true })
+    .eq('city', metroCode!)
+    .eq('venue_type', config.type)
+
+  const robots = (venueCount ?? 0) < 5 ? { index: false, follow: true } : undefined
+
   return {
     title,
     description,
+    ...(robots ? { robots } : {}),
     alternates: { canonical: url },
     openGraph: {
       title: `Free Music ${config.label} in ${metro.city}`,
