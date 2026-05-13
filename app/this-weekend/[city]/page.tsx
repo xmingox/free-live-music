@@ -138,6 +138,7 @@ export default async function ThisWeekendCityPage({
         name: c.artist_name,
         startDate: c.time ? `${c.date}T${c.time}` : c.date,
         eventStatus: 'https://schema.org/EventScheduled',
+        performer: { '@type': 'MusicGroup', name: c.artist_name },
         organizer: { '@type': 'Organization', name: 'Free Live Music', url: 'https://www.freelivemusic.co' },
         location: {
           '@type': 'Place',

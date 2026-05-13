@@ -170,6 +170,7 @@ export function buildMusicVenueJsonLd(p: MusicVenueParams): WithContext<MusicVen
                 : {}),
             },
             eventStatus: 'https://schema.org/EventScheduled' as const,
+            performer: { '@type': 'MusicGroup' as const, name: e.name },
             organizer: { '@type': 'Organization' as const, name: 'Free Live Music', url: 'https://www.freelivemusic.co' },
             offers: {
               '@type': 'Offer' as const,
@@ -219,6 +220,7 @@ export function buildMusicGroupJsonLd(p: MusicGroupParams): WithContext<MusicGro
           : {}),
       },
       eventStatus: 'https://schema.org/EventScheduled' as const,
+      performer: { '@type': 'MusicGroup' as const, name: e.name },
       organizer: { '@type': 'Organization' as const, name: 'Free Live Music', url: 'https://www.freelivemusic.co' },
       offers: {
         '@type': 'Offer' as const,
@@ -272,6 +274,7 @@ export function buildItemListJsonLd(p: ItemListParams): WithContext<ItemList> {
           name: e.name,
           startDate: e.startDate,
           eventStatus: 'https://schema.org/EventScheduled' as const,
+          performer: { '@type': 'MusicGroup' as const, name: e.name },
           organizer: { '@type': 'Organization' as const, name: 'Free Live Music', url: 'https://www.freelivemusic.co' },
           location: {
             '@type': 'Place' as const,

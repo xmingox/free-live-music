@@ -142,6 +142,7 @@ export default async function SeriesPage({
       name: c.artist_name,
       startDate: c.time ? `${c.date}T${c.time}` : c.date,
       eventStatus: 'https://schema.org/EventScheduled',
+      performer: { '@type': 'MusicGroup', name: c.artist_name },
       location: {
         '@type': 'Place',
         name: c.venue,
