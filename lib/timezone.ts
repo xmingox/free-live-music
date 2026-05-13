@@ -30,6 +30,13 @@ export function getMetroTimezone(state: string): string {
   return STATE_TZ[state] ?? 'America/New_York'
 }
 
+// Prefer metro.timezone directly; fall back to state lookup for US metros
+export function getMetroTz(metro: { timezone?: string; state?: string }): string {
+  if (metro.timezone) return metro.timezone
+  if (metro.state) return getMetroTimezone(metro.state)
+  return 'America/New_York'
+}
+
 // Returns YYYY-MM-DD in the given IANA timezone
 export function getLocalDateStr(tz: string): string {
   return new Date().toLocaleDateString('en-CA', { timeZone: tz })

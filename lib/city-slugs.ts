@@ -51,6 +51,7 @@ export function getAllMetros(): Metro[] {
   return metros.metros as Metro[]
 }
 
+
 // Get metro object from slug
 export function getMetroFromSlug(slug: string): Metro | undefined {
   const code = getCityCodeFromSlug(slug)

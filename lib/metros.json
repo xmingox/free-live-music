@@ -8,7 +8,8 @@
       "aliases": [
         "NYC",
         "New York City"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "LA",
@@ -25,7 +26,8 @@
         "Pasadena",
         "Santa Monica",
         "Venice"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "CHI",
@@ -34,7 +36,8 @@
       "region": "Midwest",
       "aliases": [
         "CHI"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "DAL",
@@ -43,7 +46,8 @@
       "region": "South",
       "aliases": [
         "DAL"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "HOU",
@@ -52,7 +56,8 @@
       "region": "South",
       "aliases": [
         "HOU"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "PHI",
@@ -61,7 +66,8 @@
       "region": "Northeast",
       "aliases": [
         "PHI"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "ATL",
@@ -70,7 +76,8 @@
       "region": "South",
       "aliases": [
         "ATL"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "MIA",
@@ -79,7 +86,8 @@
       "region": "South",
       "aliases": [
         "MIA"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "SF",
@@ -97,7 +105,8 @@
         "Riverside",
         "Fresno",
         "Irvine"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "BOS",
@@ -106,7 +115,8 @@
       "region": "Northeast",
       "aliases": [
         "BOS"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "DC",
@@ -116,7 +126,8 @@
       "aliases": [
         "DC",
         "Washington DC"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "SEA",
@@ -125,7 +136,8 @@
       "region": "West",
       "aliases": [
         "SEA"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "PDX",
@@ -136,7 +148,8 @@
         "PDX",
         "Eugene",
         "Bend"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "DEN",
@@ -147,7 +160,8 @@
         "DEN",
         "Boulder",
         "Fort Collins"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "AUS",
@@ -156,7 +170,8 @@
       "region": "South",
       "aliases": [
         "AUS"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "NSH",
@@ -165,7 +180,8 @@
       "region": "South",
       "aliases": [
         "NSH"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "MEM",
@@ -174,7 +190,8 @@
       "region": "South",
       "aliases": [
         "MEM"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "NOLA",
@@ -183,7 +200,8 @@
       "region": "South",
       "aliases": [
         "NOLA"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "MIN",
@@ -192,7 +210,8 @@
       "region": "Midwest",
       "aliases": [
         "MIN"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "DET",
@@ -201,7 +220,8 @@
       "region": "Midwest",
       "aliases": [
         "DET"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "KC",
@@ -210,7 +230,8 @@
       "region": "Midwest",
       "aliases": [
         "KC"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "STL",
@@ -219,7 +240,8 @@
       "region": "Midwest",
       "aliases": [
         "STL"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "IND",
@@ -228,7 +250,8 @@
       "region": "Midwest",
       "aliases": [
         "IND"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "CLE",
@@ -237,7 +260,8 @@
       "region": "Midwest",
       "aliases": [
         "CLE"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "PHX",
@@ -246,7 +270,8 @@
       "region": "Southwest",
       "aliases": [
         "PHX"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "LV",
@@ -255,7 +280,8 @@
       "region": "Southwest",
       "aliases": [
         "LV"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "SLC",
@@ -265,7 +291,8 @@
       "aliases": [
         "SLC",
         "Moab"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "ALB",
@@ -275,7 +302,8 @@
       "aliases": [
         "ALB",
         "ABQ"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "SD",
@@ -284,7 +312,8 @@
       "region": "West",
       "aliases": [
         "SD"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "LB",
@@ -293,7 +322,8 @@
       "region": "West",
       "aliases": [
         "LB"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "ANA",
@@ -302,7 +332,8 @@
       "region": "West",
       "aliases": [
         "ANA"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "PIT",
@@ -311,7 +342,8 @@
       "region": "Northeast",
       "aliases": [
         "PIT"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "BAL",
@@ -320,7 +352,8 @@
       "region": "Northeast",
       "aliases": [
         "BAL"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "BUF",
@@ -329,7 +362,8 @@
       "region": "Northeast",
       "aliases": [
         "BUF"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "PRV",
@@ -338,7 +372,8 @@
       "region": "Northeast",
       "aliases": [
         "PRV"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "HRT",
@@ -347,7 +382,8 @@
       "region": "Northeast",
       "aliases": [
         "HRT"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "SYR",
@@ -356,7 +392,8 @@
       "region": "Northeast",
       "aliases": [
         "SYR"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "ROC",
@@ -365,7 +402,8 @@
       "region": "Northeast",
       "aliases": [
         "ROC"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "RIC",
@@ -374,7 +412,8 @@
       "region": "Southeast",
       "aliases": [
         "RIC"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "CHA",
@@ -384,7 +423,8 @@
       "aliases": [
         "CHA",
         "CHR"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "RDU",
@@ -393,7 +433,8 @@
       "region": "Southeast",
       "aliases": [
         "RDU"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "GRE",
@@ -402,7 +443,8 @@
       "region": "Southeast",
       "aliases": [
         "GRE"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "CHS",
@@ -411,7 +453,8 @@
       "region": "Southeast",
       "aliases": [
         "CHS"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "SAV",
@@ -420,7 +463,8 @@
       "region": "Southeast",
       "aliases": [
         "SAV"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "JAX",
@@ -429,7 +473,8 @@
       "region": "Southeast",
       "aliases": [
         "JAX"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "TB",
@@ -438,7 +483,8 @@
       "region": "Southeast",
       "aliases": [
         "TB"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "ORL",
@@ -447,7 +493,8 @@
       "region": "Southeast",
       "aliases": [
         "ORL"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "FTL",
@@ -456,7 +503,8 @@
       "region": "Southeast",
       "aliases": [
         "FTL"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "WPB",
@@ -465,7 +513,8 @@
       "region": "Southeast",
       "aliases": [
         "WPB"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "LOU",
@@ -474,7 +523,8 @@
       "region": "South",
       "aliases": [
         "LOU"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "LEX",
@@ -483,7 +533,8 @@
       "region": "South",
       "aliases": [
         "LEX"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "BHM",
@@ -492,7 +543,8 @@
       "region": "South",
       "aliases": [
         "BHM"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "BR",
@@ -501,7 +553,8 @@
       "region": "South",
       "aliases": [
         "BR"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "SAT",
@@ -510,7 +563,8 @@
       "region": "South",
       "aliases": [
         "SAT"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "FTW",
@@ -528,7 +582,8 @@
         "Mansfield",
         "Haltom City",
         "Tarrant County"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "ELP",
@@ -537,7 +592,8 @@
       "region": "South",
       "aliases": [
         "ELP"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "OKC",
@@ -546,7 +602,8 @@
       "region": "South",
       "aliases": [
         "OKC"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "TUL",
@@ -556,7 +613,8 @@
       "aliases": [
         "TUL",
         "TLS"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "ARK",
@@ -565,7 +623,8 @@
       "region": "South",
       "aliases": [
         "ARK"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "CHT",
@@ -574,7 +633,8 @@
       "region": "South",
       "aliases": [
         "CHT"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "KNX",
@@ -583,7 +643,8 @@
       "region": "South",
       "aliases": [
         "KNX"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "DES",
@@ -592,7 +653,8 @@
       "region": "Midwest",
       "aliases": [
         "DES"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "MIL",
@@ -601,7 +663,8 @@
       "region": "Midwest",
       "aliases": [
         "MIL"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "MAD",
@@ -610,7 +673,8 @@
       "region": "Midwest",
       "aliases": [
         "MAD"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "GR",
@@ -619,7 +683,8 @@
       "region": "Midwest",
       "aliases": [
         "GR"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "ANN",
@@ -628,7 +693,8 @@
       "region": "Midwest",
       "aliases": [
         "ANN"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "CMH",
@@ -637,7 +703,8 @@
       "region": "Midwest",
       "aliases": [
         "CMH"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "CIN",
@@ -646,7 +713,8 @@
       "region": "Midwest",
       "aliases": [
         "CIN"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "DAY",
@@ -655,7 +723,8 @@
       "region": "Midwest",
       "aliases": [
         "DAY"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "TOL",
@@ -664,7 +733,8 @@
       "region": "Midwest",
       "aliases": [
         "TOL"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "AKR",
@@ -673,7 +743,8 @@
       "region": "Midwest",
       "aliases": [
         "AKR"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "WIC",
@@ -682,7 +753,8 @@
       "region": "Midwest",
       "aliases": [
         "WIC"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "OMA",
@@ -691,7 +763,8 @@
       "region": "Midwest",
       "aliases": [
         "OMA"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "RNO",
@@ -700,7 +773,8 @@
       "region": "West",
       "aliases": [
         "RNO"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "BSE",
@@ -709,7 +783,8 @@
       "region": "Mountain",
       "aliases": [
         "BSE"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "BOZ",
@@ -718,7 +793,8 @@
       "region": "Mountain",
       "aliases": [
         "BOZ"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "COS",
@@ -727,7 +803,8 @@
       "region": "Mountain",
       "aliases": [
         "COS"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "FTC",
@@ -736,7 +813,8 @@
       "region": "Mountain",
       "aliases": [
         "FTC"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "TUC",
@@ -746,7 +824,8 @@
       "aliases": [
         "TUC",
         "TUS"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "SBA",
@@ -755,7 +834,8 @@
       "region": "West",
       "aliases": [
         "SBA"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "TAC",
@@ -764,7 +844,8 @@
       "region": "West",
       "aliases": [
         "TAC"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "SPO",
@@ -773,7 +854,8 @@
       "region": "West",
       "aliases": [
         "SPO"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "EUG",
@@ -782,7 +864,8 @@
       "region": "West",
       "aliases": [
         "EUG"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "BEN",
@@ -791,7 +874,8 @@
       "region": "West",
       "aliases": [
         "BEN"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "HNL",
@@ -800,7 +884,8 @@
       "region": "West",
       "aliases": [
         "HNL"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "SLO",
@@ -810,7 +895,8 @@
       "aliases": [
         "SLO",
         "San Luis Obispo"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "MTY",
@@ -825,7 +911,8 @@
         "Seaside",
         "Carmel Valley",
         "Soledad"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "SCZ",
@@ -837,7 +924,8 @@
         "Santa Cruz",
         "Capitola",
         "Watsonville"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "ASH",
@@ -847,7 +935,8 @@
       "aliases": [
         "ASH",
         "Asheville"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "SAC",
@@ -857,7 +946,8 @@
       "aliases": [
         "SAC",
         "Sacramento"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "SFE",
@@ -867,7 +957,8 @@
       "aliases": [
         "SFE",
         "Santa Fe"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "CHV",
@@ -877,7 +968,8 @@
       "aliases": [
         "CHV",
         "Charlottesville"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "NAP",
@@ -891,7 +983,8 @@
         "Sonoma",
         "St. Helena",
         "Calistoga"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "FLG",
@@ -901,7 +994,8 @@
       "aliases": [
         "FLG",
         "Flagstaff"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "BTV",
@@ -911,7 +1005,8 @@
       "aliases": [
         "BTV",
         "Burlington"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "ICY",
@@ -922,7 +1017,8 @@
         "ICY",
         "Iowa City",
         "Coralville"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "PNS",
@@ -933,7 +1029,8 @@
         "PNS",
         "Pensacola",
         "Pensacola Beach"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "FAY",
@@ -943,7 +1040,8 @@
       "aliases": [
         "FAY",
         "Fayetteville"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "PWM",
@@ -953,7 +1051,8 @@
       "aliases": [
         "PWM",
         "Portland ME"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "CAE",
@@ -963,7 +1062,8 @@
       "aliases": [
         "CAE",
         "Columbia SC"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "HSV",
@@ -973,7 +1073,8 @@
       "aliases": [
         "HSV",
         "Huntsville"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "VB",
@@ -985,7 +1086,8 @@
         "Virginia Beach",
         "Norfolk",
         "Chesapeake"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "TLH",
@@ -995,7 +1097,8 @@
       "aliases": [
         "TLH",
         "Tallahassee"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "FSD",
@@ -1005,7 +1108,8 @@
       "aliases": [
         "FSD",
         "Sioux Falls"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "FCA",
@@ -1018,7 +1122,8 @@
         "Whitefish",
         "Bigfork",
         "Columbia Falls"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "ANC",
@@ -1028,7 +1133,8 @@
       "aliases": [
         "ANC",
         "Anchorage"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "SIT",
@@ -1038,7 +1144,8 @@
       "aliases": [
         "SIT",
         "Sitka"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "MAT",
@@ -1050,483 +1157,958 @@
         "Wasilla",
         "Palmer",
         "Mat-Su"
-      ]
+      ],
+      "country": "US"
     },
     {
       "code": "RIV",
       "city": "Riverside",
       "state": "CA",
       "region": "West",
-      "aliases": ["RIV", "San Bernardino", "Fontana", "Moreno Valley", "Inland Empire"]
+      "aliases": [
+        "RIV",
+        "San Bernardino",
+        "Fontana",
+        "Moreno Valley",
+        "Inland Empire"
+      ],
+      "country": "US"
     },
     {
       "code": "GSP",
       "city": "Greenville",
       "state": "SC",
       "region": "Southeast",
-      "aliases": ["GSP"]
+      "aliases": [
+        "GSP"
+      ],
+      "country": "US"
     },
     {
       "code": "ALY",
       "city": "Albany",
       "state": "NY",
       "region": "Northeast",
-      "aliases": ["ALY"]
+      "aliases": [
+        "ALY"
+      ],
+      "country": "US"
     },
     {
       "code": "FMY",
       "city": "Fort Myers",
       "state": "FL",
       "region": "South",
-      "aliases": ["FMY", "Cape Coral"]
+      "aliases": [
+        "FMY",
+        "Cape Coral"
+      ],
+      "country": "US"
     },
     {
       "code": "SRQ",
       "city": "Sarasota",
       "state": "FL",
       "region": "South",
-      "aliases": ["SRQ", "North Port"]
+      "aliases": [
+        "SRQ",
+        "North Port"
+      ],
+      "country": "US"
     },
     {
       "code": "NHV",
       "city": "New Haven",
       "state": "CT",
       "region": "Northeast",
-      "aliases": ["NHV", "North Haven", "West Haven", "Branford", "Milford"]
+      "aliases": [
+        "NHV",
+        "North Haven",
+        "West Haven",
+        "Branford",
+        "Milford"
+      ],
+      "country": "US"
     },
     {
       "code": "STA",
       "city": "Stamford",
       "state": "CT",
       "region": "Northeast",
-      "aliases": ["STA", "Greenwich", "Bridgeport", "Norwalk"]
+      "aliases": [
+        "STA",
+        "Greenwich",
+        "Bridgeport",
+        "Norwalk"
+      ],
+      "country": "US"
     },
     {
       "code": "VNT",
       "city": "Ventura",
       "state": "CA",
       "region": "West",
-      "aliases": ["VNT", "Oxnard", "Camarillo", "Port Hueneme", "Channel Islands"]
+      "aliases": [
+        "VNT",
+        "Oxnard",
+        "Camarillo",
+        "Port Hueneme",
+        "Channel Islands"
+      ],
+      "country": "US"
     },
     {
       "code": "SJC",
       "city": "San Jose",
       "state": "CA",
       "region": "West",
-      "aliases": ["SJC", "San Jose", "Sunnyvale", "Santa Clara", "Milpitas", "Campbell"]
+      "aliases": [
+        "SJC",
+        "San Jose",
+        "Sunnyvale",
+        "Santa Clara",
+        "Milpitas",
+        "Campbell"
+      ],
+      "country": "US"
     },
     {
       "code": "ABE",
       "city": "Allentown",
       "state": "PA",
       "region": "Northeast",
-      "aliases": ["ABE", "Allentown", "Bethlehem", "Easton", "Lehigh Valley"]
+      "aliases": [
+        "ABE",
+        "Allentown",
+        "Bethlehem",
+        "Easton",
+        "Lehigh Valley"
+      ],
+      "country": "US"
     },
     {
       "code": "MCA",
       "city": "McAllen",
       "state": "TX",
       "region": "South",
-      "aliases": ["MCA", "McAllen", "Edinburg", "Mission", "Pharr", "Rio Grande Valley"]
+      "aliases": [
+        "MCA",
+        "McAllen",
+        "Edinburg",
+        "Mission",
+        "Pharr",
+        "Rio Grande Valley"
+      ],
+      "country": "US"
     },
     {
       "code": "DAB",
       "city": "Daytona Beach",
       "state": "FL",
       "region": "Southeast",
-      "aliases": ["DAB", "Daytona Beach", "Deltona", "Ormond Beach", "Port Orange", "Holly Hill"]
+      "aliases": [
+        "DAB",
+        "Daytona Beach",
+        "Deltona",
+        "Ormond Beach",
+        "Port Orange",
+        "Holly Hill"
+      ],
+      "country": "US"
     },
     {
       "code": "PRO",
       "city": "Provo",
       "state": "UT",
       "region": "Mountain",
-      "aliases": ["PRO", "Provo", "Orem", "Springville", "Spanish Fork", "Payson"]
+      "aliases": [
+        "PRO",
+        "Provo",
+        "Orem",
+        "Springville",
+        "Spanish Fork",
+        "Payson"
+      ],
+      "country": "US"
     },
     {
       "code": "FRE",
       "city": "Fresno",
       "state": "CA",
       "region": "West",
-      "aliases": ["FRE", "Fresno", "Clovis", "Madera", "Selma", "Sanger"]
+      "aliases": [
+        "FRE",
+        "Fresno",
+        "Clovis",
+        "Madera",
+        "Selma",
+        "Sanger"
+      ],
+      "country": "US"
     },
     {
       "code": "BFL",
       "city": "Bakersfield",
       "state": "CA",
       "region": "West",
-      "aliases": ["BFL", "Bakersfield", "Delano", "Wasco", "Shafter"]
+      "aliases": [
+        "BFL",
+        "Bakersfield",
+        "Delano",
+        "Wasco",
+        "Shafter"
+      ],
+      "country": "US"
     },
     {
       "code": "SPR",
       "city": "Springfield",
       "state": "MA",
       "region": "Northeast",
-      "aliases": ["SPR", "Springfield", "Chicopee", "Holyoke", "Westfield", "West Springfield"]
+      "aliases": [
+        "SPR",
+        "Springfield",
+        "Chicopee",
+        "Holyoke",
+        "Westfield",
+        "West Springfield"
+      ],
+      "country": "US"
     },
     {
       "code": "POU",
       "city": "Poughkeepsie",
       "state": "NY",
       "region": "Northeast",
-      "aliases": ["POU", "Poughkeepsie", "Fishkill", "Hyde Park", "Wappingers Falls", "Dutchess County"]
+      "aliases": [
+        "POU",
+        "Poughkeepsie",
+        "Fishkill",
+        "Hyde Park",
+        "Wappingers Falls",
+        "Dutchess County"
+      ],
+      "country": "US"
     },
     {
       "code": "JAN",
       "city": "Jackson",
       "state": "MS",
       "region": "South",
-      "aliases": ["JAN", "Jackson", "Ridgeland", "Brandon", "Madison", "Pearl"]
+      "aliases": [
+        "JAN",
+        "Jackson",
+        "Ridgeland",
+        "Brandon",
+        "Madison",
+        "Pearl"
+      ],
+      "country": "US"
     },
     {
       "code": "HBG",
       "city": "Harrisburg",
       "state": "PA",
       "region": "Northeast",
-      "aliases": ["HBG", "Harrisburg", "York", "Lancaster", "Carlisle", "Lebanon", "Hershey"]
+      "aliases": [
+        "HBG",
+        "Harrisburg",
+        "York",
+        "Lancaster",
+        "Carlisle",
+        "Lebanon",
+        "Hershey"
+      ],
+      "country": "US"
     },
     {
       "code": "WSM",
       "city": "Winston-Salem",
       "state": "NC",
       "region": "Southeast",
-      "aliases": ["WSM", "Winston-Salem", "Forsyth", "Kernersville", "Clemmons", "High Point"]
+      "aliases": [
+        "WSM",
+        "Winston-Salem",
+        "Forsyth",
+        "Kernersville",
+        "Clemmons",
+        "High Point"
+      ],
+      "country": "US"
     },
     {
       "code": "AGS",
       "city": "Augusta",
       "state": "GA",
       "region": "Southeast",
-      "aliases": ["AGS", "Augusta", "Evans", "Martinez", "Grovetown", "Aiken"]
+      "aliases": [
+        "AGS",
+        "Augusta",
+        "Evans",
+        "Martinez",
+        "Grovetown",
+        "Aiken"
+      ],
+      "country": "US"
     },
     {
       "code": "MLB",
       "city": "Melbourne",
       "state": "FL",
       "region": "Southeast",
-      "aliases": ["MLB", "Melbourne", "Palm Bay", "Brevard County", "Cocoa", "Titusville", "Rockledge"]
+      "aliases": [
+        "MLB",
+        "Melbourne",
+        "Palm Bay",
+        "Brevard County",
+        "Cocoa",
+        "Titusville",
+        "Rockledge"
+      ],
+      "country": "US"
     },
     {
       "code": "SRO",
       "city": "Santa Rosa",
       "state": "CA",
       "region": "West",
-      "aliases": ["SRO", "Santa Rosa", "Rohnert Park", "Petaluma", "Sebastopol", "Sonoma County"]
+      "aliases": [
+        "SRO",
+        "Santa Rosa",
+        "Rohnert Park",
+        "Petaluma",
+        "Sebastopol",
+        "Sonoma County"
+      ],
+      "country": "US"
     },
     {
       "code": "LAN",
       "city": "Lansing",
       "state": "MI",
       "region": "Midwest",
-      "aliases": ["LAN", "Lansing", "East Lansing", "Okemos", "Haslett", "Holt", "Mason"]
+      "aliases": [
+        "LAN",
+        "Lansing",
+        "East Lansing",
+        "Okemos",
+        "Haslett",
+        "Holt",
+        "Mason"
+      ],
+      "country": "US"
     },
     {
       "code": "MOD",
       "city": "Modesto",
       "state": "CA",
       "region": "West",
-      "aliases": ["MOD", "Modesto", "Turlock", "Ceres", "Riverbank", "Stanislaus County"]
+      "aliases": [
+        "MOD",
+        "Modesto",
+        "Turlock",
+        "Ceres",
+        "Riverbank",
+        "Stanislaus County"
+      ],
+      "country": "US"
     },
     {
       "code": "SCR",
       "city": "Scranton",
       "state": "PA",
       "region": "Northeast",
-      "aliases": ["SCR", "Scranton", "Wilkes-Barre", "Hazleton", "Pittston", "Lackawanna County"]
+      "aliases": [
+        "SCR",
+        "Scranton",
+        "Wilkes-Barre",
+        "Hazleton",
+        "Pittston",
+        "Lackawanna County"
+      ],
+      "country": "US"
     },
     {
       "code": "MYR",
       "city": "Myrtle Beach",
       "state": "SC",
       "region": "Southeast",
-      "aliases": ["MYR", "Myrtle Beach", "North Myrtle Beach", "Conway", "Murrells Inlet", "Surfside Beach"]
+      "aliases": [
+        "MYR",
+        "Myrtle Beach",
+        "North Myrtle Beach",
+        "Conway",
+        "Murrells Inlet",
+        "Surfside Beach"
+      ],
+      "country": "US"
     },
     {
       "code": "SHV",
       "city": "Shreveport",
       "state": "LA",
       "region": "South",
-      "aliases": ["SHV", "Shreveport", "Bossier City", "Bossier", "Caddo Parish"]
+      "aliases": [
+        "SHV",
+        "Shreveport",
+        "Bossier City",
+        "Bossier",
+        "Caddo Parish"
+      ],
+      "country": "US"
     },
     {
       "code": "BIL",
       "city": "Billings",
       "state": "MT",
       "region": "Mountain",
-      "aliases": ["BIL", "Billings"]
+      "aliases": [
+        "BIL",
+        "Billings"
+      ],
+      "country": "US"
     },
     {
       "code": "MID",
       "city": "Midland",
       "state": "TX",
       "region": "South",
-      "aliases": ["MID", "Midland"]
+      "aliases": [
+        "MID",
+        "Midland"
+      ],
+      "country": "US"
     },
     {
       "code": "GRK",
       "city": "Killeen",
       "state": "TX",
       "region": "South",
-      "aliases": ["GRK", "Killeen", "Temple", "Fort Hood"]
+      "aliases": [
+        "GRK",
+        "Killeen",
+        "Temple",
+        "Fort Hood"
+      ],
+      "country": "US"
     },
     {
       "code": "BLI",
       "city": "Bellingham",
       "state": "WA",
       "region": "Pacific Northwest",
-      "aliases": ["BLI", "Bellingham", "Whatcom County"]
+      "aliases": [
+        "BLI",
+        "Bellingham",
+        "Whatcom County"
+      ],
+      "country": "US"
     },
     {
       "code": "MSO",
       "city": "Missoula",
       "state": "MT",
       "region": "Mountain",
-      "aliases": ["MSO", "Missoula"]
+      "aliases": [
+        "MSO",
+        "Missoula"
+      ],
+      "country": "US"
     },
     {
       "code": "OLM",
       "city": "Olympia",
       "state": "WA",
       "region": "Pacific Northwest",
-      "aliases": ["OLM", "Olympia", "Lacey", "Tumwater", "Thurston County"]
+      "aliases": [
+        "OLM",
+        "Olympia",
+        "Lacey",
+        "Tumwater",
+        "Thurston County"
+      ],
+      "country": "US"
     },
     {
       "code": "PEO",
       "city": "Peoria",
       "state": "IL",
       "region": "Midwest",
-      "aliases": ["PEO", "Peoria", "East Peoria", "Pekin"]
+      "aliases": [
+        "PEO",
+        "Peoria",
+        "East Peoria",
+        "Pekin"
+      ],
+      "country": "US"
     },
     {
       "code": "RFD",
       "city": "Rockford",
       "state": "IL",
       "region": "Midwest",
-      "aliases": ["RFD", "Rockford", "Loves Park", "Machesney Park"]
+      "aliases": [
+        "RFD",
+        "Rockford",
+        "Loves Park",
+        "Machesney Park"
+      ],
+      "country": "US"
     },
     {
       "code": "CMI",
       "city": "Champaign",
       "state": "IL",
       "region": "Midwest",
-      "aliases": ["CMI", "Champaign", "Urbana", "Champaign-Urbana", "Monticello"]
+      "aliases": [
+        "CMI",
+        "Champaign",
+        "Urbana",
+        "Champaign-Urbana",
+        "Monticello"
+      ],
+      "country": "US"
     },
     {
       "code": "YNG",
       "city": "Youngstown",
       "state": "OH",
       "region": "Midwest",
-      "aliases": ["YNG", "Youngstown", "Boardman", "Warren", "Niles", "Mahoning County"]
+      "aliases": [
+        "YNG",
+        "Youngstown",
+        "Boardman",
+        "Warren",
+        "Niles",
+        "Mahoning County"
+      ],
+      "country": "US"
     },
     {
       "code": "CAK",
       "city": "Canton",
       "state": "OH",
       "region": "Midwest",
-      "aliases": ["CAK", "Canton", "Massillon", "Alliance", "North Canton", "Plain Township", "Louisville", "Brewster", "Canal Fulton"]
+      "aliases": [
+        "CAK",
+        "Canton",
+        "Massillon",
+        "Alliance",
+        "North Canton",
+        "Plain Township",
+        "Louisville",
+        "Brewster",
+        "Canal Fulton"
+      ],
+      "country": "US"
     },
     {
       "code": "MOB",
       "city": "Mobile",
       "state": "AL",
       "region": "Southeast",
-      "aliases": ["MOB", "Mobile", "Baldwin County", "Daphne", "Fairhope"]
+      "aliases": [
+        "MOB",
+        "Mobile",
+        "Baldwin County",
+        "Daphne",
+        "Fairhope"
+      ],
+      "country": "US"
     },
     {
       "code": "CRP",
       "city": "Corpus Christi",
       "state": "TX",
       "region": "South",
-      "aliases": ["CRP", "Corpus Christi"]
+      "aliases": [
+        "CRP",
+        "Corpus Christi"
+      ],
+      "country": "US"
     },
     {
       "code": "LBB",
       "city": "Lubbock",
       "state": "TX",
       "region": "South",
-      "aliases": ["LBB", "Lubbock"]
+      "aliases": [
+        "LBB",
+        "Lubbock"
+      ],
+      "country": "US"
     },
     {
       "code": "AMA",
       "city": "Amarillo",
       "state": "TX",
       "region": "South",
-      "aliases": ["AMA", "Amarillo"]
+      "aliases": [
+        "AMA",
+        "Amarillo"
+      ],
+      "country": "US"
     },
     {
       "code": "ILM",
       "city": "Wilmington",
       "state": "NC",
       "region": "Southeast",
-      "aliases": ["ILM", "Wilmington", "Wrightsville Beach", "Carolina Beach", "Brunswick County"]
+      "aliases": [
+        "ILM",
+        "Wilmington",
+        "Wrightsville Beach",
+        "Carolina Beach",
+        "Brunswick County"
+      ],
+      "country": "US"
     },
     {
       "code": "GNV",
       "city": "Gainesville",
       "state": "FL",
       "region": "Southeast",
-      "aliases": ["GNV", "Gainesville"]
+      "aliases": [
+        "GNV",
+        "Gainesville"
+      ],
+      "country": "US"
     },
     {
       "code": "COE",
       "city": "Coeur d'Alene",
       "state": "ID",
       "region": "Pacific Northwest",
-      "aliases": ["COE", "Coeur d'Alene", "Hayden", "Post Falls"]
+      "aliases": [
+        "COE",
+        "Coeur d'Alene",
+        "Hayden",
+        "Post Falls"
+      ],
+      "country": "US"
     },
     {
       "code": "RAP",
       "city": "Rapid City",
       "state": "SD",
       "region": "Mountain",
-      "aliases": ["RAP", "Rapid City", "Box Elder", "Ellsworth"]
+      "aliases": [
+        "RAP",
+        "Rapid City",
+        "Box Elder",
+        "Ellsworth"
+      ],
+      "country": "US"
     },
     {
       "code": "CID",
       "city": "Cedar Rapids",
       "state": "IA",
       "region": "Midwest",
-      "aliases": ["CID", "Cedar Rapids", "Marion", "Hiawatha"]
+      "aliases": [
+        "CID",
+        "Cedar Rapids",
+        "Marion",
+        "Hiawatha"
+      ],
+      "country": "US"
     },
     {
       "code": "FWA",
       "city": "Fort Wayne",
       "state": "IN",
       "region": "Midwest",
-      "aliases": ["FWA", "Fort Wayne", "Allen County"]
+      "aliases": [
+        "FWA",
+        "Fort Wayne",
+        "Allen County"
+      ],
+      "country": "US"
     },
     {
       "code": "GRB",
       "city": "Green Bay",
       "state": "WI",
       "region": "Midwest",
-      "aliases": ["GRB", "Green Bay", "Ashwaubenon", "De Pere", "Brown County"]
+      "aliases": [
+        "GRB",
+        "Green Bay",
+        "Ashwaubenon",
+        "De Pere",
+        "Brown County"
+      ],
+      "country": "US"
     },
     {
       "code": "DLH",
       "city": "Duluth",
       "state": "MN",
       "region": "Midwest",
-      "aliases": ["DLH", "Duluth", "Superior", "Hermantown"]
+      "aliases": [
+        "DLH",
+        "Duluth",
+        "Superior",
+        "Hermantown"
+      ],
+      "country": "US"
     },
     {
       "code": "AHN",
       "city": "Athens",
       "state": "GA",
       "region": "Southeast",
-      "aliases": ["AHN", "Athens", "Clarke County"]
+      "aliases": [
+        "AHN",
+        "Athens",
+        "Clarke County"
+      ],
+      "country": "US"
     },
     {
       "code": "TRI",
       "city": "Johnson City",
       "state": "TN",
       "region": "Southeast",
-      "aliases": ["TRI", "Johnson City", "Bristol", "Kingsport", "Tri-Cities", "Elizabethton"]
+      "aliases": [
+        "TRI",
+        "Johnson City",
+        "Bristol",
+        "Kingsport",
+        "Tri-Cities",
+        "Elizabethton"
+      ],
+      "country": "US"
     },
     {
       "code": "MCN",
       "city": "Macon",
       "state": "GA",
       "region": "Southeast",
-      "aliases": ["MCN", "Macon", "Bibb County", "Warner Robins"]
+      "aliases": [
+        "MCN",
+        "Macon",
+        "Bibb County",
+        "Warner Robins"
+      ],
+      "country": "US"
     },
     {
       "code": "CHY",
       "city": "Cheyenne",
       "state": "WY",
       "region": "Mountain",
-      "aliases": ["CHY", "Cheyenne", "Laramie County"]
+      "aliases": [
+        "CHY",
+        "Cheyenne",
+        "Laramie County"
+      ],
+      "country": "US"
     },
     {
       "code": "ERI",
       "city": "Erie",
       "state": "PA",
       "region": "Northeast",
-      "aliases": ["ERI", "Erie", "Erie County"]
+      "aliases": [
+        "ERI",
+        "Erie",
+        "Erie County"
+      ],
+      "country": "US"
     },
     {
       "code": "ROA",
       "city": "Roanoke",
       "state": "VA",
       "region": "Southeast",
-      "aliases": ["ROA", "Roanoke", "Salem", "Vinton", "Roanoke County"]
+      "aliases": [
+        "ROA",
+        "Roanoke",
+        "Salem",
+        "Vinton",
+        "Roanoke County"
+      ],
+      "country": "US"
     },
     {
       "code": "LNK",
       "city": "Lincoln",
       "state": "NE",
       "region": "Midwest",
-      "aliases": ["LNK", "Lincoln", "Lancaster County"]
+      "aliases": [
+        "LNK",
+        "Lincoln",
+        "Lancaster County"
+      ],
+      "country": "US"
     },
     {
       "code": "SBN",
       "city": "South Bend",
       "state": "IN",
       "region": "Midwest",
-      "aliases": ["SBN", "South Bend", "Mishawaka", "Notre Dame", "St. Joseph County"]
+      "aliases": [
+        "SBN",
+        "South Bend",
+        "Mishawaka",
+        "Notre Dame",
+        "St. Joseph County"
+      ],
+      "country": "US"
     },
     {
       "code": "EVV",
       "city": "Evansville",
       "state": "IN",
       "region": "Midwest",
-      "aliases": ["EVV", "Evansville", "Vanderburgh County"]
+      "aliases": [
+        "EVV",
+        "Evansville",
+        "Vanderburgh County"
+      ],
+      "country": "US"
     },
     {
       "code": "BWG",
       "city": "Bowling Green",
       "state": "KY",
       "region": "Southeast",
-      "aliases": ["BWG", "Bowling Green", "Warren County"]
+      "aliases": [
+        "BWG",
+        "Bowling Green",
+        "Warren County"
+      ],
+      "country": "US"
     },
     {
       "code": "FAR",
       "city": "Fargo",
       "state": "ND",
       "region": "Midwest",
-      "aliases": ["FAR", "Fargo", "Moorhead", "West Fargo", "Cass County"]
+      "aliases": [
+        "FAR",
+        "Fargo",
+        "Moorhead",
+        "West Fargo",
+        "Cass County"
+      ],
+      "country": "US"
     },
     {
       "code": "GTF",
       "city": "Great Falls",
       "state": "MT",
       "region": "Mountain",
-      "aliases": ["GTF", "Great Falls", "Cascade County"]
+      "aliases": [
+        "GTF",
+        "Great Falls",
+        "Cascade County"
+      ],
+      "country": "US"
     },
     {
       "code": "SLE",
       "city": "Salem",
       "state": "OR",
       "region": "Pacific Northwest",
-      "aliases": ["SLE", "Salem", "Marion County", "Polk County"]
+      "aliases": [
+        "SLE",
+        "Salem",
+        "Marion County",
+        "Polk County"
+      ],
+      "country": "US"
     },
     {
       "code": "TWF",
       "city": "Twin Falls",
       "state": "ID",
       "region": "Mountain",
-      "aliases": ["TWF", "Twin Falls", "Magic Valley"]
+      "aliases": [
+        "TWF",
+        "Twin Falls",
+        "Magic Valley"
+      ],
+      "country": "US"
     },
     {
       "code": "CKV",
       "city": "Clarksville",
       "state": "TN",
       "region": "Southeast",
-      "aliases": ["CKV", "Clarksville", "Montgomery County"]
+      "aliases": [
+        "CKV",
+        "Clarksville",
+        "Montgomery County"
+      ],
+      "country": "US"
     },
     {
       "code": "MSL",
       "city": "Florence",
       "state": "AL",
       "region": "Southeast",
-      "aliases": ["MSL", "Florence", "Muscle Shoals", "Sheffield", "Tuscumbia", "Shoals", "Lauderdale County"]
+      "aliases": [
+        "MSL",
+        "Florence",
+        "Muscle Shoals",
+        "Sheffield",
+        "Tuscumbia",
+        "Shoals",
+        "Lauderdale County"
+      ],
+      "country": "US"
     },
     {
       "code": "WAC",
       "city": "Waco",
       "state": "TX",
       "region": "South",
-      "aliases": ["WAC", "Waco", "McLennan County"]
+      "aliases": [
+        "WAC",
+        "Waco",
+        "McLennan County"
+      ],
+      "country": "US"
+    },
+    {
+      "code": "LON",
+      "city": "London",
+      "country": "GB",
+      "timezone": "Europe/London",
+      "currency": "GBP",
+      "region": "Europe",
+      "published": false,
+      "aliases": [
+        "LON",
+        "London UK"
+      ]
+    },
+    {
+      "code": "TOR",
+      "city": "Toronto",
+      "country": "CA",
+      "timezone": "America/Toronto",
+      "currency": "CAD",
+      "region": "Canada",
+      "published": false,
+      "aliases": [
+        "TOR",
+        "Toronto Canada"
+      ]
+    },
+    {
+      "code": "DUB",
+      "city": "Dublin",
+      "country": "IE",
+      "timezone": "Europe/Dublin",
+      "currency": "EUR",
+      "region": "Europe",
+      "published": false,
+      "aliases": [
+        "DUB",
+        "Dublin Ireland"
+      ]
     }
   ]
 }
