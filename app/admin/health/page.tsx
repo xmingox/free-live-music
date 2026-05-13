@@ -632,7 +632,7 @@ export default function AdminHealthPage() {
           </p>
           {!data?.gscQueries?.length ? (
             <p className="text-slate-500 text-sm">
-              {loading ? 'Loading...' : 'No GSC data yet — add GOOGLE_SERVICE_ACCOUNT_JSON + GSC_SITE_URL to Vercel env vars to enable.'}
+              {loading ? 'Loading...' : 'No GSC data yet — cron runs daily at noon UTC. First data appears ~2 days after the first successful run.'}
             </p>
           ) : (
             <div className="overflow-x-auto">
