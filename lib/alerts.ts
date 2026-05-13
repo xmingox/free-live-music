@@ -62,18 +62,40 @@ export async function sendDailyDigest(runs: DigestCronRun[]): Promise<void> {
 
   const lines = runs.map(r => {
     const status = r.success ? '✓' : '✗'
-    const stats = r.stats_json
-      ? ' | ' + Object.entries(r.stats_json).map(([k, v]) => `${k}: ${v}`).join(', ')
+    // Exclude per_source from the inline stats — it gets its own section below
+    const statsEntries = r.stats_json
+      ? Object.entries(r.stats_json).filter(([k]) => k !== 'per_source')
+      : []
+    const stats = statsEntries.length > 0
+      ? ' | ' + statsEntries.map(([k, v]) => `${k}: ${v}`).join(', ')
       : ''
     const err = r.error_message ? `\n    ERROR: ${r.error_message}` : ''
     return `${status} ${r.name.padEnd(24)} ${new Date(r.started_at).toISOString()}${stats}${err}`
   })
+
+  // Per-source breakdown and threshold warnings from the import run
+  const warnings: string[] = []
+  const importRun = runs.find(r => r.name === 'import')
+  if (importRun?.stats_json) {
+    const perSource = importRun.stats_json.per_source as Record<string, number> | undefined
+    if (perSource) {
+      const zeroSources = Object.entries(perSource).filter(([, v]) => v === 0).map(([k]) => k)
+      if (zeroSources.length > 0) {
+        warnings.push(`⚠ Sources returning 0 rows (${zeroSources.length}): ${zeroSources.join(', ')}`)
+      }
+    }
+    const suppressed = importRun.stats_json.suppressed as number | undefined
+    if (typeof suppressed === 'number' && suppressed > 50) {
+      warnings.push(`⚠ High suppression count: ${suppressed} rows suppressed (threshold: 50)`)
+    }
+  }
 
   const body = [
     `Daily cron summary — ${date}`,
     `${'─'.repeat(60)}`,
     ...lines,
     '',
+    ...(warnings.length > 0 ? [...warnings, ''] : []),
     failures.length > 0
       ? `${failures.length} cron(s) failed. Review at https://www.freelivemusic.co/admin/health`
       : 'All crons completed successfully.',

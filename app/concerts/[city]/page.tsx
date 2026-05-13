@@ -249,6 +249,7 @@ export default async function CityPage({
           address: `${metro.city}, ${metro.state}`,
         },
         offers: { price: '0' as const, priceCurrency: 'USD', availability: 'https://schema.org/InStock' as const },
+        url: `https://www.freelivemusic.co/concert/${concert.slug}`,
       },
     })),
   })

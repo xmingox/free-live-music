@@ -141,6 +141,7 @@ export default async function SeriesPage({
       '@type': 'MusicEvent',
       name: c.artist_name,
       startDate: c.time ? `${c.date}T${c.time}` : c.date,
+      eventStatus: 'https://schema.org/EventScheduled',
       location: {
         '@type': 'Place',
         name: c.venue,
@@ -150,7 +151,13 @@ export default async function SeriesPage({
           addressRegion: metro.state,
         },
       },
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        url: `https://www.freelivemusic.co/concert/${c.slug}`,
+      },
       url: `https://www.freelivemusic.co/concert/${c.slug}`,
     })),
   }

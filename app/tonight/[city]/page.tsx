@@ -120,6 +120,8 @@ export default async function TonightCityPage({
         '@type': 'MusicEvent',
         name: c.artist_name,
         startDate: c.time ? `${c.date}T${c.time}` : c.date,
+        eventStatus: 'https://schema.org/EventScheduled',
+        organizer: { '@type': 'Organization', name: 'Free Live Music', url: 'https://www.freelivemusic.co' },
         location: {
           '@type': 'Place',
           name: c.venue,
@@ -134,6 +136,7 @@ export default async function TonightCityPage({
           price: '0',
           priceCurrency: 'USD',
           availability: 'https://schema.org/InStock',
+          url: `https://www.freelivemusic.co/concert/${c.slug}`,
         },
         url: `https://www.freelivemusic.co/concert/${c.slug}`,
       },

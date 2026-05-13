@@ -169,12 +169,14 @@ export function buildMusicVenueJsonLd(p: MusicVenueParams): WithContext<MusicVen
                     }
                 : {}),
             },
+            eventStatus: 'https://schema.org/EventScheduled' as const,
+            organizer: { '@type': 'Organization' as const, name: 'Free Live Music', url: 'https://www.freelivemusic.co' },
             offers: {
               '@type': 'Offer' as const,
               price: '0' as const,
               priceCurrency: 'USD',
               availability: 'https://schema.org/InStock' as const,
-              ...(e.offers.url ? { url: e.offers.url } : {}),
+              ...(e.offers.url ? { url: e.offers.url } : e.url ? { url: e.url } : {}),
             },
             ...(e.url ? { url: e.url } : {}),
           })),
@@ -215,11 +217,14 @@ export function buildMusicGroupJsonLd(p: MusicGroupParams): WithContext<MusicGro
               }
           : {}),
       },
+      eventStatus: 'https://schema.org/EventScheduled' as const,
+      organizer: { '@type': 'Organization' as const, name: 'Free Live Music', url: 'https://www.freelivemusic.co' },
       offers: {
         '@type': 'Offer' as const,
         price: '0' as const,
         priceCurrency: 'USD',
         availability: 'https://schema.org/InStock' as const,
+        ...(e.url ? { url: e.url } : {}),
       },
       ...(e.url ? { url: e.url } : {}),
     })),
@@ -264,6 +269,8 @@ export function buildItemListJsonLd(p: ItemListParams): WithContext<ItemList> {
           '@type': 'MusicEvent' as const,
           name: e.name,
           startDate: e.startDate,
+          eventStatus: 'https://schema.org/EventScheduled' as const,
+          organizer: { '@type': 'Organization' as const, name: 'Free Live Music', url: 'https://www.freelivemusic.co' },
           location: {
             '@type': 'Place' as const,
             name: typeof e.location.name === 'string' ? e.location.name : undefined,
@@ -283,7 +290,9 @@ export function buildItemListJsonLd(p: ItemListParams): WithContext<ItemList> {
             price: '0' as const,
             priceCurrency: 'USD',
             availability: 'https://schema.org/InStock' as const,
+            ...(e.url ? { url: e.url } : {}),
           },
+          ...(e.url ? { url: e.url } : {}),
         },
       }
     }),

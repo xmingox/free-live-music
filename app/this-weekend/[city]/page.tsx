@@ -136,7 +136,9 @@ export default async function ThisWeekendCityPage({
       item: {
         '@type': 'MusicEvent',
         name: c.artist_name,
-        startDate: c.date,
+        startDate: c.time ? `${c.date}T${c.time}` : c.date,
+        eventStatus: 'https://schema.org/EventScheduled',
+        organizer: { '@type': 'Organization', name: 'Free Live Music', url: 'https://www.freelivemusic.co' },
         location: {
           '@type': 'Place',
           name: c.venue,
@@ -146,7 +148,14 @@ export default async function ThisWeekendCityPage({
             addressRegion: metro.state,
           },
         },
-        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock',
+          url: `https://www.freelivemusic.co/concert/${c.slug}`,
+        },
+        url: `https://www.freelivemusic.co/concert/${c.slug}`,
       },
     })),
   } : null

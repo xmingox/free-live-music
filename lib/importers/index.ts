@@ -63,9 +63,62 @@ const ASYNC_SOURCES: Array<{ label: string; fn: () => Promise<ImportRow[]> }> = 
   { label: 'getLevittLAShows',        fn: getLevittLAShows },
   { label: 'getLaPalmaShows',         fn: getLaPalmaShows },
 ]
-const SYNC_SOURCES  = [getWashingtonDCShows, getBostonShows, getDenverShows, getPortlandShows, getAustinShows, getSeattleShows, getChicagoShows, getSternGroveShows, getMarinaDelReyShows, getTorranceShows, getSantaClaritaShows, getGlendaleShows, getBeverlyHillsShows, getAlhambraShows, getNoHoShows, getArcadiaShows, getThousandOaksShows, getSimiValleyShows, getCamarilloShows, getHermosaBeachShows, getPlayaVistaShows, getSantaMonicaShows, getCulverCityShows, getManhattanBeachShows, getElSegundoShows, getRedondoBeachShows, getIrvineSymphonyShows, getHuntingtonBeachPierShows, getMissionViejoShows, getRanchoSantaMargaritaShows, getBreaConcertShows, getCostaMesaShows, getDanaPointShows, getSanClementeShows, getPacificSymphonyShows, getSymphonyInTheCitiesShows, scrapeLincolnCenter, getOCCitiesShows, getSkirballShows, getPasadenaShows, getLongBeachShows, getOCParksShows, getSummerStageShows, getGettyShows, getLACMAShows, getLACMALatinShows, getNaumburgShows, getCelebrateBrooklynShows, getNYPhilShows, getBryantParkShows, getHudsonYardsShows]
+// Use explicit names — function.name gets minified in production builds
+const SYNC_SOURCES: Array<{ label: string; fn: () => ImportRow[] }> = [
+  { label: 'getWashingtonDCShows',         fn: getWashingtonDCShows },
+  { label: 'getBostonShows',               fn: getBostonShows },
+  { label: 'getDenverShows',               fn: getDenverShows },
+  { label: 'getPortlandShows',             fn: getPortlandShows },
+  { label: 'getAustinShows',               fn: getAustinShows },
+  { label: 'getSeattleShows',              fn: getSeattleShows },
+  { label: 'getChicagoShows',              fn: getChicagoShows },
+  { label: 'getSternGroveShows',           fn: getSternGroveShows },
+  { label: 'getMarinaDelReyShows',         fn: getMarinaDelReyShows },
+  { label: 'getTorranceShows',             fn: getTorranceShows },
+  { label: 'getSantaClaritaShows',         fn: getSantaClaritaShows },
+  { label: 'getGlendaleShows',             fn: getGlendaleShows },
+  { label: 'getBeverlyHillsShows',         fn: getBeverlyHillsShows },
+  { label: 'getAlhambraShows',             fn: getAlhambraShows },
+  { label: 'getNoHoShows',                 fn: getNoHoShows },
+  { label: 'getArcadiaShows',              fn: getArcadiaShows },
+  { label: 'getThousandOaksShows',         fn: getThousandOaksShows },
+  { label: 'getSimiValleyShows',           fn: getSimiValleyShows },
+  { label: 'getCamarilloShows',            fn: getCamarilloShows },
+  { label: 'getHermosaBeachShows',         fn: getHermosaBeachShows },
+  { label: 'getPlayaVistaShows',           fn: getPlayaVistaShows },
+  { label: 'getSantaMonicaShows',          fn: getSantaMonicaShows },
+  { label: 'getCulverCityShows',           fn: getCulverCityShows },
+  { label: 'getManhattanBeachShows',       fn: getManhattanBeachShows },
+  { label: 'getElSegundoShows',            fn: getElSegundoShows },
+  { label: 'getRedondoBeachShows',         fn: getRedondoBeachShows },
+  { label: 'getIrvineSymphonyShows',       fn: getIrvineSymphonyShows },
+  { label: 'getHuntingtonBeachPierShows',  fn: getHuntingtonBeachPierShows },
+  { label: 'getMissionViejoShows',         fn: getMissionViejoShows },
+  { label: 'getRanchoSantaMargaritaShows', fn: getRanchoSantaMargaritaShows },
+  { label: 'getBreaConcertShows',          fn: getBreaConcertShows },
+  { label: 'getCostaMesaShows',            fn: getCostaMesaShows },
+  { label: 'getDanaPointShows',            fn: getDanaPointShows },
+  { label: 'getSanClementeShows',          fn: getSanClementeShows },
+  { label: 'getPacificSymphonyShows',      fn: getPacificSymphonyShows },
+  { label: 'getSymphonyInTheCitiesShows',  fn: getSymphonyInTheCitiesShows },
+  { label: 'scrapeLincolnCenter',          fn: scrapeLincolnCenter },
+  { label: 'getOCCitiesShows',             fn: getOCCitiesShows },
+  { label: 'getSkirballShows',             fn: getSkirballShows },
+  { label: 'getPasadenaShows',             fn: getPasadenaShows },
+  { label: 'getLongBeachShows',            fn: getLongBeachShows },
+  { label: 'getOCParksShows',              fn: getOCParksShows },
+  { label: 'getSummerStageShows',          fn: getSummerStageShows },
+  { label: 'getGettyShows',               fn: getGettyShows },
+  { label: 'getLACMAShows',               fn: getLACMAShows },
+  { label: 'getLACMALatinShows',          fn: getLACMALatinShows },
+  { label: 'getNaumburgShows',             fn: getNaumburgShows },
+  { label: 'getCelebrateBrooklynShows',    fn: getCelebrateBrooklynShows },
+  { label: 'getNYPhilShows',              fn: getNYPhilShows },
+  { label: 'getBryantParkShows',          fn: getBryantParkShows },
+  { label: 'getHudsonYardsShows',         fn: getHudsonYardsShows },
+]
 
-export async function runImport(): Promise<{ inserted: number; skipped: number; suppressed: number; errors: string[] }> {
+export async function runImport(): Promise<{ inserted: number; skipped: number; suppressed: number; errors: string[]; per_source: Record<string, number> }> {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -74,13 +127,16 @@ export async function runImport(): Promise<{ inserted: number; skipped: number; 
   let inserted = 0
   let skipped  = 0
   const errors: string[] = []
+  const perSource: Record<string, number> = {}
 
   const suppressions = await loadSuppressions(supabase)
 
   const allRows: ImportRow[] = []
 
-  for (const fetcher of SYNC_SOURCES) {
-    allRows.push(...fetcher())
+  for (const { label, fn } of SYNC_SOURCES) {
+    const rows = fn()
+    perSource[label] = rows.length
+    allRows.push(...rows)
   }
 
   const nycParksRows: ImportRow[] = []
@@ -88,9 +144,11 @@ export async function runImport(): Promise<{ inserted: number; skipped: number; 
   for (const { label, fn } of ASYNC_SOURCES) {
     try {
       const rows = await fn()
+      perSource[label] = rows.length
       if (label === 'fetchNYCParks') nycParksRows.push(...rows)
       allRows.push(...rows)
     } catch (err) {
+      perSource[label] = -1
       const cause = (err instanceof Error && (err as NodeJS.ErrnoException).cause)
         ? ` — cause: ${(err as NodeJS.ErrnoException).cause}`
         : ''
@@ -122,5 +180,5 @@ export async function runImport(): Promise<{ inserted: number; skipped: number; 
     }
   }
 
-  return { inserted, skipped, suppressed: suppressedCount, errors }
+  return { inserted, skipped, suppressed: suppressedCount, errors, per_source: perSource }
 }
