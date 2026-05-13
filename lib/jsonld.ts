@@ -69,7 +69,7 @@ export function buildMusicEventJsonLd(p: MusicEventParams): WithContext<MusicEve
     ...(p.endDate ? { endDate: p.endDate } : {}),
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-    performer: { '@type': 'MusicGroup', name: p.performer },
+    ...(p.performer ? { performer: { '@type': 'MusicGroup', name: p.performer } } : {}),
     location: {
       '@type': 'Place',
       name: p.venueName,
