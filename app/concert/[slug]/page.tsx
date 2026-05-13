@@ -170,7 +170,8 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
     concert.neighborhood ? getNeighborhoodConcerts(concert.city, concert.neighborhood, concert.id, today) : Promise.resolve([]),
   ])
 
-  const city = getMetroByCode(concert.city)?.city ?? concert.city
+  const metro = getMetroByCode(concert.city)
+  const city = metro?.city ?? concert.city
   const canonicalUrl = `https://www.freelivemusic.co/concert/${slug}`
 
   const offerUrl = concert.source_url && isValidUrl(concert.source_url) ? concert.source_url : canonicalUrl
@@ -180,12 +181,14 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
   const eventJsonLd = buildMusicEventJsonLd({
     name: concert.artist_name,
     description: eventDescription,
+    url: canonicalUrl,
     image: concert.image_url ?? ogImageUrl,
     startDate: concert.time ? `${concert.date}T${parseTimeToIso(concert.time)}` : concert.date,
-    endDate: concert.time ? `${concert.date}T${parseEndTimeIso(concert.time)}` : concert.date,
+    endDate: concert.time ? `${concert.date}T${parseEndTimeIso(concert.time)}` : undefined,
     performer: concert.artist_name,
     venueName: concert.venue,
     venueCity: city,
+    venueState: metro?.state,
     offer: {
       validFrom: concert.created_at.split('T')[0],
       url: offerUrl,

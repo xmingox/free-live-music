@@ -40,12 +40,14 @@ console.log('\nMusicEvent')
 const event = buildMusicEventJsonLd({
   name: 'The Shins',
   description: 'Free show at Lincoln Center',
+  url: 'https://www.freelivemusic.co/concert/the-shins-nyc-2026-07-04',
   image: 'https://example.com/img.jpg',
   startDate: '2026-07-04T19:00:00',
   endDate: '2026-07-04T21:00:00',
   performer: 'The Shins',
   venueName: 'Damrosch Park',
   venueCity: 'New York',
+  venueState: 'NY',
   offer: { validFrom: '2026-01-01', url: 'https://lincolncenter.org' },
   organizer: { name: 'Lincoln Center', url: 'https://lincolncenter.org' },
 })

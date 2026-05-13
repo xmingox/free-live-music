@@ -39,12 +39,14 @@ export interface JsonLdMusicEventItem {
 export interface MusicEventParams {
   name: string
   description: string
+  url: string
   image: string
   startDate: string
-  endDate: string
+  endDate?: string
   performer: string
   venueName: string
   venueCity: string
+  venueState?: string
   offer: {
     validFrom: string
     url: string
@@ -61,9 +63,10 @@ export function buildMusicEventJsonLd(p: MusicEventParams): WithContext<MusicEve
     '@type': 'MusicEvent',
     name: p.name,
     description: p.description,
+    url: p.url,
     image: p.image,
     startDate: p.startDate,
-    endDate: p.endDate,
+    ...(p.endDate ? { endDate: p.endDate } : {}),
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     performer: { '@type': 'MusicGroup', name: p.performer },
@@ -73,6 +76,7 @@ export function buildMusicEventJsonLd(p: MusicEventParams): WithContext<MusicEve
       address: {
         '@type': 'PostalAddress',
         addressLocality: p.venueCity,
+        ...(p.venueState ? { addressRegion: p.venueState } : {}),
       },
     },
     offers: {
