@@ -156,6 +156,7 @@ export default async function SeriesPage({
         price: '0',
         priceCurrency: 'USD',
         availability: 'https://schema.org/InStock',
+        validFrom: c.date,
         url: `https://www.freelivemusic.co/concert/${c.slug}`,
       },
       url: `https://www.freelivemusic.co/concert/${c.slug}`,
