@@ -22,7 +22,7 @@ async function writeCronRun(record: {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     )
-    await supabase.from('cron_runs').insert({
+    const { error } = await supabase.from('cron_runs').insert({
       name:          'import',
       started_at:    record.started_at,
       finished_at:   new Date().toISOString(),
@@ -30,8 +30,9 @@ async function writeCronRun(record: {
       stats_json:    record.stats_json,
       error_message: record.error_message,
     })
+    if (error) console.error('[/api/import] cron_runs insert failed:', error)
   } catch (err) {
-    console.error('[/api/import] cron_runs insert failed:', err)
+    console.error('[/api/import] cron_runs insert threw:', err)
   }
 }
 
