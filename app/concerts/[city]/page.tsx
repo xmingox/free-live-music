@@ -304,6 +304,36 @@ export default async function CityPage({
           )}
         </div>
 
+        {/* Thin-season degraded view — surfaces guide + venues when events are sparse */}
+        {concerts.length < 10 && (
+          <div className="mb-8 rounded-2xl border border-slate-200 bg-slate-50 p-6 space-y-4">
+            <p className="text-sm text-slate-500">
+              {concerts.length === 0
+                ? `No upcoming free concerts listed in ${metro.city} right now — check back as new shows are added.`
+                : `${concerts.length} upcoming show${concerts.length !== 1 ? 's' : ''} listed right now. More are added as venues announce their schedules.`}
+            </p>
+            {CITY_GUIDES[citySlug] && (
+              <div>
+                <p className="text-slate-700 text-sm leading-relaxed mb-3">
+                  {CITY_GUIDES[citySlug].intro.split('. ').slice(0, 2).join('. ') + '.'}
+                </p>
+                <Link
+                  href={`/free-live-music/${citySlug}`}
+                  className="inline-flex items-center gap-1 text-sm font-medium text-violet-700 hover:text-violet-600 transition"
+                >
+                  Read the full {metro.city} free music guide →
+                </Link>
+              </div>
+            )}
+            <Link
+              href={`/venues/${citySlug}`}
+              className="inline-flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-slate-900 transition"
+            >
+              Browse {metro.city} music venues →
+            </Link>
+          </div>
+        )}
+
         {concerts && concerts.length > 0 ? (
           <>
             {/* Tonight strip */}

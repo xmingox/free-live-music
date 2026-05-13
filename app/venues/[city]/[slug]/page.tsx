@@ -162,13 +162,23 @@ export default async function VenuePage(
         .then(r => r.data ?? [])
 
   const today = new Date().toISOString().split('T')[0]
-  const { data: concerts } = await supabase
-    .from('concerts')
-    .select('id, slug, artist_name, venue, neighborhood, date, time, genre, admission_type, source_url')
-    .eq('venue_id', venue.id)
-    .gte('date', today)
-    .order('date', { ascending: true })
-    .limit(50)
+  const [{ data: concerts }, { data: pastConcerts }] = await Promise.all([
+    supabase
+      .from('concerts')
+      .select('id, slug, artist_name, venue, neighborhood, date, time, genre, admission_type, source_url')
+      .eq('venue_id', venue.id)
+      .gte('date', today)
+      .order('date', { ascending: true })
+      .limit(50),
+    supabase
+      .from('concerts')
+      .select('id, slug, artist_name, date')
+      .eq('venue_id', venue.id)
+      .eq('is_verified', true)
+      .lt('date', today)
+      .order('date', { ascending: false })
+      .limit(10),
+  ])
 
   const v = venue as Venue
   const shows = (concerts ?? []) as Pick<Concert, 'id' | 'slug' | 'artist_name' | 'venue' | 'neighborhood' | 'date' | 'time' | 'genre' | 'admission_type' | 'source_url'>[]
@@ -416,6 +426,23 @@ export default async function VenuePage(
                 ))}
               </div>
             )}
+          </section>
+        )}
+
+        {/* Past shows */}
+        {pastConcerts && pastConcerts.length > 0 && (
+          <section className="mt-8">
+            <h2 className="text-lg font-bold text-white mb-3">Past Shows</h2>
+            <div className="flex flex-col gap-1.5">
+              {pastConcerts.map((show) => (
+                <div key={show.id} className="flex items-center justify-between px-4 py-2.5 bg-slate-800/30 border border-slate-700/30 rounded-lg">
+                  <span className="text-slate-300 text-sm truncate">{show.artist_name}</span>
+                  <span className="text-slate-500 text-xs shrink-0 ml-4">
+                    {new Date(show.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </span>
+                </div>
+              ))}
+            </div>
           </section>
         )}
 
