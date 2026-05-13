@@ -191,7 +191,7 @@ export default async function VenueListPage(
 
         {venues.length > 0 && (
           <p className="text-slate-400 text-sm mb-8 max-w-2xl leading-relaxed">
-            {venueIntro(venues, metro.city, metro.state)}
+            {venueIntro(venues, metro.city, metro.state ?? '')}
           </p>
         )}
 

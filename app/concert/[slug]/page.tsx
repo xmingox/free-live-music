@@ -405,7 +405,7 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
         {(() => {
           const metro = getMetroByCode(concert.city)
           if (!metro) return null
-          const hotelUrl = bookingSearchUrl(metro.city, metro.state, concert.date)
+          const hotelUrl = bookingSearchUrl(metro.city, metro.state ?? '', concert.date)
           return (
             <a
               href={hotelUrl}

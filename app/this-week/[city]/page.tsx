@@ -96,7 +96,7 @@ export async function generateMetadata({
   const metro = getMetroByCode(cityCode)
   if (!metro) return { title: 'City Not Found' }
 
-  const { weekLabel } = getThisWeekDates(getMetroTimezone(metro.state))
+  const { weekLabel } = getThisWeekDates(getMetroTimezone(metro.state ?? ''))
   const title = `Free Concerts This Week in ${metro.city} — ${weekLabel}`
   const description = `Find free live music happening this week (Monday–Friday) in ${metro.city}, ${metro.state}. Browse weekday concerts with no cover charge.`
   const url = `https://www.freelivemusic.co/this-week/${city}`
@@ -121,7 +121,7 @@ export default async function ThisWeekCityPage({
   const metro = getMetroByCode(cityCode)
   if (!metro) return null
 
-  const { monday, friday, queryFrom, weekdays, weekLabel, isNextWeek } = getThisWeekDates(getMetroTimezone(metro.state))
+  const { monday, friday, queryFrom, weekdays, weekLabel, isNextWeek } = getThisWeekDates(getMetroTimezone(metro.state ?? ''))
   const concerts = await getWeekConcerts(metro, queryFrom, friday)
   const concertsSlug = cityCodeToSlug[cityCode] ?? citySlug
 

@@ -194,7 +194,7 @@ export default async function VenuePage(
     address: v.address ? {
       streetAddress: v.address,
       addressLocality: metro.city,
-      addressRegion: metro.state,
+      addressRegion: metro.state ?? '',
     } : undefined,
     geo: (v.lat && v.lng) ? { latitude: v.lat, longitude: v.lng } : undefined,
     events: shows.slice(0, 10).map((c) => ({
@@ -205,7 +205,7 @@ export default async function VenuePage(
         address: v.address ? {
           streetAddress: v.address,
           addressLocality: metro.city,
-          addressRegion: metro.state,
+          addressRegion: metro.state ?? '',
         } : undefined,
       },
       offers: { price: '0' as const, priceCurrency: 'USD', availability: 'https://schema.org/InStock' as const },
@@ -451,7 +451,7 @@ export default async function VenuePage(
           const hotelDate = shows.length > 0
             ? shows[0].date
             : new Date(Date.now() + 86400000).toISOString().split('T')[0]
-          const hotelUrl = bookingSearchUrl(metro.city, metro.state, hotelDate)
+          const hotelUrl = bookingSearchUrl(metro.city, metro.state ?? '', hotelDate)
           return (
             <a
               href={hotelUrl}

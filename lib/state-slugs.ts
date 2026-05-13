@@ -32,7 +32,7 @@ export const stateCodeToSlug: Record<string, string> = Object.fromEntries(
 
 // All states that have at least one metro in metros.json
 export function getActiveStateSlugs(): string[] {
-  const codes = new Set(metros.metros.map((m) => m.state))
+  const codes = new Set(metros.metros.map((m) => m.state).filter(Boolean) as string[])
   return [...codes].map((code) => stateCodeToSlug[code]).filter(Boolean)
 }
 

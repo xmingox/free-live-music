@@ -26,7 +26,7 @@ const getMetroCodeFromCity = (cityName: string): City | null => {
 }
 
 const getMetroCodeFromState = (state: string): City | null => {
-  const metro = metros.metros.find(m => m.state.toUpperCase() === state.toUpperCase())
+  const metro = metros.metros.find(m => m.state?.toUpperCase() === state.toUpperCase())
   return metro ? (metro.code as City) : null
 }
 

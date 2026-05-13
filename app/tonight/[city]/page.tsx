@@ -54,7 +54,7 @@ export async function generateMetadata({
   const metro = getMetroByCode(cityCode)
   if (!metro) return { title: 'City Not Found' }
 
-  const tz = getMetroTimezone(metro.state)
+  const tz = getMetroTimezone(metro.state ?? '')
   const todayStr = getLocalDateStr(tz)
   const dayLabel = new Date(todayStr + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' })
   const title = `Free Concerts Tonight in ${metro.city} — ${dayLabel}`
@@ -87,7 +87,7 @@ export default async function TonightCityPage({
   const metro = getMetroByCode(cityCode)
   if (!metro) return null
 
-  const tz = getMetroTimezone(metro.state)
+  const tz = getMetroTimezone(metro.state ?? '')
   const today = getLocalDateStr(tz)
   const dayLabel = new Date(today + 'T12:00:00Z').toLocaleDateString('en-US', {
     weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC',

@@ -69,7 +69,7 @@ export async function generateMetadata({
   const metro = getMetroByCode(cityCode)
   if (!metro) return { title: 'City Not Found' }
 
-  const tz = getMetroTimezone(metro.state)
+  const tz = getMetroTimezone(metro.state ?? '')
   const { sat, sun } = getWeekendDates(tz)
   const satLabel = formatDateLabel(sat, { month: 'long', day: 'numeric' })
   const sunLabel = formatDateLabel(sun, { month: 'long', day: 'numeric' })
@@ -104,7 +104,7 @@ export default async function ThisWeekendCityPage({
   const metro = getMetroByCode(cityCode)
   if (!metro) return null
 
-  const tz = getMetroTimezone(metro.state)
+  const tz = getMetroTimezone(metro.state ?? '')
   const { sat, sun, satLabel, sunLabel } = getWeekendDates(tz)
   const concerts = await getWeekendConcerts(metro, sat, sun)
 
