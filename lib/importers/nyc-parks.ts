@@ -35,6 +35,7 @@ function formatTime(isoString: string): string {
 
 export async function fetchNYCParks(): Promise<ImportRow[]> {
   const res = await fetch(URL, {
+    signal: AbortSignal.timeout(15_000),
     headers: {
       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
       'Accept': 'text/html,application/xhtml+xml',

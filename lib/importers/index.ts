@@ -56,7 +56,13 @@ import { getSeattleShows } from './seattle'
 import type { ImportRow } from './types'
 import { loadSuppressions, filterSuppressed } from './suppression'
 
-const ASYNC_SOURCES = [fetchNYCParks, scrapeGrandPerformances, getLevittLAShows, getLaPalmaShows]
+// Use explicit names — function.name gets minified in production builds
+const ASYNC_SOURCES: Array<{ label: string; fn: () => Promise<ImportRow[]> }> = [
+  { label: 'fetchNYCParks',           fn: fetchNYCParks },
+  { label: 'scrapeGrandPerformances', fn: scrapeGrandPerformances },
+  { label: 'getLevittLAShows',        fn: getLevittLAShows },
+  { label: 'getLaPalmaShows',         fn: getLaPalmaShows },
+]
 const SYNC_SOURCES  = [getWashingtonDCShows, getBostonShows, getDenverShows, getPortlandShows, getAustinShows, getSeattleShows, getChicagoShows, getSternGroveShows, getMarinaDelReyShows, getTorranceShows, getSantaClaritaShows, getGlendaleShows, getBeverlyHillsShows, getAlhambraShows, getNoHoShows, getArcadiaShows, getThousandOaksShows, getSimiValleyShows, getCamarilloShows, getHermosaBeachShows, getPlayaVistaShows, getSantaMonicaShows, getCulverCityShows, getManhattanBeachShows, getElSegundoShows, getRedondoBeachShows, getIrvineSymphonyShows, getHuntingtonBeachPierShows, getMissionViejoShows, getRanchoSantaMargaritaShows, getBreaConcertShows, getCostaMesaShows, getDanaPointShows, getSanClementeShows, getPacificSymphonyShows, getSymphonyInTheCitiesShows, scrapeLincolnCenter, getOCCitiesShows, getSkirballShows, getPasadenaShows, getLongBeachShows, getOCParksShows, getSummerStageShows, getGettyShows, getLACMAShows, getLACMALatinShows, getNaumburgShows, getCelebrateBrooklynShows, getNYPhilShows, getBryantParkShows, getHudsonYardsShows]
 
 export async function runImport(): Promise<{ inserted: number; skipped: number; suppressed: number; errors: string[] }> {
@@ -79,13 +85,16 @@ export async function runImport(): Promise<{ inserted: number; skipped: number; 
 
   const nycParksRows: ImportRow[] = []
 
-  for (const fetcher of ASYNC_SOURCES) {
+  for (const { label, fn } of ASYNC_SOURCES) {
     try {
-      const rows = await fetcher()
-      if (fetcher.name === 'fetchNYCParks') nycParksRows.push(...rows)
+      const rows = await fn()
+      if (label === 'fetchNYCParks') nycParksRows.push(...rows)
       allRows.push(...rows)
     } catch (err) {
-      errors.push(`Fetch failed (${fetcher.name}): ${err}`)
+      const cause = (err instanceof Error && (err as NodeJS.ErrnoException).cause)
+        ? ` — cause: ${(err as NodeJS.ErrnoException).cause}`
+        : ''
+      errors.push(`Fetch failed (${label}): ${err}${cause}`)
     }
   }
 
