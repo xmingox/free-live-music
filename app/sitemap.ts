@@ -13,13 +13,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   )
 
   const today = new Date().toISOString().split('T')[0]
-  const allConcerts: { slug: string; date: string; created_at: string; city: string }[] = []
+  const allConcerts: { slug: string; date: string; created_at: string; city: string; venue_id: string | null }[] = []
   const pageSize = 1000
   let offset = 0
   while (true) {
     const { data, error } = await supabase
       .from('concerts')
-      .select('slug, date, created_at, city')
+      .select('slug, date, created_at, city, venue_id')
       .eq('is_verified', true)
       .eq('is_tbd', false)
       .gte('date', today)
@@ -32,20 +32,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   const cityCountMap: Record<string, number> = {}
+  const venueIdsWithConcerts = new Set<string>()
   for (const c of allConcerts) {
     if (c.city) cityCountMap[c.city] = (cityCountMap[c.city] ?? 0) + 1
+    if (c.venue_id) venueIdsWithConcerts.add(c.venue_id)
   }
   const CITY_MIN_CONCERTS = 10
 
   const { data: venueRows } = await supabase
     .from('venues')
-    .select('slug, city, updated_at, music_score, music_schedule')
+    .select('id, slug, city, updated_at, music_score, music_schedule')
 
-  // Exclude venues with negative score AND no music schedule — these are
-  // Google Places entries with no evidence of live music (Opus recommendation).
-  // Venues with upcoming shows won't have negative scores (weekly cron adds +20).
+  // Only include venues that will actually be indexed:
+  // - Must have music_score >= 0 or a music_schedule (baseline quality)
+  // - Must have upcoming concerts (venue_id match) or a music_schedule
+  // This aligns with the noindex logic in the venue detail page.
   const venues = (venueRows ?? []).filter(v =>
-    (v.music_score ?? 0) >= 0 || v.music_schedule != null
+    ((v.music_score ?? 0) >= 0 || v.music_schedule != null) &&
+    (v.music_schedule != null || venueIdsWithConcerts.has(v.id))
   )
 
   const concertUrls: MetadataRoute.Sitemap = allConcerts.map((c) => ({

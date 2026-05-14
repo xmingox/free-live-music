@@ -91,6 +91,10 @@ export default async function AliasCityPage({
   const aliasCity = getAliasCityFromSlug(alias.toLowerCase())
 
   if (!aliasCity) {
+    const canonicalSlugs = Object.values(cityCodeToSlug)
+    if (canonicalSlugs.includes(alias.toLowerCase())) {
+      redirect(`/concerts/${alias.toLowerCase()}`)
+    }
     redirect('/')
     throw new Error()
   }
