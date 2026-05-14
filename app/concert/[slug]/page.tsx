@@ -85,7 +85,7 @@ function isValidUrl(url: string): boolean {
   try { new URL(url); return true } catch { return false }
 }
 
-export const revalidate = 3600
+export const revalidate = 86400
 // Empty array = pre-build nothing, but enable on-demand ISR for all slugs.
 // Without this, Next.js 15 marks the route ƒ (fully dynamic) and emits
 // private/no-cache headers regardless of fetch revalidate settings.

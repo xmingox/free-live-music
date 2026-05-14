@@ -1,4 +1,4 @@
-export const revalidate = 3600
+export const revalidate = 86400
 
 import { Metadata } from 'next'
 import { getAllMetros, cityCodeToSlug } from '@/lib/city-slugs'

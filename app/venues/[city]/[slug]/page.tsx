@@ -1,4 +1,4 @@
-export const revalidate = 3600
+export const revalidate = 21600
 
 import { createClient } from '@supabase/supabase-js'
 import { notFound } from 'next/navigation'
