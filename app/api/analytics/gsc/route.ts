@@ -85,7 +85,7 @@ async function run() {
         endDate: yesterday,
         dimensions: ['page', 'query'],
         rowLimit: 25000,
-        dataState: 'final',
+        dataState: 'all',
       },
     })
 

@@ -13,19 +13,7 @@ import SiteFooter from '@/components/SiteFooter'
 import { bookingSearchUrl } from '@/lib/affiliate'
 import { buildMusicVenueJsonLd } from '@/lib/jsonld'
 
-export async function generateStaticParams() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-  const { data: venues } = await supabase
-    .from('venues')
-    .select('slug, city')
-
-  return (venues ?? [])
-    .filter(v => cityCodeToSlug[v.city])
-    .map(v => ({ city: cityCodeToSlug[v.city], slug: v.slug }))
-}
+export async function generateStaticParams() { return [] }
 
 const venueTypeLabels: Record<string, string> = {
   park: 'Park',

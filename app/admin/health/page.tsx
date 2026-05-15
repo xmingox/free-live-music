@@ -139,7 +139,9 @@ function CronGroupCard({ name, runs }: { name: string; runs: CronRun[] }) {
           {Object.entries(lastRun.stats_json).map(([k, v]) => (
             <span key={k} className="text-xs text-slate-400">
               <span className="text-slate-500">{k}:</span>{' '}
-              <span className="text-white">{String(v)}</span>
+              <span className="text-white">
+                {v !== null && typeof v === 'object' ? JSON.stringify(v) : String(v)}
+              </span>
             </span>
           ))}
         </div>
@@ -181,7 +183,9 @@ function CronGroupCard({ name, runs }: { name: string; runs: CronRun[] }) {
                   <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-0.5">
                     {Object.entries(run.stats_json).map(([k, v]) => (
                       <span key={k} className="text-xs text-slate-500">
-                        {k}: <span className="text-slate-400">{String(v)}</span>
+                        {k}: <span className="text-slate-400">
+                          {v !== null && typeof v === 'object' ? JSON.stringify(v) : String(v)}
+                        </span>
                       </span>
                     ))}
                   </div>
