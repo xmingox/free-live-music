@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import { Concert } from '@/types'
 import Link from 'next/link'
 import { cityCodeToSlug, getMetroByCode } from '@/lib/city-slugs'
@@ -33,6 +33,13 @@ async function sbGet<T>(path: string, revalidate = 3600): Promise<T[]> {
 async function getConcertBySlug(slug: string): Promise<Concert | null> {
   const rows = await sbGet<Concert>(`concerts?slug=eq.${encodeURIComponent(slug)}&select=*&limit=1`)
   return rows[0] ?? null
+}
+
+async function getCanonicalSlugFromPrevious(slug: string): Promise<string | null> {
+  const rows = await sbGet<{ slug: string }>(
+    `concerts?previous_slug=eq.${encodeURIComponent(slug)}&select=slug&limit=1`
+  )
+  return rows[0]?.slug ?? null
 }
 
 async function getVenueSlug(venueId: string): Promise<string | null> {
@@ -138,7 +145,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ConcertPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const concert = await getConcertBySlug(slug)
-  if (!concert) notFound()
+  if (!concert) {
+    const canonical = await getCanonicalSlugFromPrevious(slug)
+    if (canonical) permanentRedirect(`/concert/${canonical}`)
+    notFound()
+  }
 
   const today = new Date().toISOString().split('T')[0]
 
