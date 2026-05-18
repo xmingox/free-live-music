@@ -6,6 +6,10 @@ import { GUIDE_SLUGS } from '@/lib/city-guides-data'
 import { getActiveStateSlugs, stateCodeToSlug } from '@/lib/state-slugs'
 import { seriesSlug } from '@/lib/series'
 
+// Refresh hourly so slug renames, new concerts, and is_tbd flips surface in
+// crawler-facing sitemap.xml without needing a deploy.
+export const revalidate = 3600
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

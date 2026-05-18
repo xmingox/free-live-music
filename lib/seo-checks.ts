@@ -48,7 +48,7 @@ async function fetchText(
   url: string,
   init: RequestInit = {},
   timeoutMs = 10_000,
-): Promise<{ status: number; text: string; headers: Headers }> {
+): Promise<{ status: number; text: string; headers: Headers; finalUrl: string }> {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), timeoutMs)
   try {
@@ -58,7 +58,7 @@ async function fetchText(
       signal: controller.signal,
     })
     const text = res.body ? await res.text() : ''
-    return { status: res.status, text, headers: res.headers }
+    return { status: res.status, text, headers: res.headers, finalUrl: res.url }
   } finally {
     clearTimeout(timer)
   }
@@ -292,7 +292,10 @@ export async function checkRedirectChains(
           }
           break
         }
-        if (hops > 1 || lastStatus !== 200) {
+        // 410 is intentional for past-event slugs (Vercel-level Gone response —
+        // stronger deindex signal than 200+noindex). Treat as acceptable.
+        const acceptableFinal = lastStatus === 200 || lastStatus === 410
+        if (hops > 1 || !acceptableFinal) {
           chains.push({ url: startUrl, hops, final_status: lastStatus })
           flags.push({
             flag_type: 'seo_redirect_chain',
@@ -339,18 +342,23 @@ export async function checkCanonicalConsistency(
         )
         const canonical = canonicalMatch?.[1] ?? null
         const noindex = /<meta\s+name=["']robots["']\s+content=["'][^"']*noindex/i.test(res.text)
-        // strip trailing slash to compare; we already enforce trailingSlash:false
+        // Normalize for comparison (strip trailing slash; trailingSlash:false enforced).
         const norm = (u: string) => u.replace(/\/$/, '')
-        if (noindex || (canonical && norm(canonical) !== norm(url))) {
+        // If the fetch followed a redirect, the canonical legitimately points at
+        // the new final URL — compare against finalUrl, not the requested URL.
+        // The request URL being in the sitemap while pointing elsewhere is a
+        // separate "stale sitemap" concern handled by sitemap_drift / liveness.
+        const referenceUrl = res.finalUrl || url
+        if (noindex || (canonical && norm(canonical) !== norm(referenceUrl))) {
           mismatches.push({ url, canonical, noindex })
           if (noindex) {
             flags.push({ flag_type: 'seo_noindex_in_sitemap', source_url: url, fetched_value: 'noindex' })
           }
-          if (canonical && norm(canonical) !== norm(url)) {
+          if (canonical && norm(canonical) !== norm(referenceUrl)) {
             flags.push({
               flag_type: 'seo_canonical_mismatch',
               source_url: url,
-              stored_value: url,
+              stored_value: referenceUrl,
               fetched_value: canonical,
               field_name: 'canonical',
             })
