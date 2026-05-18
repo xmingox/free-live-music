@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/import/search",
-      "schedule": "0 8 * * 1"
+      "schedule": "0 8 * * 1,4"
     },
     {
       "path": "/api/maintenance/past-events",
