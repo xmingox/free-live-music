@@ -50,7 +50,24 @@ export interface DigestCronRun {
   stats_json: Record<string, unknown> | null
 }
 
-export async function sendDailyDigest(runs: DigestCronRun[]): Promise<void> {
+export interface DigestSeoFinding {
+  name: string
+  status: 'pass' | 'warn' | 'fail' | 'skip'
+  message: string
+}
+
+export interface DigestSeoRun {
+  run_date: string
+  alert_count: number
+  warn_count: number
+  pass_count: number
+  findings: DigestSeoFinding[]
+}
+
+export async function sendDailyDigest(
+  runs: DigestCronRun[],
+  seoLatest?: DigestSeoRun | null,
+): Promise<void> {
   const resend = getResend()
   if (!resend) return
 
@@ -90,12 +107,27 @@ export async function sendDailyDigest(runs: DigestCronRun[]): Promise<void> {
     }
   }
 
+  // SEO findings section (from yesterday's seo-daily run, if available)
+  const seoLines: string[] = []
+  if (seoLatest) {
+    const icon = (s: 'pass' | 'warn' | 'fail' | 'skip') =>
+      s === 'pass' ? '✓' : s === 'warn' ? '⚠' : s === 'fail' ? '✗' : '○'
+    seoLines.push(
+      '',
+      `SEO daily (${seoLatest.run_date}) — ${seoLatest.pass_count} pass, ${seoLatest.warn_count} warn, ${seoLatest.alert_count} fail`,
+      '─'.repeat(60),
+      ...seoLatest.findings.map((f) => `${icon(f.status)} ${f.name.padEnd(24)} ${f.message}`),
+    )
+  }
+
   const body = [
     `Daily cron summary — ${date}`,
     `${'─'.repeat(60)}`,
     ...lines,
     '',
     ...(warnings.length > 0 ? [...warnings, ''] : []),
+    ...seoLines,
+    '',
     failures.length > 0
       ? `${failures.length} cron(s) failed. Review at https://www.freelivemusic.co/admin/health`
       : 'All crons completed successfully.',

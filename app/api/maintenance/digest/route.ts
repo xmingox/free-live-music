@@ -10,7 +10,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { sendDailyDigest } from '@/lib/alerts'
+import { sendDailyDigest, DigestSeoFinding } from '@/lib/alerts'
 
 function isAuthorized(req: NextRequest): boolean {
   const secret = process.env.CRON_SECRET
@@ -41,9 +41,29 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  await sendDailyDigest(runs ?? [])
+  // Latest seo_daily_runs row (if any) — surfaces in the digest's SEO section
+  const { data: seoRow } = await supabase
+    .from('seo_daily_runs')
+    .select('run_date, alert_count, warn_count, pass_count, findings_json')
+    .order('run_date', { ascending: false })
+    .limit(1)
+    .maybeSingle()
 
-  return NextResponse.json({ ok: true, runs_found: (runs ?? []).length, date: yesterday })
+  const seoLatest = seoRow
+    ? {
+        run_date: seoRow.run_date as string,
+        alert_count: seoRow.alert_count as number,
+        warn_count: seoRow.warn_count as number,
+        pass_count: seoRow.pass_count as number,
+        findings: Object.values(
+          (seoRow.findings_json as Record<string, { name: string; status: DigestSeoFinding['status']; message: string }>) ?? {},
+        ).map((f) => ({ name: f.name, status: f.status, message: f.message })),
+      }
+    : null
+
+  await sendDailyDigest(runs ?? [], seoLatest)
+
+  return NextResponse.json({ ok: true, runs_found: (runs ?? []).length, date: yesterday, seo_included: !!seoLatest })
 }
 
 export const POST = GET

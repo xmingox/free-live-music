@@ -13,7 +13,7 @@ const supabase = createClient(
 
 export async function GET() {
   try {
-    const [cronRunsResult, submissionStatsResult, pendingCountResult, venueHealthResult, suppressionsResult, topConcertsResult, gscQueriesResult, qaFlagsResult] =
+    const [cronRunsResult, submissionStatsResult, pendingCountResult, venueHealthResult, suppressionsResult, topConcertsResult, gscQueriesResult, qaFlagsResult, seoDailyResult] =
       await Promise.all([
         supabase
           .from('cron_runs')
@@ -62,6 +62,13 @@ export async function GET() {
           .eq('resolved', false)
           .order('flagged_at', { ascending: false })
           .limit(50),
+
+        supabase
+          .from('seo_daily_runs')
+          .select('run_date, started_at, finished_at, success, alert_count, warn_count, pass_count, findings_json')
+          .order('run_date', { ascending: false })
+          .limit(14)
+          .then((r) => r, () => ({ data: null, error: null })),
       ])
 
     // If RPCs don't exist yet, fall back to raw queries
@@ -118,6 +125,7 @@ export async function GET() {
       topConcerts: topConcertsResult.data ?? [],
       gscQueries: gscQueriesResult.data ?? [],
       qaFlags: qaFlagsResult.data ?? [],
+      seoDailyRuns: seoDailyResult.data ?? [],
     })
   } catch (error) {
     console.error('Health API error:', error)

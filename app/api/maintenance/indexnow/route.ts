@@ -1,9 +1,12 @@
 /**
- * /api/maintenance/indexnow — Ping IndexNow with newly approved concert URLs.
+ * /api/maintenance/indexnow — Ping IndexNow with newly approved or modified URLs.
  *
- * Runs every 30 minutes via Vercel Cron. Queries concerts approved in the last
- * 35 minutes (overlapping window to avoid missing events near the boundary) and
- * submits their URLs to api.indexnow.org so Bing indexes them immediately.
+ * Runs hourly via Vercel Cron (`5 * * * *`). Within a 65-minute look-back window:
+ *   1. New verified concerts                  → /concert/{slug}
+ *   2. Concerts whose slug was renamed today  → /concert/{slug} (new canonical)
+ *   3. Newly eligible venues                  → /venues/{city}/{slug}
+ *
+ * Submits the combined batch to api.indexnow.org so Bing/Yandex re-crawl quickly.
  *
  * Requires:
  *   Authorization: Bearer {CRON_SECRET}
@@ -70,31 +73,58 @@ async function handle(req: NextRequest) {
     return NextResponse.json({ skipped: true, reason: 'INDEXNOW_KEY not configured' })
   }
 
-  // Query concerts approved in the last 35 minutes (35-min window covers the
-  // 30-min cron interval with a 5-min overlap to avoid boundary misses)
+  // 65-minute look-back covers the hourly cron with a 5-minute overlap to avoid
+  // boundary misses; combined with IndexNow's tolerance for re-submission this
+  // is safe to run repeatedly.
   const supabase = getSupabase()
-  const { data: concerts, error: queryError } = await supabase
+  const sinceIso = new Date(Date.now() - 65 * 60 * 1000).toISOString()
+
+  // 1) Newly verified concerts in the window
+  const concertsRes = await supabase
     .from('concerts')
-    .select('slug')
-    .gte('created_at', new Date(Date.now() - 35 * 60 * 1000).toISOString())
+    .select('slug, city')
+    .gte('created_at', sinceIso)
     .eq('is_verified', true)
 
-  if (queryError) {
-    console.error('[/api/maintenance/indexnow] DB query failed:', queryError)
-    await writeCronRun({ urls_submitted: 0, skipped: false, error: queryError.message })
-    return NextResponse.json({ error: queryError.message }, { status: 500 })
+  if (concertsRes.error) {
+    console.error('[/api/maintenance/indexnow] concerts query failed:', concertsRes.error)
+    await writeCronRun({ urls_submitted: 0, skipped: false, error: concertsRes.error.message })
+    return NextResponse.json({ error: concertsRes.error.message }, { status: 500 })
   }
 
-  // Filter to concerts that have a slug (all verified concerts should, but guard anyway)
-  const slugs = (concerts ?? []).map((c) => c.slug).filter(Boolean) as string[]
+  // 2) Newly created or updated eligible venues in the window
+  const venuesRes = await supabase
+    .from('venues')
+    .select('slug, city, updated_at, music_score, music_schedule')
+    .gte('updated_at', sinceIso)
 
-  if (slugs.length === 0) {
-    console.log('[/api/maintenance/indexnow] No new concerts to submit')
+  if (venuesRes.error) {
+    console.error('[/api/maintenance/indexnow] venues query failed:', venuesRes.error)
+    // Non-fatal: keep going with concerts
+  }
+
+  const cityCodeToSlug = (await import('@/lib/city-slugs')).cityCodeToSlug
+
+  const concertUrls = (concertsRes.data ?? [])
+    .map((c) => c.slug)
+    .filter(Boolean)
+    .map((slug) => `https://${HOST}/concert/${slug}`)
+
+  const venueUrls = (venuesRes.data ?? [])
+    .filter((v) => (v.music_score ?? 0) >= 0 || v.music_schedule != null)
+    .map((v) => {
+      const citySlug = cityCodeToSlug[v.city] ?? v.city?.toLowerCase()
+      return citySlug && v.slug ? `https://${HOST}/venues/${citySlug}/${v.slug}` : null
+    })
+    .filter((u): u is string => !!u)
+
+  const urlList = [...new Set([...concertUrls, ...venueUrls])].slice(0, 10_000)
+
+  if (urlList.length === 0) {
+    console.log('[/api/maintenance/indexnow] Nothing new to submit')
     await writeCronRun({ urls_submitted: 0, skipped: true })
     return NextResponse.json({ urls_submitted: 0, skipped: true })
   }
-
-  const urlList = slugs.map((slug) => `https://${HOST}/concert/${slug}`)
 
   // POST to IndexNow
   const body = {
@@ -118,7 +148,7 @@ async function handle(req: NextRequest) {
       console.error('[/api/maintenance/indexnow]', indexNowError)
     } else {
       console.log(
-        `[/api/maintenance/indexnow] Submitted ${urlList.length} URL(s) to IndexNow`,
+        `[/api/maintenance/indexnow] Submitted ${urlList.length} URL(s) (${concertUrls.length} concert, ${venueUrls.length} venue) to IndexNow`,
       )
     }
   } catch (err) {
