@@ -305,10 +305,20 @@ async function handle(req: NextRequest) {
     }
   }
 
-  // Persist seo_daily_runs row (one per run_date — upsert)
-  const findingsJson: Record<string, CheckResult> = {}
-  for (const r of results) findingsJson[r.name] = r
-  await supabase
+  // Persist seo_daily_runs row (one per run_date — upsert).
+  // Strip bulky per-check arrays that don't need to live in findings_json:
+  // sitemap_fetch.urls is 3k+ URLs, and details.sample / details.failures can
+  // grow; the digest only needs name/status/message/short-details.
+  const findingsJson: Record<string, Record<string, unknown>> = {}
+  for (const r of results) {
+    const { flags: _flags, ...rest } = r
+    const cleaned: Record<string, unknown> = { ...rest }
+    if (r.name === 'sitemap_fetch') {
+      cleaned.urls = undefined
+    }
+    findingsJson[r.name] = cleaned
+  }
+  const { error: upsertErr } = await supabase
     .from('seo_daily_runs')
     .upsert(
       {
@@ -323,6 +333,9 @@ async function handle(req: NextRequest) {
       },
       { onConflict: 'run_date' },
     )
+  if (upsertErr) {
+    console.error('[/api/maintenance/seo-daily] seo_daily_runs upsert failed:', upsertErr)
+  }
 
   // Mirror to cron_runs for digest-email uniformity
   await supabase.from('cron_runs').insert({

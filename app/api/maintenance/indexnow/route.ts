@@ -1,10 +1,12 @@
 /**
  * /api/maintenance/indexnow — Ping IndexNow with newly approved or modified URLs.
  *
- * Runs hourly via Vercel Cron (`5 * * * *`). Within a 65-minute look-back window:
- *   1. New verified concerts                  → /concert/{slug}
- *   2. Concerts whose slug was renamed today  → /concert/{slug} (new canonical)
- *   3. Newly eligible venues                  → /venues/{city}/{slug}
+ * Runs daily at 07:00 UTC (Vercel Hobby tier limits crons to daily cadence;
+ * upgrade to Pro to change to hourly `5 * * * *` for faster surfacing).
+ *
+ * Within a 25-hour look-back window:
+ *   1. New verified concerts        → /concert/{slug}
+ *   2. New / updated eligible venues → /venues/{city}/{slug}
  *
  * Submits the combined batch to api.indexnow.org so Bing/Yandex re-crawl quickly.
  *
@@ -73,11 +75,10 @@ async function handle(req: NextRequest) {
     return NextResponse.json({ skipped: true, reason: 'INDEXNOW_KEY not configured' })
   }
 
-  // 65-minute look-back covers the hourly cron with a 5-minute overlap to avoid
-  // boundary misses; combined with IndexNow's tolerance for re-submission this
-  // is safe to run repeatedly.
+  // 25-hour look-back covers the daily cron with a 1-hour overlap to avoid
+  // boundary misses; IndexNow tolerates repeated submissions for the same URL.
   const supabase = getSupabase()
-  const sinceIso = new Date(Date.now() - 65 * 60 * 1000).toISOString()
+  const sinceIso = new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString()
 
   // 1) Newly verified concerts in the window
   const concertsRes = await supabase
