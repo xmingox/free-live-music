@@ -370,7 +370,6 @@ async function handle(req: NextRequest) {
     run_date: runDate,
     summary,
     flags_inserted: flagsInserted,
-    upsert_error: upsertErr ? { message: upsertErr.message, code: upsertErr.code, details: upsertErr.details, hint: upsertErr.hint } : null,
     results,
   })
 }
