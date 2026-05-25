@@ -92,7 +92,7 @@ function isValidUrl(url: string): boolean {
   try { new URL(url); return true } catch { return false }
 }
 
-export const revalidate = 86400
+export const revalidate = 3600
 // Empty array = pre-build nothing, but enable on-demand ISR for all slugs.
 // Without this, Next.js 15 marks the route ƒ (fully dynamic) and emits
 // private/no-cache headers regardless of fetch revalidate settings.
@@ -158,7 +158,6 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
     const city = getMetroByCode(concert.city)?.city ?? concert.city
     return (
       <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center px-4 text-center">
-        <meta name="robots" content="noindex,follow" />
         <div className="text-5xl mb-4">🎵</div>
         <h1 className="text-2xl font-bold mb-2">This show has passed</h1>
         <p className="text-slate-400 mb-6 max-w-sm">
