@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { fetchNYCParks } from './nyc-parks'
-import { getSummerStageShows } from './summerstage'
+import { fetchSummerStageShows } from './summerstage'
 import { scrapeGrandPerformances } from './grand-performances'
 import { getGettyShows } from './getty'
 import { getLACMAShows } from './lacma'
@@ -60,6 +60,7 @@ import { loadSuppressions, filterSuppressed } from './suppression'
 const ASYNC_SOURCES: Array<{ label: string; fn: () => Promise<ImportRow[]> }> = [
   { label: 'fetchNYCParks',           fn: fetchNYCParks },
   { label: 'scrapeGrandPerformances', fn: scrapeGrandPerformances },
+  { label: 'fetchSummerStageShows',   fn: fetchSummerStageShows },
   { label: 'getLevittLAShows',        fn: getLevittLAShows },
   { label: 'getLaPalmaShows',         fn: getLaPalmaShows },
 ]
@@ -107,7 +108,6 @@ const SYNC_SOURCES: Array<{ label: string; fn: () => ImportRow[] }> = [
   { label: 'getPasadenaShows',             fn: getPasadenaShows },
   { label: 'getLongBeachShows',            fn: getLongBeachShows },
   { label: 'getOCParksShows',              fn: getOCParksShows },
-  { label: 'getSummerStageShows',          fn: getSummerStageShows },
   { label: 'getGettyShows',               fn: getGettyShows },
   { label: 'getLACMAShows',               fn: getLACMAShows },
   { label: 'getLACMALatinShows',          fn: getLACMALatinShows },
