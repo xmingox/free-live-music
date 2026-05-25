@@ -105,6 +105,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: { canonical: url },
+    robots: { index: false, follow: true },
     openGraph: { title, description, url, siteName: 'Free Live Music', type: 'website' },
     twitter: { card: 'summary_large_image', title, description },
   }
