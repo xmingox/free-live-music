@@ -122,9 +122,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const canonicalUrl = `https://www.freelivemusic.co/concert/${slug}`
 
   if (concert.date < new Date().toISOString().split('T')[0]) {
+    const citySlug = cityCodeToSlug[concert.city]
     return {
       title: `${concert.artist_name} — Past Concert | Free Live Music`,
       robots: { index: false, follow: true },
+      alternates: { canonical: citySlug ? `https://www.freelivemusic.co/concerts/${citySlug}` : 'https://www.freelivemusic.co' },
     }
   }
 

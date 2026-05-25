@@ -74,7 +74,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   const result = await resolveArtist(slug)
-  if (!result) return { title: 'Artist Not Found' }
+  if (!result) return { title: 'Artist Not Found', robots: { index: false, follow: true } }
 
   const { artistName, concerts } = result
   const cityCount = new Set(concerts.map((c) => c.city)).size
