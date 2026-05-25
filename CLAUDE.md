@@ -1,5 +1,5 @@
 # freelivemusic.co — Project Context for Claude Code
-> Last updated: May 9, 2026
+> Last updated: May 25, 2026
 
 ## What This Is
 A web app that helps people find free live music events near them across the US. Aggregates data from Eventbrite (via Apify scraping), parks & rec calendars, and user submissions. Starting with LA/NYC, expanding to 75+ US cities.
@@ -547,3 +547,98 @@ First Load JS shared by all pages: **339 KiB**
 
 ### Footer Nav — Phase 2 Complete (May 8, 2026)
 `components/SiteFooter.tsx` — 12 city venue links hardcoded from top metros (NYC, LA, CHI, SF, AUS, SEA, DC, BOS, DEN, ATL, NSH, PDX). Used on homepage, venue list, venue detail, type hub, and neighborhood hub pages. Homepage uses an inlined version (client component can't import server components).
+
+---
+
+## Session Summary — May 25, 2026
+
+### Root Cause of Google Deindexing — FIXED
+
+**Cause:** www vs non-www canonical mismatch. The sitemap used `www.freelivemusic.co` but city pages generated canonicals without `www`. Google saw two conflicting signals and dropped ranking.
+
+**Files fixed:**
+- `app/concerts/[city]/page.tsx` — canonical changed from non-www to `https://www.freelivemusic.co/concerts/${city}`
+- `app/robots.ts` — sitemap URL changed to `https://www.freelivemusic.co/sitemap.xml`; removed `/intl/` from disallow
+
+**All commits pushed to main** → auto-deployed to Vercel.
+
+---
+
+### SEO Round 2 — Additional Fixes Applied
+
+1. **`app/concert/[slug]/page.tsx`**
+   - Removed redundant `<meta name="robots" content="noindex,follow" />` from JSX body (was leaking into the DOM)
+   - Changed `revalidate = 86400` → `revalidate = 3600`
+   - Past concerts (date < today) now get `robots: { index: false, follow: true }` with canonical pointing to their city page — prevents stale content from accumulating in Google's index
+
+2. **`app/tonight/[city]/page.tsx`**, **`app/this-weekend/[city]/page.tsx`**, **`app/this-week/[city]/page.tsx`**
+   - Added `robots: { index: false, follow: true }` — these date-specific pages change daily and have stale titles in Google's index if indexed
+
+3. **`app/artist/[slug]/page.tsx`**
+   - Changed `revalidate = 86400` → `revalidate = 3600`
+   - Added `robots: { index: false, follow: true }` when artist not found (404 case)
+
+4. **`app/concerts/city/[alias]/page.tsx`**
+   - Changed `revalidate = 86400` → `revalidate = 3600`
+
+---
+
+### September Cliff — Known Risk
+
+Event data drops sharply after August as summer concert series end:
+- **July:** ~1,215 events/month, ~157 active cities
+- **September:** ~39 events/month, ~22 active cities
+- **October onwards:** Most hardcoded city data expires entirely
+
+**Strategy:**
+- **August action required:** Run Apify/Eventbrite scrape to refill fall data before September
+- **City pages with < 5 events** redirect to metro parent (already wired via `CITY_PAGE_THRESHOLD = 5`)
+- **Past concert pages** already have `robots: noindex` — won't accumulate stale Google entries
+- **Artist pages** will 404 gracefully when all shows expire (noindex already set for that case)
+- **Hardcoded importers to monitor:** Stern Grove, Chicago, Boston, Denver, Portland, Seattle, Austin, Washington DC — need manual updates when venues announce fall/2027 lineups
+
+---
+
+### Live Import Pipeline — SummerStage Converted
+
+**`lib/importers/summerstage.ts`** — completely rewritten from hardcoded array to live iCal scraper.
+
+- **Source:** `https://cityparksfoundation.org/?post_type=tribe_events&ical=1&eventDisplay=list&tribe_events_cat=summerstage`
+- Parses RFC 5545 iCal (VCALENDAR/VEVENT) with line unfolding
+- Filters: past events, benefit concerts (ticketed), events without summary
+- Normalizes NYC borough from location field (Bronx, Brooklyn, Queens, Manhattan, Staten Island)
+- `source_id` format preserved: `summerstage-{date}-{slug}` — no DB duplicates on re-import
+- Moved from `SYNC_SOURCES` → `ASYNC_SOURCES` in `lib/importers/index.ts`
+
+**SummerStage was the only venue among 50+ hardcoded importers with a public iCal feed.**
+
+All other hardcoded importers (Stern Grove, Chicago, Boston, etc.) are static arrays that must be manually updated when venues announce new lineups. Consider checking for iCal/JSON APIs when updating these annually.
+
+---
+
+### Import Pipeline — Cron Schedule
+
+Cron runs daily at **6am UTC** via Vercel (`vercel.json`). Calls `/api/import` with `CRON_SECRET` auth.
+
+A remote routine is scheduled to check Supabase at **6:30am UTC on May 26, 2026** to verify SummerStage events were inserted:
+- Routine ID: `trig_014zCg4JRryK3PeJV4sn1kB8`
+- View at: https://claude.ai/code/routines/trig_014zCg4JRryK3PeJV4sn1kB8
+- Query: `SELECT COUNT(*) FROM concerts WHERE source_name = 'SummerStage' AND created_at >= CURRENT_DATE`
+
+---
+
+### Git / Deployment Notes
+
+- Git identity set: `user.email = Xmingox@hotmail.com`, `user.name = xmingox`
+- Remote push uses HTTPS with PAT (stored in git credential manager)
+- GitHub auto-deploys to Vercel via webhook (id: 620105144) → deploy hook `Pn3qZiZvRH`
+- **Do not force-push or rebase published commits** — remote is ahead in some sessions due to Vercel/GitHub direct edits
+
+---
+
+### Ask at Next Login
+
+1. **Did the 6am cron insert new SummerStage events?** Check the remote routine result at https://claude.ai/code/routines/trig_014zCg4JRryK3PeJV4sn1kB8
+2. **Has Google re-indexed the city pages after the www canonical fix?** Check Search Console coverage report.
+3. **Are any other importers worth converting to live scrapers?** (iCal/RSS/JSON feeds at other venues)
+4. **August re-scrape planning** — schedule Apify run to refill fall event data before September cliff hits.
