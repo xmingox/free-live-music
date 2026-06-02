@@ -1,5 +1,5 @@
 # freelivemusic.co — Project Context for Claude Code
-> Last updated: May 25, 2026
+> Last updated: June 2, 2026
 
 ## What This Is
 A web app that helps people find free live music events near them across the US. Aggregates data from Eventbrite (via Apify scraping), parks & rec calendars, and user submissions. Starting with LA/NYC, expanding to 75+ US cities.
@@ -642,3 +642,81 @@ A remote routine is scheduled to check Supabase at **6:30am UTC on May 26, 2026*
 2. **Has Google re-indexed the city pages after the www canonical fix?** Check Search Console coverage report.
 3. **Are any other importers worth converting to live scrapers?** (iCal/RSS/JSON feeds at other venues)
 4. **August re-scrape planning** — schedule Apify run to refill fall event data before September cliff hits.
+
+---
+
+## Session Summary — June 2, 2026
+
+### Google Places API charges — `venue-health` cron removed
+
+User flagged unexpected `$1.28` charge from "Places API Place Details Pro" on the Google Cloud bill. Investigation showed the `/api/maintenance/venue-health` weekly cron (Sun 04:00 UTC) was calling `places.googleapis.com/v1/places/{placeId}` for `businessStatus` on up to 100 venues/run.
+
+**Fix (commit `cd63c83`):**
+- Deleted `app/api/maintenance/venue-health/route.ts` (entire 435-line route)
+- Removed cron entry from `vercel.json`
+- Updated stale references in `app/admin/health/page.tsx` (description text) and the email body of `app/api/maintenance/noindex-audit/route.ts`
+
+**Additional user action (in Google Cloud Console):** Disabled both **Places API (New)** and **Geocoding API**. Geocoding showed 12,133 requests but $0 charge — covered by the $200/mo Maps Platform free credit.
+
+**Manual scripts that still use Google APIs (run on demand only, not scheduled):**
+- `scripts/discover-venues.mjs` — Places
+- `scripts/enrich-venues.mjs` — Places
+- `scripts/enrich-neighborhoods.mjs` — Geocoding
+
+If you ever need to run these again, re-enable the relevant API in Google Cloud first. Then disable again when done. Consider setting a budget alert (Billing → Budgets & alerts, ~$5/mo with email) so this doesn't happen silently.
+
+### Vercel Hobby overages — ISR revalidate tuned down
+
+Monthly usage on Hobby plan exceeded:
+- **ISR Writes:** 424K / 200K (2.1x over)
+- **Fluid Active CPU:** 6h 46m / 4h (1.7x over)
+
+Hobby throttles past the limit but does not bill, so no immediate $ impact.
+
+**Root cause:** The May 25 SEO changes reduced `revalidate` from `86400` → `3600` on `/concert/[slug]`, `/artist/[slug]`, and `/concerts/city/[alias]` pages. With ~3,063 future concert pages, that's a 24x increase in regeneration writes.
+
+**Fix (commit `13372e9`):**
+- `/concert/[slug]` revalidate: 3600 → **86400** (concert detail data is static after creation)
+- `/artist/[slug]` revalidate: 3600 → **21600** (6h aggregation freshness is plenty)
+- `/tonight/[city]` revalidate: 900 → **3600** (page is `noindex`; no SEO benefit to 15-min freshness)
+
+City pages (`/concerts/[city]` and `/concerts/city/[alias]`) **left at 3600** so newly-added shows still surface in the lists users browse within 1h. Expected ~60-80% reduction in ISR writes. Check next billing cycle to confirm.
+
+**Next CPU lever if still needed:** investigate `/api/import` (daily Apify Eventbrite run) and other heavy crons. ISR regen reduction should already bring down CPU since each regen is a server render.
+
+### Operational issues — git push workflow on this machine
+
+The May 25 CLAUDE.md note "Git identity set: user.email = Xmingox@hotmail.com, user.name = xmingox" is **stale**. Current state:
+
+- **`gh` CLI is logged in as `evenaisle`** (a different GitHub account). `~/.gitconfig` routes all `github.com` credential requests through `gh auth git-credential`, so `git push` to `xmingox/free-live-music` returns 403.
+- **No `user.name` / `user.email`** set globally or locally. Commits attribute to `m2 <m2@m2s-MacBook-Pro.local>` instead of `xmingox`.
+
+**One-shot push workaround (used twice this session, works):**
+```bash
+git -c credential.helper= -c credential.https://github.com.helper= \
+  push https://xmingox@github.com/xmingox/free-live-music.git main
+```
+Enter the xmingox PAT when prompted. **Never paste a PAT into Claude chat** — happened once this session and the token had to be revoked.
+
+**Permanent fix (not done):**
+1. `gh auth login` → add the `xmingox` account via browser
+2. `gh auth switch -u xmingox`
+3. `git config --global user.name xmingox && git config --global user.email Xmingox@hotmail.com`
+
+### Note — `concerts-client.tsx` dedup bug investigation (no change)
+
+User reported events rendering multiple times on the homepage grid. Investigation found **no bug**:
+- `setConcerts(data)` always replaces, never appends (lines 146, 155, 162)
+- `useMemo` returns `filterByDate(...)` — pure non-mutating filter
+- React render uses `key={concert.id}` (unique)
+- `lib/data.ts` `getConcerts()` already dedupes by `c.id` at the data layer (lines 47-53)
+
+If duplicates appear again, get a specific city or concert ID first before touching the code.
+
+### Ask at Next Login (June 2)
+
+1. **Did ISR usage drop in Vercel?** Check Usage tab — ISR Writes should track well below 200K/month and Fluid CPU should follow.
+2. **Did the SummerStage live importer run successfully?** Still relevant from May 25. Routine: https://claude.ai/code/routines/trig_014zCg4JRryK3PeJV4sn1kB8
+3. **Google Cloud:** Set a budget alert so silent charges can't recur. Confirm Places API + Geocoding remain disabled.
+4. **Permanent git push fix?** Worth doing `gh auth login` for `xmingox` so future pushes don't need the one-shot workaround.
+5. **September cliff** — still need to plan the August re-scrape.
