@@ -1,4 +1,4 @@
-export const revalidate = 900 // 15-minute ISR — intent expires fast
+export const revalidate = 3600
 
 import { Metadata } from 'next'
 import Link from 'next/link'
