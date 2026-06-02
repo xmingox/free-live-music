@@ -141,7 +141,6 @@ async function run() {
       }
 
       // Reclaimable: currently below-par but got a new upcoming show in last 7 days
-      // — venue-health cron should promote these on next Sunday run
       if ((tier === 'soft' || tier === 'noindexed') && recentlyAddedVenues.has(v.id)) {
         stats.reclaimable++
       }
@@ -202,7 +201,6 @@ Tier breakdown:
 Sitemap: ${sitemap.included} included / ${sitemap.excluded} excluded
 
 Reclaimable (soft/noindexed + new show in last 7 days): ${reclaimable}
-  → These will auto-promote to verified tier on next Sunday's venue-health run.
 
 Top cities by noindexed venues:
   ${topNoindexed || 'none'}

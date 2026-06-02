@@ -423,7 +423,7 @@ export default function AdminHealthPage() {
         <section>
           <h2 className="text-lg font-semibold text-white mb-1">Venue Health</h2>
           <p className="text-sm text-slate-400 mb-4">
-            Venue health scoring runs weekly via the venue-health cron (not yet active)
+            Venue health scoring is disabled. Existing scores reflect the last scoring run.
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
             {[

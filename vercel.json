@@ -17,10 +17,6 @@
       "schedule": "0 3 * * 0"
     },
     {
-      "path": "/api/maintenance/venue-health",
-      "schedule": "0 4 * * 0"
-    },
-    {
       "path": "/api/maintenance/warm",
       "schedule": "30 6 * * *"
     },
