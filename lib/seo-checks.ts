@@ -13,6 +13,7 @@
  */
 
 import { google, searchconsole_v1 } from 'googleapis'
+import { getUsToday } from './timezone'
 
 const HOST = 'www.freelivemusic.co'
 const ORIGIN = `https://${HOST}`
@@ -389,7 +390,7 @@ export async function checkJsonLd(urls: string[], sampleSize = 25): Promise<Chec
   const sample = pickRandomSample(urls, sampleSize)
   const flags: SeoFlag[] = []
   const failures: { url: string; reason: string }[] = []
-  const today = new Date().toISOString().split('T')[0]
+  const today = getUsToday()
 
   await Promise.all(
     sample.map(async (url) => {

@@ -1,6 +1,7 @@
 export const revalidate = 86400
 
 import { Metadata } from 'next'
+import { getUsToday } from '@/lib/timezone'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
@@ -32,7 +33,7 @@ async function getCityConcertCounts(stateCode: string): Promise<Record<string, n
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   )
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = getUsToday()
   const { data } = await supabase
     .from('concerts')
     .select('city')

@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next'
+import { getUsToday } from '@/lib/timezone'
 import { createClient } from '@supabase/supabase-js'
 import { getAllMetros, cityCodeToSlug, aliasSlugMap } from '@/lib/city-slugs'
 import { GUIDE_CITIES } from '@/lib/city-guides'
@@ -16,7 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = getUsToday()
   const allConcerts: { slug: string; date: string; created_at: string; city: string; venue_id: string | null }[] = []
   const pageSize = 1000
   let offset = 0

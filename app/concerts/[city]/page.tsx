@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { getUsToday } from '@/lib/timezone'
 import Link from 'next/link'
 import { Concert } from '@/types'
 import ConcertCard from '@/components/ConcertCard'
@@ -51,7 +52,7 @@ export async function generateMetadata({
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   )
-  const today = new Date().toISOString().split('T')[0]
+  const today = getUsToday()
   const { count: upcomingCount } = await supabase
     .from('concerts')
     .select('id', { count: 'exact', head: true })
@@ -161,7 +162,7 @@ async function getConcertsByCity(metro: ReturnType<typeof getMetroByCode>): Prom
       process.env.NEXT_PUBLIC_SUPABASE_URL,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     )
-    const today = new Date().toISOString().split('T')[0]
+    const today = getUsToday()
     const { data, error } = await supabase
       .from('concerts')
       .select('*')
@@ -339,7 +340,7 @@ export default async function CityPage({
           <>
             {/* Tonight strip */}
             {(() => {
-              const today = new Date().toISOString().split('T')[0]
+              const today = getUsToday()
               const tonightShows = concerts.filter((c) => c.date === today)
               if (!tonightShows.length) return null
               return (

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getUsToday } from '@/lib/timezone'
 import { createClient } from '@supabase/supabase-js'
 import { getCityCodeFromSlug, getMetroByCode } from '@/lib/city-slugs'
 
@@ -32,7 +33,7 @@ export async function GET(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   )
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = getUsToday()
   const cityNames = [metro.city, ...(metro.aliases || [])]
 
   const { data: concerts } = await supabase

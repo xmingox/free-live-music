@@ -1,6 +1,7 @@
 export const revalidate = 21600
 
 import { createClient } from '@supabase/supabase-js'
+import { getUsToday } from '@/lib/timezone'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Metadata } from 'next'
@@ -64,7 +65,7 @@ export async function generateMetadata(
   const metro = getMetroByCode(metroCode)
   const canonicalUrl = `https://www.freelivemusic.co/venues/${citySlug}/${slug}`
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = getUsToday()
   const sixtyDaysAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 
   const [{ count: upcomingCount }, { data: lastShow }] = await Promise.all([
@@ -149,7 +150,7 @@ export default async function VenuePage(
         .limit(6)
         .then(r => r.data ?? [])
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = getUsToday()
   const [{ data: concerts }, { data: pastConcerts }] = await Promise.all([
     supabase
       .from('concerts')

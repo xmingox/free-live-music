@@ -42,6 +42,15 @@ export function getLocalDateStr(tz: string): string {
   return new Date().toLocaleDateString('en-CA', { timeZone: tz })
 }
 
+// Lenient national "today" (YYYY-MM-DD) computed in US Pacific time.
+// Pacific is the latest contiguous-US timezone, so using it as the upcoming/past
+// boundary means no US evening event is ever prematurely hidden as "past" (the UTC
+// bug: at ~5pm PT, UTC has already rolled to tomorrow and dropped tonight's shows).
+// For a page scoped to a known metro, prefer getLocalDateStr(getMetroTz(metro)).
+export function getUsToday(): string {
+  return getLocalDateStr('America/Los_Angeles')
+}
+
 // Returns 0=Sun…6=Sat for the given IANA timezone
 export function getLocalDow(tz: string): number {
   const dateStr = getLocalDateStr(tz)

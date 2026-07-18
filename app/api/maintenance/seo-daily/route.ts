@@ -17,6 +17,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { getUsToday } from '@/lib/timezone'
 import { createClient } from '@supabase/supabase-js'
 import { sendCronAlert } from '@/lib/alerts'
 import {
@@ -69,7 +70,7 @@ async function handle(req: NextRequest) {
   }
 
   const started_at = new Date().toISOString()
-  const runDate = new Date().toISOString().split('T')[0]
+  const runDate = getUsToday()
   const supabase = getSupabase()
 
   // ── 1. Sitemap fetch + parse ─────────────────────────────────────────────
@@ -78,7 +79,7 @@ async function handle(req: NextRequest) {
   const concertUrls = allUrls.filter((u) => u.includes('/concert/'))
 
   // ── 2. Expected counts vs DB (parallel) ──────────────────────────────────
-  const today = new Date().toISOString().split('T')[0]
+  const today = getUsToday()
   const fourteenDaysOut = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
     .toISOString()
     .split('T')[0]

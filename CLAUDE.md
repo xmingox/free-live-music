@@ -101,12 +101,9 @@ The site is **pivoting from national breadth toward depth**. Evidence: across ~6
 
 Git push to `main` → Vercel auto-deploys via GitHub webhook (~2–3 min). Data-only refresh: `git commit --allow-empty -m "bust ISR" && git push`.
 
-⚠️ **Git push auth gotcha:** the local `gh` CLI may be logged in as the wrong account (`evenaisle`, not `xmingox`), causing 403s. The remote itself is correct. One-shot workaround:
-```bash
-git -c credential.helper= -c credential.https://github.com.helper= \
-  push https://xmingox@github.com/xmingox/free-live-music.git main
-```
-**Never paste a PAT into chat.** Permanent fix: `gh auth login` as `xmingox`, then `gh auth switch`.
+**Deploy helper:** run `bash deploy.sh "commit message"` — it commits all changes and pushes to `main` (Vercel auto-deploys).
+
+**Git auth (RESOLVED July 18):** `gh` CLI is now authenticated as `xmingox` with `gh auth setup-git`, so a plain `git push origin main` works. (History: it was previously logged in as `evenaisle`, causing 403s.) **Never paste a PAT into chat.**
 
 Secrets live in `.env.local` (Supabase URL/keys, Mapbox token) — never commit them, never print their values.
 

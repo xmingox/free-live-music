@@ -31,6 +31,7 @@
  */
 
 import * as cheerio from 'cheerio'
+import { getUsToday } from '../timezone'
 import { createClient } from '@supabase/supabase-js'
 import metros from '@/lib/metros.json'
 import { loadSuppressions, filterSuppressed } from './suppression'
@@ -40,7 +41,7 @@ import { loadSuppressions, filterSuppressed } from './suppression'
 const HAIKU_MODEL = 'claude-haiku-4-5-20251001'
 const MAX_URLS = 12
 const MAX_PAGE_TEXT = 12_000
-const TODAY = new Date().toISOString().split('T')[0]
+const TODAY = getUsToday()
 
 /**
  * Domains that never contain useful concert listing pages.

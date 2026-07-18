@@ -1,4 +1,5 @@
 import type { ImportRow } from './types'
+import { getUsToday } from '../timezone'
 
 const ICAL_URL = 'https://cityparksfoundation.org/?post_type=tribe_events&ical=1&eventDisplay=list&tribe_events_cat=summerstage'
 const SOURCE_NAME = 'SummerStage'
@@ -66,7 +67,7 @@ export async function fetchSummerStageShows(): Promise<ImportRow[]> {
 
   const raw = await res.text()
   const vevents = parseVEvents(raw)
-  const today = new Date().toISOString().split('T')[0]
+  const today = getUsToday()
   const rows: ImportRow[] = []
 
   for (const ev of vevents) {

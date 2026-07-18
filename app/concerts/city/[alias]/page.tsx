@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { getUsToday } from '@/lib/timezone'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { Concert } from '@/types'
@@ -29,7 +30,7 @@ async function getConcertsByAliasCity(cityName: string): Promise<Concert[]> {
       process.env.NEXT_PUBLIC_SUPABASE_URL,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     )
-    const today = new Date().toISOString().split('T')[0]
+    const today = getUsToday()
     const { data, error } = await supabase
       .from('concerts')
       .select('*')

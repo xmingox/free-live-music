@@ -1,4 +1,5 @@
 import { unstable_cache } from 'next/cache'
+import { getUsToday } from './timezone'
 import { Concert } from '@/types'
 import { MOCK_CONCERTS } from './mock-data'
 import metros from './metros.json'
@@ -12,7 +13,7 @@ async function fetchConcerts(metroCode?: string): Promise<Concert[]> {
     const { createClient } = await import('@supabase/supabase-js')
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    const today = new Date().toISOString().split('T')[0]
+    const today = getUsToday()
 
     let cityFilter: string[] | undefined
     if (metroCode) {

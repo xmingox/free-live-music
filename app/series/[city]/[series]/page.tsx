@@ -1,6 +1,7 @@
 export const revalidate = 86400
 
 import { Metadata } from 'next'
+import { getUsToday } from '@/lib/timezone'
 import Link from 'next/link'
 import { Concert } from '@/types'
 import ConcertCard from '@/components/ConcertCard'
@@ -28,7 +29,7 @@ async function getSeriesConcerts(
   )
 
   const cityNames = [metro.city, ...(metro.aliases || [])]
-  const today = new Date().toISOString().split('T')[0]
+  const today = getUsToday()
 
   // Fetch all upcoming concerts for this metro, find which artist slug matches
   const { data } = await supabase

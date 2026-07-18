@@ -1,4 +1,5 @@
 import { notFound, permanentRedirect } from 'next/navigation'
+import { getUsToday } from '@/lib/timezone'
 import { Concert } from '@/types'
 import Link from 'next/link'
 import { cityCodeToSlug, getMetroByCode } from '@/lib/city-slugs'
@@ -121,7 +122,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const city = getMetroByCode(concert.city)?.city ?? concert.city
   const canonicalUrl = `https://www.freelivemusic.co/concert/${slug}`
 
-  if (concert.date < new Date().toISOString().split('T')[0]) {
+  if (concert.date < getUsToday()) {
     const citySlug = cityCodeToSlug[concert.city]
     return {
       title: `${concert.artist_name} — Past Concert | Free Live Music`,
@@ -153,7 +154,7 @@ export default async function ConcertPage({ params }: { params: Promise<{ slug: 
     notFound()
   }
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = getUsToday()
 
   if (concert.date < today) {
     const citySlug = cityCodeToSlug[concert.city]

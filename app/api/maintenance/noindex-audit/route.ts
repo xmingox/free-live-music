@@ -17,6 +17,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { getUsToday } from '@/lib/timezone'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
@@ -60,7 +61,7 @@ async function run() {
   })
 
   try {
-    const today = new Date().toISOString().split('T')[0]
+    const today = getUsToday()
 
     // Fetch all venues with score + schedule
     const { data: venues, error: venueError } = await supabase

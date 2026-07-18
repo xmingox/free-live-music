@@ -2,6 +2,7 @@ export const revalidate = 21600
 export async function generateStaticParams() { return [] }
 
 import { Metadata } from 'next'
+import { getUsToday } from '@/lib/timezone'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Concert } from '@/types'
@@ -21,7 +22,7 @@ async function resolveArtist(slug: string): Promise<{ artistName: string; concer
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   )
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = getUsToday()
 
   // Step 1: ILIKE match — convert slug to approximate name for fast lookup
   const nameGuess = decodeURIComponent(slug).replace(/-/g, ' ')
