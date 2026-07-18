@@ -17,7 +17,7 @@ import { computeRecurringSeries } from '@/lib/series'
 import { buildFaqPageJsonLd, buildItemListJsonLd } from '@/lib/jsonld'
 import { CITY_GUIDES } from '@/lib/city-guides-data'
 
-export const revalidate = 3600 // Revalidate every hour
+export const revalidate = 86400 // daily backstop; import cron triggers refresh via revalidateTag('concerts')
 
 // Generate static params for all cities
 export async function generateStaticParams() {

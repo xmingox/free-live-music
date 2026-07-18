@@ -8,7 +8,7 @@ import { seriesSlug } from '@/lib/series'
 
 // Refresh hourly so slug renames, new concerts, and is_tbd flips surface in
 // crawler-facing sitemap.xml without needing a deploy.
-export const revalidate = 3600
+export const revalidate = 86400 // daily; sitemap re-reads all concerts+venues, so keep this off the hourly path
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createClient(

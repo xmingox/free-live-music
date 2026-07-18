@@ -1,722 +1,134 @@
-# freelivemusic.co — Project Context for Claude Code
-> Last updated: June 2, 2026
-
-## What This Is
-A web app that helps people find free live music events near them across the US. Aggregates data from Eventbrite (via Apify scraping), parks & rec calendars, and user submissions. Starting with LA/NYC, expanding to 75+ US cities.
-
-- **Live site:** https://www.freelivemusic.co
-- **GitHub:** https://github.com/xmingox/free-live-music
-- **Active branch:** main
-- **Status:** Live & functional as of May 5, 2026
+# freelivemusic.co — Project Context & Guardrails for Claude
+> Last updated: July 18, 2026. This file is auto-loaded every session. Keep it accurate — for an AI-steered project, this doc IS part of the architecture. Stale context causes wrong decisions.
+> Full diagnosis + roadmap lives in `AUDIT_AND_PLAN.md`. Prior session history is archived in `CLAUDE_ARCHIVE.md`.
 
 ---
 
-## Tech Stack
+## 0. How Claude should operate on this project (read first)
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | Next.js 15.3.1 / React (TypeScript, PWA-ready) |
-| Styling | Tailwind CSS — dark theme (slate-800/900 base) |
-| Maps | Mapbox GL JS |
-| Hosting | Vercel — project: **free-live-music-1lwp** |
-| Database | Supabase (PostgreSQL) |
-| Data pipeline | Apify → CSV → csv_to_sql.py → Supabase SQL editor |
+**No guessing. Label confidence.**
+- If you don't know something, say so and go find out (read the code, query the DB, search the web). Do not fill gaps with plausible-sounding invention.
+- Suggesting is welcome — but when a claim isn't directly verified, mark it: **[verified]** (checked against code/DB/web just now), **[likely]** (strong inference, not confirmed), or **[guess]** (low confidence, needs checking). Never present a [guess] as fact.
+- Prefer "I haven't confirmed this" over a confident wrong answer. A wrong number in this file or a deploy compounds.
 
----
+**Verify before you trust — including this file.**
+- Docs (including this one) can be stale. Before acting on a "fact," confirm it against the live code or database. Example precedent: the previous CLAUDE.md claimed 829 events; the real count was 3,926.
+- When an audit or agent hands you a finding, spot-check the load-bearing claims yourself before building on them.
 
-## Credentials & Services
+**Show your work before side effects.**
+- Read-only audit first, then propose, then change. Show diffs before committing. Never deploy without the user seeing what ships.
 
-**Supabase**
-- URL: `NEXT_PUBLIC_SUPABASE_URL` (see `.env.local`)
-- Anon key: `NEXT_PUBLIC_SUPABASE_ANON_KEY` (see `.env.local`)
-- Service role: `SUPABASE_SERVICE_ROLE_KEY` (see `.env.local`)
-
-**Vercel**
-- Active project: `free-live-music-1lwp` (projectId: `prj_et8HJ3Ndyix10qA6lUvQNUxyFH7D`) ← THIS is the live one
-- Dead project: `free-live-music` ← old CLI artifact, ignore
-- Domain `www.freelivemusic.co` → `free-live-music-1lwp`
-- `.vercel/project.json` is correctly linked to `free-live-music-1lwp`
-- **Git auto-deploy IS set up** — GitHub webhook (id: 620105144) → Vercel deploy hook `Pn3qZiZvRH` → auto-deploys `main` on every push
-
-**Mapbox**
-- Token: `NEXT_PUBLIC_MAPBOX_TOKEN` (set in Vercel env + `.env.local`)
-- Used for: `/venues/[city]/map` interactive map, static thumbnails on venue detail pages
-- Free tier: 50k map loads/month
-
-**Apify scraper:** `crawlerbros/eventbrite-events-scraper` (~$0.001/result)
+**Keep this file current.** When you change architecture, costs, or invariants, update the relevant section here in the same session.
 
 ---
 
-## Database Schema
+## 1. What this is & the goal
 
-```sql
-concerts (
-  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  display_id      text,
-  slug            text,
-  artist_name     text,
-  venue           text,
-  date            date,
-  time            time,
-  neighborhood    text,
-  city            text,
-  genre           text,
-  price           text,
-  admission_type  text,
-  indoor_outdoor  text,
-  image_url       text,
-  is_verified     boolean DEFAULT false,
-  source_url      text,
-  source_name     text,
-  source_id       text,
-  created_at      timestamptz
-)
-```
+A web app that helps people find **free** live music events near them across the US. Aggregates events from parks calendars, concert series, festivals, and venue feeds. Core dataset: events (concerts), venues, cities.
 
-Current data: 829 verified events, all with slugs populated.
+- **Live site:** https://www.freelivemusic.co · **Repo:** github.com/xmingox/free-live-music · **Branch:** main
+
+**Priorities, in order:** (1) SEO discoverability, (2) crawl freshness — surface current/upcoming events, never stale/past, (3) fast + cheap reads that stay on free/near-free tiers, (4) long-term maintainability.
+
+### Strategic direction (decided July 2026 — don't drift back)
+The site is **pivoting from national breadth toward depth**. Evidence: across ~6 weeks of Search Console data, city hubs and the 7,509-venue directory earned ~0 clicks; every measured click came from individual event/artist pages. Demand concentrates in named series+year, named artists playing free shows, and a few year-round markets (Las Vegas foremost).
+
+**Current bet:** pilot depth on **Las Vegas** (Fremont Street — free, nightly, year-round, weak incumbents) using a **recurring-residency data model** (the perennial inventory that kills the September supply cliff), plus **owned channels** (a weekly newsletter — none exists yet — and a subreddit presence) as the primary acquisition channel for the first 6–12 months. SEO is the harvest channel, not the seed. Keep the 177-metro tail live but stop investing in it until the pilot shows signal. See `AUDIT_AND_PLAN.md`.
+
+**International: capable, not committed.** US-only today. Build the data model country-aware (ISO `country` + IANA `timezone` on cities/venues/events, which the timezone fix requires anyway) so a future deep market could be international — but invest in no non-US content, sources, or routes until the US pilot proves the playbook. Adding countries now is just more breadth. Don't extend the premature `/intl/*` route.
 
 ---
 
-## Key Files
+## 2. Spending guardrails (HARD RULES)
 
-- `app/concerts-client.tsx` — home page client component; reads URL params via `useEffect(window.location.search)` (NOT useSearchParams — avoids Suspense boundary that caused LCP 5.3s)
-- `app/concerts/[city]/page.tsx` — metro city SSR page
-- `app/concerts/city/[alias]/page.tsx` — alias city SSR page
-- `app/venues/[city]/page.tsx` — city venue list with type/neighborhood discovery hub links
-- `app/venues/[city]/venue-list-client.tsx` — client search/filter for venue list
-- `app/venues/[city]/[slug]/page.tsx` — individual venue detail page
-- `app/venues/[city]/type-hub-page.tsx` — shared server component for venue type hubs; imported by each type wrapper
-- `app/venues/[city]/bars/page.tsx` — "Free Music Bars in {City}" (+ breweries, parks, restaurants, amphitheaters)
-- `app/venues/[city]/map/page.tsx` — full-screen Mapbox GL map page (server component)
-- `app/venues/[city]/map/VenueMapWrapper.tsx` — client wrapper holding the dynamic ssr:false import
-- `app/venues/[city]/map/VenueMapClient.tsx` — Mapbox GL JS interactive map with filterable side panel
-- `app/venues/[city]/neighborhood/[hood]/page.tsx` — neighborhood hub pages; on-demand, no generateStaticParams
-- `components/SiteNav.tsx` — site-wide nav (Concerts | Venues links + breadcrumb); used on all venue and concert detail pages
-- `lib/metros.json` — metro definitions with city codes and aliases
-- `lib/data.ts` — Supabase query helpers, alias-aware
-- `lib/city-slugs.ts` — slug helpers including `cityToSlug()` for URL generation
+**Golden rule: never incur a paid API call or enable a billable service without (a) an explicit cost estimate and (b) the user's approval in chat.** Cost overruns on this project have happened silently before — assume that risk is real.
+
+| Service | Plan / free limit | Rules & lessons learned |
+|---|---|---|
+| **Supabase** | Free tier | Stay on it. **No per-request runtime DB reads that scale with traffic** (the `middleware.ts` per-`/concert/` lookup is the anti-pattern — reads should scale with imports, not visitors). No paid add-ons without approval. |
+| **Vercel** | Hobby (confirmed July 18) | **Currently OVER free limits (July 18 dashboard): ISR Writes 383K/200K (~1.9x) and Fluid Active CPU 7h47m/4h (~1.9x).** The June revalidate tuning did NOT fix ISR writes — needs event-driven `revalidateTag`, not blind timers. Fluid CPU is likely the daily crons (incl. the zombie `seo-daily`/`gsc-pull` still failing daily). Sustained Hobby overage can pause/throttle the project. ⚠️ **Hobby prohibits commercial use** — `lib/affiliate.ts` exists; if affiliate revenue is live, migration risk. |
+| **Google Cloud (Places + Geocoding)** | — | **KEEP DISABLED.** A silent $1.28 Places charge already occurred (venue-health cron, now deleted). The manual scripts `discover-venues.mjs`, `enrich-venues.mjs`, `enrich-neighborhoods.mjs` call these APIs and **cost money** — run only on explicit request, re-enable the API deliberately, disable again after. Set a budget alert. |
+| **Mapbox** | 50k loads/month free | Fine at current scale. Don't add map calls to high-traffic pages without checking the counter. |
+| **Apify** (Eventbrite scrape) | ~$0.001/result | Batch runs only. Estimate cost (results × rate) and get approval before a large run. |
+| **Resend** (email) | Free tier | Used for ops alerts today; the planned newsletter will need a volume check against the free limit before launch. |
+
+**Before any billable action, state:** which service, estimated cost, and why. Then wait for a yes.
 
 ---
 
-## Metro / City System
+## 3. Correctness invariants (these keep breaking — respect them)
 
-177 US metros in `lib/metros.json`. `getConcerts(metroCode)` expands to `[metro.city, ...metro.aliases]` and queries with `.in('city', cities)`.
-
-Recent alias fixes (May 5, 2026) — all resolved:
-NYC, LA, NSH, CHI, ATL, AUS, DAL, BOS, DEN, DC, PDX, SEA, SF, MEM, FTW
-
----
-
-## Open Bugs / Current Tasks
-
-All previously listed bugs fixed as of May 9, 2026:
-- ✅ Deduplication — 4 duplicate DB rows deleted; `getConcerts()` dedupes by id
-- ✅ Sitemap — paginated query now includes all 3,063 future concert pages
-- ✅ Time display — `formatTime()` in ConcertCard handles both `19:00:00` and `7:30pm`
-- ✅ Venue "TBD" — card already hides venue line and shows neighborhood only
+- **Timezone: never use UTC for "today."** Do not write `new Date().toISOString().split('T')[0]` for date logic — it hides West Coast evening shows from ~5pm Pacific. Use `lib/timezone.ts` (venue/city-local, IANA-aware). This pattern currently appears in ~26 files; new code must not add to them.
+- **Time display:** 12-hour format ("7:30pm"), never "19:30". (Longer term: store a real `timestamptz` + venue tz.)
+- **Adding a city requires a 3-way sync** — miss one and events silently don't render:
+  1. Metro entry in `lib/metros.json` (3-letter code present in the `aliases` array, not just `code`)
+  2. City code in the `City`/`Concert.city` unions in `types/index.ts`
+  3. Slug handling in `lib/city-slugs.ts`
+  Verify on `/concerts/{city-slug}` (direct query, no ISR delay).
+- **Dedup by content, not just `id`.** Duplicate cards have appeared because importers re-created events under a different city code (OC importers hardcoding `city:'LA'` for `ANA` events). Use an `artist+venue+date` key. **Never hardcode the wrong city in an importer** — Dana Point ≠ LA.
+- **Data provenance:** source event dates from the venue's/organizer's **own current-year page**, never year-adjusted from a prior-year "best of summer" article. Set `is_tbd = true` for placeholder/unnamed performers.
+- **`price` is always "Free."** `date` must be >= today (frontend filters past). `is_verified = true` for manual adds (note: currently 100% true, so it no longer discriminates).
 
 ---
 
-## Data Pipeline
+## 4. SEO principles
 
-1. Run `crawlerbros/eventbrite-events-scraper` on Apify
-2. Export CSV → run `python csv_to_sql.py`
-3. Paste SQL into Supabase SQL Editor
-4. Run: `UPDATE concerts SET is_verified = true WHERE source_name = 'Eventbrite' AND date != '2026-01-01'`
-5. Delete placeholders: `DELETE FROM concerts WHERE date = '2026-01-01'`
-
----
-
-## Deployment
-
-Git push to `main` → auto-deploys to `www.freelivemusic.co` via GitHub webhook → Vercel deploy hook.
-
-```bash
-git add . && git commit -m "..." && git push origin main
-# Vercel build starts automatically (~2-3 min)
-```
-
-For data-only changes (ISR cache bust), same — just push any commit.
-
-**How it works:** GitHub webhook (id: 620105144) fires on every push to any branch and calls Vercel deploy hook `Pn3qZiZvRH` which always deploys from `main`.
+- **One canonical host:** `https://www.freelivemusic.co` everywhere (a www/non-www mismatch previously caused deindexing).
+- **One canonical URL family per entity.** Do not create new URL surfaces for the same content. Known sprawl to consolidate, not extend: `/free-music/*` (duplicate of `/free-live-music/*`), plus overlapping city/time/state families.
+- **Series & artist pages are the durable assets** — they recur yearly and match real search demand. They must NOT 404 at season end (the current `/series` page does — fix to show past seasons). Pick one of `/series` vs `/artist` for a given entity and 301 the other.
+- **noindex discipline:** TBA/placeholder events (~310 currently indexable — should be noindexed with canonical → series), past events, and date-volatile pages (`/tonight`, `/this-week`, `/this-weekend`).
+- **JSON-LD must be truthful.** `lib/jsonld.ts` currently hardcodes `organizer: 'Free Live Music'` on events it doesn't organize — that's misrepresentation. Include real `streetAddress`+geo (available in the `venues` table) and timezone offsets.
+- **Centralize the index/noindex threshold** in one module imported by both `sitemap.ts` and page metadata (they currently drift).
+- Keep the good hygiene already in place: 410-Gone for expired events, `previous_slug` 301s, archive sweep, noindex on volatile pages.
 
 ---
 
-## Roadmap
+## 5. Architecture reference (current, verified July 2026)
 
-Done ✅: DB setup, Eventbrite import (829 events), Next.js 15.3.1, metro alias fixes, alias city pages, ISR, domain fix, LCP fix (5.3s → <3s), venue discovery (6,300+ venues across 108 cities), venue UX Phase 1 + 2 (type hubs, neighborhood hubs, site nav, nearby venues)
+**Stack:** Next.js 15.5.x (App Router, TypeScript), React 19, Tailwind (dark theme). Supabase (Postgres 17). Vercel (project `free-live-music-1lwp`). Mapbox GL JS.
 
-In Progress 🔄: Deduplication bug, sitemap concert pages, SEO architecture
+**Data (live counts):** `concerts` 3,926 rows (1,600 future, ~2,326 past — past events are NOT being cleaned from the main table despite `is_archived`). `venues` 7,509 (`music_schedule` null on all of them). `event_series` exists with 0 rows. Future supply by month: Jul 537 / Aug 827 / Sep 174 / Oct 39 / Nov 11 / Dec 12 — **the September cliff is real and ~6 weeks out.**
 
-Planned ⏳: Search Console submission, genre/date filtering, event page improvements, user submissions, push notifications, venue map view (/venues/[city]/map), footer nav with city list, more data sources (LA Parks, Hollywood Bowl, Grand Performances, KCRW)
+**Ingestion:** ~55 importers in `lib/importers/`; only ~5 are live scrapers (SummerStage iCal is the model), the rest are hardcoded static arrays that expire. A daily cron (`/api/import`, 6am UTC) runs them. The generic Brave+Haiku extractor is effectively dead (10 submissions ever).
 
----
+**Key files:** `lib/data.ts` (queries; currently `select('*')` — over-fetches), `middleware.ts` (per-request 410 check — should parse date from slug), `app/sitemap.ts`, `lib/timezone.ts`, `lib/jsonld.ts`, `lib/metros.json`, `lib/city-slugs.ts`.
 
-#### Critical Requirements:
-- **time:** Must be 12-hour format (7:30pm, 10:00am) — NOT 19:30 or 19:30:00
-- **date:** Must be >= today (frontend filters past events)
-- **price:** Always "Free"
-- **city:** Must match frontend city codes exactly
-- **is_verified:** true for manually added events
-
-## Data Pipeline
-
-### Adding Free Concert Data (8 Steps)
-
-1. **Research:** WebSearch for `"[CITY] free concert 2026"`
-2. **Identify Series:** Find recurring concerts with specific dates
-3. **Extract Data:** Get artist_name, venue, date, time, genre
-4. **Normalize:** Fix time format (→ 7:30pm), date format (→ YYYY-MM-DD)
-5. **SQL INSERT:** Add to concerts table
-6. **Add city to metros.json + types/index.ts** if new city code
-7. **Git commit + push** → triggers Vercel auto-deploy (busts ISR cache)
-8. **Post-insertion QA** — run all checks below before marking done
-
-### Post-Insertion QA Checklist (required after every batch)
-After every INSERT, verify with WebFetch:
-- [ ] City listing page loads: `freelivemusic.co/concerts/[city-slug]` — correct event count, no layout issues
-- [ ] Concert detail page loads for at least one new event — check artist, venue, date, time all present
-- [ ] Date is 2026 and admission is clearly "Free" / "no tickets needed"
-- [ ] Source name ("via X") is clickable and links to source URL
-- [ ] "View Official Listing ↗" button is present when source_url exists
-- [ ] `is_tbd` set correctly (true for placeholder artist names, false for named performers)
-- [ ] Crawl log updated: INSERT or UPDATE in `metro_crawl_log` with result, notes, revisit_after if partial
-
-### Verification Query
-```sql
-SELECT city, COUNT(*) as total_events, COUNT(DISTINCT artist_name) as unique_series
-FROM concerts WHERE city = 'FTW' GROUP BY city;
-```
-
-## Known Issues & Solutions
-
-### Issue: Events not showing after database insert
-**Cause:** ISR cache (1-hour TTL on city pages)
-**Solution:** Redeploy on Vercel dashboard to clear cache immediately
-
-### Issue: Events in database but not on frontend
-Check:
-- Time format: Must be "7:30pm" (not "19:30")
-- Date: Must be future date
-- City code: Must match exactly (FTW, not FORT WORTH)
-- is_verified: Should be true
-
-Debug with:
-```sql
-SELECT * FROM concerts WHERE city = 'FTW' LIMIT 5;
-SELECT DISTINCT time FROM concerts WHERE city = 'FTW';
-```
-
-## City Codes Reference
-
-FTW=Fort Worth, LOU=Louisville, ELP=El Paso, BHM=Birmingham, ABQ=Albuquerque, TUS=Tucson, TLS=Tulsa, PIT=Pittsburgh, RAH=Raleigh, OKC=Oklahoma City, SAT=San Antonio, HNL=Honolulu, CHR=Charlotte
-
-## Setup on New Machine
-
-```bash
-git clone https://github.com/xmingox/free-live-music.git
-cd free-live-music
-npm install
-vercel link
-vercel env pull .env.local
-npm run dev
-```
-
-## Common Tasks
-
-### Add events for a new city
-1. WebSearch: "[CITY] free concert 2026"
-2. Find 3-5 series with dates
-3. Extract artist_name, venue, date, time
-4. Normalize times (→ 7:30pm format)
-5. INSERT into concerts
-6. Verify with GROUP BY query
-7. Redeploy on Vercel
-
-### View zero-event cities
-```sql
-SELECT city FROM city_year_sequences 
-WHERE city NOT IN (SELECT DISTINCT city FROM concerts);
-```
-
-## Recent Work (May 2026)
-
-Added 125 events across 10 zero-event cities: Fort Worth (16), Louisville (14), El Paso (17), Birmingham (11), Albuquerque (10), Tucson (8), Tulsa (11), Pittsburgh (12), Raleigh (12), Oklahoma City (14).
-
-Fixed: City code standardization (FTW, LOU, etc.) and time format normalization (12-hour format).
-
----
-Last Updated: May 6, 2026
-
-## Deployment Workflow
-
-### Code Changes
-```bash
-git add .
-git commit -m "Your message"
-git push origin main
-# Vercel auto-deploys via GitHub webhook — no manual step needed
-```
-
-### Data Changes (clear ISR cache)
-```bash
-git commit --allow-empty -m "Bust ISR cache" && git push origin main
-```
-
-## Notes for Claude Code & Cowork
-
-This CLAUDE.md file is auto-loaded in future sessions to provide:
-- Project context and architecture
-- Database schema reference
-- Data pipeline steps
-- Common debugging queries
-- Setup instructions for new machines
-- Known issues and solutions
-
-**Next session:** Just ask about adding events, debugging issues, or improving the site—I'll have full context!
-
-## Recent Work (May 2026)
-
-**Completed:**
-- Added 125 free concert listings across 10 major zero-event cities
-- Standardized city codes (FTW, LOU, ELP, BHM, ABQ, TUS, TLS, PIT, RAH, OKC)
-- Normalized all time formats to 12-hour (7:30pm format)
-- Verified all events have is_verified=true and future dates
-
-**Cities Added:**
-- Fort Worth: 16 events
-- Louisville: 14 events
-- El Paso: 17 events
-- Birmingham: 11 events
-- Albuquerque: 10 events
-- Tucson: 8 events
-- Tulsa: 11 events
-- Pittsburgh: 12 events
-- Raleigh: 12 events
-- Oklahoma City: 14 events
-
-**Fixed:**
-- City code standardization (full names → 3-letter codes)
-- Time format conversion (24-hour → 12-hour with am/pm)
-- ISR cache clear procedure (via Vercel redeploy)
+**Schema note:** `concerts.time` is text (mixed formats), no timezone. `city` is free-text. Redundant indexes exist on source-dedup and slug. See `AUDIT_AND_PLAN.md` for the cleanup list.
 
 ---
 
-Last Updated: May 6, 2026
-Maintained By: xmingox
-Current Status: Ready for production with 125+ events across 10 cities
+## 6. Deployment
 
----
+Git push to `main` → Vercel auto-deploys via GitHub webhook (~2–3 min). Data-only refresh: `git commit --allow-empty -m "bust ISR" && git push`.
 
-## Session Summary — May 7, 2026
-
-### Fixes Applied
-
-1. **SEO improvements** (`app/page.tsx`, `app/concert/[slug]/page.tsx`, `next.config.ts`)
-   - Replaced `force-dynamic` with `revalidate = 3600` (ISR) on home and concert pages
-   - Added `BreadcrumbList` JSON-LD + visible `<nav>` breadcrumb to concert pages
-   - Added canonical URLs and OpenGraph/Twitter metadata to home and concert pages
-   - `next.config.ts`: disabled `X-Powered-By`, enforced `trailingSlash: false`, added `X-Robots-Tag: index, follow`
-
-2. **New cities added to metros.json** (`lib/metros.json`)
-   - Added ELP (El Paso, TX) and HNL (Honolulu, HI)
-   - Added 3-letter code as alias for all new cities (FTW, LOU, ELP, BHM, PIT, OKC, SAT, HNL) so events stored with those codes are matched by the frontend filter
-   - Fixed 5 mismatched codes via aliases: ABQ→ALB, TUS→TUC, TLS→TUL, RAH→RDU, CHR→CHA
-
-3. **City type updated** (`types/index.ts`)
-   - Added all 13 new city codes to the `Concert.city` and `City` type unions
-
-4. **Supabase 1000-row cap fixed** (`lib/data.ts`)
-   - Added `.limit(5000)` to `getConcerts()` — default Supabase cap of 1000 was cutting off newer cities
-   - Root cause: 1,684 future verified events exist; FTW/LOU/etc. events were beyond the first 1000
-
-### How to Verify
-- City page (direct query, no ISR issue): `https://www.freelivemusic.co/concerts/fort-worth`
-- Home page (ISR cached, refreshes hourly): `https://www.freelivemusic.co/?city=FTW&date=all`
-- SQL check: `SELECT city, COUNT(*) FROM concerts WHERE date >= CURRENT_DATE GROUP BY city ORDER BY count DESC;`
-
-### Lesson Learned
-When adding new cities, always check:
-- [ ] Metro entry exists in `lib/metros.json`
-- [ ] 3-letter code is in the `aliases` array (not just the `code` field)
-- [ ] City code is in the `City` type in `types/index.ts`
-- [ ] Events are stored with a code that matches an alias or `metro.city`
-
----
-
-## Session Summary — May 7, 2026 (Part 2)
-
-### St. Louis (STL) Events Added
-Inserted 30 verified events across 6 series:
-- **Whitaker Music Festival** — Missouri Botanical Garden, Wednesdays May 27–Jul 29, 7:00pm (10 events)
-- **Mondays at the Music Stand** — Tower Grove Park, Jul 14–Sep 22, 6:00pm (6 events)
-- **Gateway Festival Orchestra** — Jun 18, Jul 12, 19, 26 (4 events)
-- **Blues at the Arch** — Gateway Arch National Park, Aug 14–16, 12:00pm (3 events)
-- **St. Louis Symphony Orchestra** — Art Hill Forest Park, Sep 16, 7:00pm (1 event)
-- **Making Music Concert Series** — Kirkwood Park, Jun 14–Aug 23, 7:30pm (6 events)
-
-### Bugs Fixed
-
-#### 1. NaN time display on concert detail pages
-**File:** `app/concert/[slug]/page.tsx`
-**Cause:** `formatTime()` split `"5:30pm"` on `:` and called `Number("30pm")` → NaN. Affected every concert detail page since all times are stored in 12-hour format.
-**Fix:** If time string already contains `am` or `pm`, return it directly. Only run 24-hour conversion as fallback.
-**Lesson:** The DB stores time in 12-hour format (`7:30pm`). Don't try to re-parse it — display as-is.
-
-#### 2. STL events not showing on frontend
-**Cause:** `metros.json` had empty `aliases: []` for STL, so client-side filter `cityNames.includes(c.city)` never matched events stored as `city = 'STL'`.
-**Fix:** Added `"STL"` to aliases array in metros.json.
-**Lesson:** Every time a new city is added, its 3-letter code must be in the `aliases` array — not just the `code` field.
-
-### Checklist for Adding New Cities (Updated)
-- [ ] Metro entry exists in `lib/metros.json`
-- [ ] 3-letter code is in the `aliases` array
-- [ ] City code is in the `City` type in `types/index.ts`
-- [ ] Events stored with code matching an alias or `metro.city`
-- [ ] Verify on `/concerts/{city-slug}` page (direct DB query, no ISR issue)
-
----
-
-## Session Summary — May 7, 2026
-
-### Baltimore (BAL) — 15 events inserted
-**Sources:** All confirmed from official 2026 venue/org sites (no year-adjusted guessing)
-- **Artscape** (2) — 100 Holliday St, Downtown — May 23–24, 11:00am — source: artscape.org
-- **Patterson Park Summer Concert Series** (5) — Below the Observatory — Jun 7–Aug 9, 6:00pm — source: pattersonpark.com
-- **WTMD First Thursday** (4) — Canton Waterfront Park — Jun 4–Sep 3, 5:30pm — source: wtmd.org
-- **Summer Sounds at Belvedere Square** (4) — Belvedere Square Market — Jun 19–Sep 18, 6:00pm — source: belvederesquare.com
-
-**Code changes:** Added `BAL` to metros.json aliases and to City type in types/index.ts. Also added missing `STL` to City type.
-
-### St. Louis (STL) — 17 events inserted (replaced 30 unverified events)
-**Why replaced:** Previous 30 events were sourced from a May 2025 STL Mag article; dates were adjusted to 2026 equivalents but unverified. At least "Mondays at the Music Stand" had confirmed wrong dates (Jul 14, 2026 = Tuesday, not Monday).
-
-**New sources:** All confirmed directly from 2026 venue/org sites
-- **Whitaker Music Festival** (10) — Cohen Amphitheater, Missouri Botanical Garden, Tower Grove — Wednesdays May 27–Jul 29, 7:00pm — source: missouribotanicalgarden.org (full lineup with named artists)
-- **Blues at the Arch** (3) — Gateway Arch National Park, Downtown — Aug 14–16, time TBA — source: archpark.org
-- **Gateway Festival Orchestra** (4) — multiple venues (Ritenour HS, WashU Brookings Quad, 560 Music Center) — Jun 18–Jul 26 — source: gatewayfestivalorchestra.org
-
-**Lesson:** Always source event dates from the venue's own 2026 page, not from a "best of summer" article that may be from the prior year.
-
-### Jacksonville (JAX) — 17 events inserted
-- **Jacksonville Jazz Festival** (3) — Ford on Bay, Downtown — May 22–24 — source: jacksonvillejazzfest.com (headliners: Parliament Funkadelic, Andra Day, Nile Rodgers & CHIC)
-- **Riverside Arts Market** (12) — 715 Riverside Ave, Riverside — Saturdays 10:00am, May–Aug — source: visitjacksonville.com
-- **Florida Fin Fest** (2) — Seawalk Pavilion, Jacksonville Beach — Sep 11–12 — source: flfinfest.com
-
-### Omaha (OMA) — 29 events inserted
-9 series: RITMO Music Fest, Orchestra Omaha Outdoor Pops, Rock The C!, Beats & Bites Stage (6), Music in Dundee (5), Omaha Freedom Festival, Music at Miller Park (2 named performers), Nebraska Wind Symphony, 4th of July Beach Party, Live on the Lawn (2), Jazz on the Green (4), Playing with Fire (3), Summer Sounds at Highlander
-
-### Birmingham (BHM) — 27 events total (16 new Pepper Place + 11 existing fixed)
-**Data fixes applied to existing 11 events:** corrected slugs to standard format (artist-bhm-YYYY-MM-DD), fixed Magic City Pop-Up Plaza venue to "Railroad Park, 17th Street Plaza", fixed ASO neighborhood from "Railroad Park" to "Southside", added source_url to all events.
-- **Pepper Place Saturday Market** (16) — The Market at Pepper Place, Southside — Saturdays 7:00am, May–Aug — source: pepperplacemarket.com
-- **Lesson:** Always audit existing city events before adding new ones — slug format, venue, neighborhood, and source_url all need to match the standard.
-- [ ] Check concert detail pages for NaN in time display
-
-### San Diego (SD) — 72 events inserted
-4 series, all from official venue/city sources:
-- **Twilight in the Park** (33) — Balboa Park, Balboa Park neighborhood — Tue/Wed/Thu Jun 16–Aug 27, time not listed on official site (stored as NULL) — source: balboapark.org/twilight-concerts (full named-performer schedule)
-- **Coronado Promenade Concerts** (17) — Spreckels Park, Coronado — Sundays May 24–Sep 6, 6:00pm (May 24 first act 4:30pm, Aug 23 first act 4:30pm) — source: coronadoconcert.com
-- **Santee Summer Concerts** (9) — Town Center Community Park East, Santee — Thursdays Jun 11–Aug 13 (no Jul 2), 6:30pm — source: cityofsanteeca.gov
-- **Music on Main** (13) — Prescott Promenade, El Cajon — Fridays Jun 5–Aug 28, 6:00pm — source: downtownelcajon.com
-
-**Code changes:** Added `SD` to metros.json aliases and to City type in types/index.ts.
-**Twilight conflict resolved:** Sources initially disagreed on Tue/Wed/Fri vs Tue/Wed/Thu — confirmed Tue/Wed/Thu from official balboapark.org schedule.
-
-### Santa Barbara (SBA) — 4 placeholder events inserted
-- **Concerts in the Park** (4) — Alameda Park, Downtown — Sundays Jun 7, Jun 21, Jul 12, Aug 2 — source: santabarbaraca.gov
-- **Note:** Performers not announced until June 2026. Used series name as artist_name. Come back in June to update with actual performers.
-**Code changes:** Added `SBA` to metros.json aliases and to City type in types/index.ts.
-
-### Orange County / Anaheim (ANA) — 73 events inserted (two passes)
-**First pass (43 events):**
-- **Twilight Concert Series** (13) — Irvine Great Park Amphitheater — Fri/Sat Jun 27–Aug 29, 7:00pm — source: cityofirvine.org
-- **Concerts in the Park** (9) — Bill Barber Park, Irvine — Thursdays Jul 9–Sep 4 (no Aug 6), 7:00pm — source: cityofirvine.org
-- **Summer Concert Series** (4) — Huntington Central Park, HB — Sundays 5:00pm — source: surfcityusa.com
-- **Concerts in the Park** (5) — Fullerton — Thursdays Jun 5–Jul 3, 6:30pm — source: fullertonca.gov
-- **Summer Concert Series** (5) — Yorba Linda — Thursdays Jun 5–Jul 3, 7:00pm — source: yorbalindaca.gov
-- **Concerts in the Park** (7) — Mile Square Regional Park, Fountain Valley — Saturdays Jun 7–Jul 19, 7:00pm — source: fountainvalleyca.gov
-
-**Second pass (30 events):**
-- **Summer Concerts** (7) — Cypress Civic Center, Cypress — Fridays Jun 6–Jul 18, 6:00pm — source: cypressca.gov
-- **Concerts in the Park** (5) — City Hall Park, Brea — Wednesdays Jun 4–Jul 2, 6:30pm — source: cityofbrea.net
-- **Summer Concert Series** (6) — Boisseranc Park, Buena Park — Wednesdays Jun 4–Jul 9, 7:00pm — source: buenapark.com
-- **Concerts at the Park** (5) — Hart Park Bandshell, Orange — Wednesdays Jun 4–Jul 2, 6:30pm — source: cityoforange.org
-- **Concerts in the Park** (4) — Grand Park, Aliso Viejo — Sundays Jun 7–Jun 28, time TBD — source: cityofalisoviejoca.gov
-- **Concerts in the Park** (3) — Crown Valley Community Park, Laguna Niguel — Fridays May 15, Jul 10, Jul 24, time TBD — source: lagunaniguelhca.org
-
-**Code changes:** Added `ANA` to metros.json aliases and to City type in types/index.ts.
-**Pagination fix:** Rewrote getConcerts() in lib/data.ts to paginate using .range() (1000 rows/page) — fixes Supabase server-side max_rows cap that was silently truncating results for all cities.
-**Skipped:** La Mesa Sundays at Six (2026 performers not yet announced), Sonidos del Barrio (2026 dates not yet announced).
-
----
-
-## Session Summary — May 8, 2026
-
-### LCP Fix (5.3s → <3s)
-**Root cause:** `useSearchParams()` in `concerts-client.tsx` forced the component into a Suspense boundary. Server sent empty HTML; the skeleton showed at FCP (2.9s), and the real content swapped in at LCP (5.3s) — a 2.4s gap caused entirely by a Suspense swap, not image loading.
-**Fix:** Removed `useSearchParams` entirely. State now initializes from `defaultCity` prop (SSR-safe). A one-time `useEffect` reads `window.location.search` after hydration. Full page content renders on the server — no Suspense, no empty HTML.
-**Lesson:** Never use `useSearchParams()` in a component that should SSR. Use `useEffect` + `window.location.search` for one-time URL param reads instead.
-
-### Venue Discovery Pipeline
-Ran `scripts/discover-venues.mjs` across 72 cities using Google Places API. Inserted ~6,300 venues total across 108 metro areas. Data includes: name, address, neighborhood, lat/lng, venue_type, google_place_id, website, music_schedule.
-**Dead URL cleanup:** Identified and NULLed websites for 3 venues with Amazon affiliate links inserted by Google Places. DNS-failing venues (closed businesses) left as-is — website field conveys useful historical info.
-
-### Venue UX — Phase 1 (completed)
-1. `components/SiteNav.tsx` — site-wide nav with breadcrumbs + Concerts/Venues links, used on all venue and concert detail pages
-2. `concerts-client.tsx` — added slim top nav bar and "Browse {City} venues →" link in hero
-3. `app/concert/[slug]/page.tsx` — venue name links to venue detail page when venue_id is set
-4. `app/venues/[city]/venue-list-client.tsx` — search input, type filter chips, "With upcoming shows" toggle
-5. `app/venues/[city]/[slug]/page.tsx` — nearby venues section, music_schedule-aware empty state, Claim CTA
-
-### Venue UX — Phase 2 (completed)
-#### Venue type hub pages
-`app/venues/[city]/type-hub-page.tsx` — shared server component (query + layout) for type-filtered pages.
-Thin wrappers at named routes (takes precedence over `[slug]` in Next.js App Router):
-- `bars/page.tsx` → `/venues/chicago/bars` — "Free Music Bars in Chicago"
-- `breweries/page.tsx`, `parks/page.tsx`, `restaurants/page.tsx`, `amphitheaters/page.tsx`
-Each has `generateStaticParams` covering all 108 cities + ISR revalidate=3600.
-
-#### Neighborhood hub pages
-`app/venues/[city]/neighborhood/[hood]/page.tsx` — on-demand rendering (no generateStaticParams). URL slug `lincoln-park` is resolved to canonical DB neighborhood string via `cityToSlug()` comparison against all distinct neighborhoods for that city.
-
-#### Discovery links on venue list page
-`app/venues/[city]/page.tsx` now renders a `HubLinks` server component above the filter UI:
-- "Browse by type" colored chips — only shows types present in that city
-- "Browse by neighborhood" gray chips — top 8 neighborhoods by venue count
-
-#### Venue detail → neighborhood link
-Neighborhood name in venue detail page (`app/venues/[city]/[slug]/page.tsx`) now links to the neighborhood hub.
-
-### Architecture Notes
-- Named routes (`bars/`, `neighborhood/`) always take precedence over dynamic `[slug]/` in Next.js App Router — safe to add without routing conflicts
-- `cityToSlug()` from `lib/city-slugs.ts` is used for both generating neighborhood hub URLs and resolving slugs back to DB neighborhood strings
-- Type hub pages import `VENUE_TYPE_CONFIGS` from `type-hub-page.tsx` — single source of truth for type metadata (slug, label, color)
-
-### PageSpeed Results Summary (May 8, 2026)
-| Metric | Before | After | Fix |
-|--------|--------|-------|-----|
-| Mobile score | 74 | **81** | Multiple fixes |
-| Desktop score | — | **100** | — |
-| LCP (mobile) | 5.4s | **4.1s** | Removed Clarity + JSON-LD from cards |
-| TBT (mobile) | 600ms | **30ms** | Removed useSearchParams, fixed router.push on mount |
-| Long tasks | 6 | **3** | JSON-LD removal |
-
-**Root causes found and fixed:**
-1. `useSearchParams()` — forced Suspense boundary, sent empty HTML. Fixed: removed, use `useEffect(window.location.search)` instead.
-2. `router.push()` on every mount — triggered soft navigation during hydration. Fixed: `didInitRef` guard + `router.replace`.
-3. Microsoft Clarity — 25 KiB JS + forced reflow (77ms). Fixed: removed entirely.
-4. JSON-LD in every ConcertCard — 24× `buildJsonLd()` + `JSON.stringify()` during hydration. Fixed: removed from cards (stays on concert detail page).
-
-**Final result (May 8, 2026 6:01 PM):**
-- Mobile: **99/100**, FCP 1.0s, LCP 2.0s, TBT 80ms ✅
-- Desktop: **100/100** ✅
-- LCP 2.0s = Google "Good" range (under 2.5s threshold)
-
-**The unlock:** Vercel build auto-upgraded Next.js 15.3.1 → 15.5.15 (semver `^15.3.1`). First Load JS dropped from 339 KiB → 102 KiB due to improved chunk splitting in 15.5.x. Combined with all earlier fixes, pushed score from 74 → 99.
-
-**Still flagged (not worth fixing at 99):**
-- Render-blocking CSS: 120ms savings possible
-- Legacy JS polyfills: 12 KiB (`@swc/helpers`, smaller now but still present)
-- Unused JS: 64 KiB (same @swc/helpers root cause)
-
----
-
-## Bundle Analysis
-
-Run to identify large JS chunks and their sources:
-
-```bash
-ANALYZE=true npm run build
-# Output: .next/analyze/client.html (open in browser)
-```
-
-### Current bundle (May 8, 2026)
-First Load JS shared by all pages: **339 KiB**
-
-| Chunk | Size | Contents |
-|-------|------|----------|
-| `255-*.js` | 65.4 KiB | `@swc/helpers/esm` — SWC polyfill helpers (class syntax, async/await, destructuring). Cannot reduce without switching from SWC to Babel. |
-| `4bd1b696-*.js` | 54.2 KiB | Next.js router internals |
-| `ed9f2dc4-*.js` | 217 KiB | React runtime + Next.js framework |
-| other | 2.0 KiB | Page-level shared code |
-
-### What to look for
-- Large chunks from `node_modules` that aren't used on every page → mark as dynamic import
-- Any library > 20 KiB appearing in a page-specific chunk → check if it can be removed or swapped
-- `@swc/helpers` size growing → means more complex transpilation, check for class-heavy patterns
-
-### Footer Nav — Phase 2 Complete (May 8, 2026)
-`components/SiteFooter.tsx` — 12 city venue links hardcoded from top metros (NYC, LA, CHI, SF, AUS, SEA, DC, BOS, DEN, ATL, NSH, PDX). Used on homepage, venue list, venue detail, type hub, and neighborhood hub pages. Homepage uses an inlined version (client component can't import server components).
-
----
-
-## Session Summary — May 25, 2026
-
-### Root Cause of Google Deindexing — FIXED
-
-**Cause:** www vs non-www canonical mismatch. The sitemap used `www.freelivemusic.co` but city pages generated canonicals without `www`. Google saw two conflicting signals and dropped ranking.
-
-**Files fixed:**
-- `app/concerts/[city]/page.tsx` — canonical changed from non-www to `https://www.freelivemusic.co/concerts/${city}`
-- `app/robots.ts` — sitemap URL changed to `https://www.freelivemusic.co/sitemap.xml`; removed `/intl/` from disallow
-
-**All commits pushed to main** → auto-deployed to Vercel.
-
----
-
-### SEO Round 2 — Additional Fixes Applied
-
-1. **`app/concert/[slug]/page.tsx`**
-   - Removed redundant `<meta name="robots" content="noindex,follow" />` from JSX body (was leaking into the DOM)
-   - Changed `revalidate = 86400` → `revalidate = 3600`
-   - Past concerts (date < today) now get `robots: { index: false, follow: true }` with canonical pointing to their city page — prevents stale content from accumulating in Google's index
-
-2. **`app/tonight/[city]/page.tsx`**, **`app/this-weekend/[city]/page.tsx`**, **`app/this-week/[city]/page.tsx`**
-   - Added `robots: { index: false, follow: true }` — these date-specific pages change daily and have stale titles in Google's index if indexed
-
-3. **`app/artist/[slug]/page.tsx`**
-   - Changed `revalidate = 86400` → `revalidate = 3600`
-   - Added `robots: { index: false, follow: true }` when artist not found (404 case)
-
-4. **`app/concerts/city/[alias]/page.tsx`**
-   - Changed `revalidate = 86400` → `revalidate = 3600`
-
----
-
-### September Cliff — Known Risk
-
-Event data drops sharply after August as summer concert series end:
-- **July:** ~1,215 events/month, ~157 active cities
-- **September:** ~39 events/month, ~22 active cities
-- **October onwards:** Most hardcoded city data expires entirely
-
-**Strategy:**
-- **August action required:** Run Apify/Eventbrite scrape to refill fall data before September
-- **City pages with < 5 events** redirect to metro parent (already wired via `CITY_PAGE_THRESHOLD = 5`)
-- **Past concert pages** already have `robots: noindex` — won't accumulate stale Google entries
-- **Artist pages** will 404 gracefully when all shows expire (noindex already set for that case)
-- **Hardcoded importers to monitor:** Stern Grove, Chicago, Boston, Denver, Portland, Seattle, Austin, Washington DC — need manual updates when venues announce fall/2027 lineups
-
----
-
-### Live Import Pipeline — SummerStage Converted
-
-**`lib/importers/summerstage.ts`** — completely rewritten from hardcoded array to live iCal scraper.
-
-- **Source:** `https://cityparksfoundation.org/?post_type=tribe_events&ical=1&eventDisplay=list&tribe_events_cat=summerstage`
-- Parses RFC 5545 iCal (VCALENDAR/VEVENT) with line unfolding
-- Filters: past events, benefit concerts (ticketed), events without summary
-- Normalizes NYC borough from location field (Bronx, Brooklyn, Queens, Manhattan, Staten Island)
-- `source_id` format preserved: `summerstage-{date}-{slug}` — no DB duplicates on re-import
-- Moved from `SYNC_SOURCES` → `ASYNC_SOURCES` in `lib/importers/index.ts`
-
-**SummerStage was the only venue among 50+ hardcoded importers with a public iCal feed.**
-
-All other hardcoded importers (Stern Grove, Chicago, Boston, etc.) are static arrays that must be manually updated when venues announce new lineups. Consider checking for iCal/JSON APIs when updating these annually.
-
----
-
-### Import Pipeline — Cron Schedule
-
-Cron runs daily at **6am UTC** via Vercel (`vercel.json`). Calls `/api/import` with `CRON_SECRET` auth.
-
-A remote routine is scheduled to check Supabase at **6:30am UTC on May 26, 2026** to verify SummerStage events were inserted:
-- Routine ID: `trig_014zCg4JRryK3PeJV4sn1kB8`
-- View at: https://claude.ai/code/routines/trig_014zCg4JRryK3PeJV4sn1kB8
-- Query: `SELECT COUNT(*) FROM concerts WHERE source_name = 'SummerStage' AND created_at >= CURRENT_DATE`
-
----
-
-### Git / Deployment Notes
-
-- Git identity set: `user.email = Xmingox@hotmail.com`, `user.name = xmingox`
-- Remote push uses HTTPS with PAT (stored in git credential manager)
-- GitHub auto-deploys to Vercel via webhook (id: 620105144) → deploy hook `Pn3qZiZvRH`
-- **Do not force-push or rebase published commits** — remote is ahead in some sessions due to Vercel/GitHub direct edits
-
----
-
-### Ask at Next Login
-
-1. **Did the 6am cron insert new SummerStage events?** Check the remote routine result at https://claude.ai/code/routines/trig_014zCg4JRryK3PeJV4sn1kB8
-2. **Has Google re-indexed the city pages after the www canonical fix?** Check Search Console coverage report.
-3. **Are any other importers worth converting to live scrapers?** (iCal/RSS/JSON feeds at other venues)
-4. **August re-scrape planning** — schedule Apify run to refill fall event data before September cliff hits.
-
----
-
-## Session Summary — June 2, 2026
-
-### Google Places API charges — `venue-health` cron removed
-
-User flagged unexpected `$1.28` charge from "Places API Place Details Pro" on the Google Cloud bill. Investigation showed the `/api/maintenance/venue-health` weekly cron (Sun 04:00 UTC) was calling `places.googleapis.com/v1/places/{placeId}` for `businessStatus` on up to 100 venues/run.
-
-**Fix (commit `cd63c83`):**
-- Deleted `app/api/maintenance/venue-health/route.ts` (entire 435-line route)
-- Removed cron entry from `vercel.json`
-- Updated stale references in `app/admin/health/page.tsx` (description text) and the email body of `app/api/maintenance/noindex-audit/route.ts`
-
-**Additional user action (in Google Cloud Console):** Disabled both **Places API (New)** and **Geocoding API**. Geocoding showed 12,133 requests but $0 charge — covered by the $200/mo Maps Platform free credit.
-
-**Manual scripts that still use Google APIs (run on demand only, not scheduled):**
-- `scripts/discover-venues.mjs` — Places
-- `scripts/enrich-venues.mjs` — Places
-- `scripts/enrich-neighborhoods.mjs` — Geocoding
-
-If you ever need to run these again, re-enable the relevant API in Google Cloud first. Then disable again when done. Consider setting a budget alert (Billing → Budgets & alerts, ~$5/mo with email) so this doesn't happen silently.
-
-### Vercel Hobby overages — ISR revalidate tuned down
-
-Monthly usage on Hobby plan exceeded:
-- **ISR Writes:** 424K / 200K (2.1x over)
-- **Fluid Active CPU:** 6h 46m / 4h (1.7x over)
-
-Hobby throttles past the limit but does not bill, so no immediate $ impact.
-
-**Root cause:** The May 25 SEO changes reduced `revalidate` from `86400` → `3600` on `/concert/[slug]`, `/artist/[slug]`, and `/concerts/city/[alias]` pages. With ~3,063 future concert pages, that's a 24x increase in regeneration writes.
-
-**Fix (commit `13372e9`):**
-- `/concert/[slug]` revalidate: 3600 → **86400** (concert detail data is static after creation)
-- `/artist/[slug]` revalidate: 3600 → **21600** (6h aggregation freshness is plenty)
-- `/tonight/[city]` revalidate: 900 → **3600** (page is `noindex`; no SEO benefit to 15-min freshness)
-
-City pages (`/concerts/[city]` and `/concerts/city/[alias]`) **left at 3600** so newly-added shows still surface in the lists users browse within 1h. Expected ~60-80% reduction in ISR writes. Check next billing cycle to confirm.
-
-**Next CPU lever if still needed:** investigate `/api/import` (daily Apify Eventbrite run) and other heavy crons. ISR regen reduction should already bring down CPU since each regen is a server render.
-
-### Operational issues — git push workflow on this machine
-
-The May 25 CLAUDE.md note "Git identity set: user.email = Xmingox@hotmail.com, user.name = xmingox" is **stale**. Current state:
-
-- **`gh` CLI is logged in as `evenaisle`** (a different GitHub account). `~/.gitconfig` routes all `github.com` credential requests through `gh auth git-credential`, so `git push` to `xmingox/free-live-music` returns 403.
-- **No `user.name` / `user.email`** set globally or locally. Commits attribute to `m2 <m2@m2s-MacBook-Pro.local>` instead of `xmingox`.
-
-**One-shot push workaround (used twice this session, works):**
+⚠️ **Git push auth gotcha:** the local `gh` CLI may be logged in as the wrong account (`evenaisle`, not `xmingox`), causing 403s. The remote itself is correct. One-shot workaround:
 ```bash
 git -c credential.helper= -c credential.https://github.com.helper= \
   push https://xmingox@github.com/xmingox/free-live-music.git main
 ```
-Enter the xmingox PAT when prompted. **Never paste a PAT into Claude chat** — happened once this session and the token had to be revoked.
+**Never paste a PAT into chat.** Permanent fix: `gh auth login` as `xmingox`, then `gh auth switch`.
 
-**Permanent fix (not done):**
-1. `gh auth login` → add the `xmingox` account via browser
-2. `gh auth switch -u xmingox`
-3. `git config --global user.name xmingox && git config --global user.email Xmingox@hotmail.com`
+Secrets live in `.env.local` (Supabase URL/keys, Mapbox token) — never commit them, never print their values.
 
-### Note — `concerts-client.tsx` dedup bug investigation (no change)
+---
 
-User reported events rendering multiple times on the homepage grid. Investigation found **no bug**:
-- `setConcerts(data)` always replaces, never appends (lines 146, 155, 162)
-- `useMemo` returns `filterByDate(...)` — pure non-mutating filter
-- React render uses `key={concert.id}` (unique)
-- `lib/data.ts` `getConcerts()` already dedupes by `c.id` at the data layer (lines 47-53)
+## 7. Do-NOT list
 
-If duplicates appear again, get a specific city or concert ID first before touching the code.
+- ❌ Don't add per-request DB reads that scale with traffic.
+- ❌ Don't call Google Places/Geocoding without re-enabling deliberately + disabling after + user approval.
+- ❌ Don't create new URL families for existing content.
+- ❌ Don't hardcode a city code in an importer that doesn't match the event's real location.
+- ❌ Don't use UTC for "today."
+- ❌ Don't write unverified facts into guides/JSON-LD (fabricated venue claims poison E-E-A-T).
+- ❌ Don't force-push or rebase published commits.
+- ❌ Don't incur billable API usage without a cost estimate + approval.
+- ❌ Don't present guesses as facts — label confidence.
 
-### Ask at Next Login (June 2)
+---
 
-1. **Did ISR usage drop in Vercel?** Check Usage tab — ISR Writes should track well below 200K/month and Fluid CPU should follow.
-2. **Did the SummerStage live importer run successfully?** Still relevant from May 25. Routine: https://claude.ai/code/routines/trig_014zCg4JRryK3PeJV4sn1kB8
-3. **Google Cloud:** Set a budget alert so silent charges can't recur. Confirm Places API + Geocoding remain disabled.
-4. **Permanent git push fix?** Worth doing `gh auth login` for `xmingox` so future pushes don't need the one-shot workaround.
-5. **September cliff** — still need to plan the August re-scrape.
+## 8. Current priorities
+
+See `AUDIT_AND_PLAN.md` for the full tiered roadmap. Near-term:
+- **Tier 0 (this week):** timezone fix, repair/kill broken SEO crons + alerting, revoke anon-callable `SECURITY DEFINER` RPCs, start the fall data drive (September cliff).
+- **Tier 1 (2 weeks):** middleware slug-date parsing, event-driven revalidation, consolidate series/guide URLs, noindex TBA pages, harden JSON-LD, slim `select('*')`.
+- **Tier 2 (strategic pilot):** Las Vegas depth — Fremont Street importer, residency data model, newsletter + subreddit.

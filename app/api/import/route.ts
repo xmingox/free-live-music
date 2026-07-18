@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { runImport } from '@/lib/importers/index'
 import { sendCronAlert } from '@/lib/alerts'
+import { revalidateTag } from 'next/cache'
 
 // Used by Vercel Cron (GET) and manual triggers (POST).
 // Both require: Authorization: Bearer {CRON_SECRET}
@@ -44,6 +45,10 @@ async function handle(req: NextRequest) {
   try {
     const stats = await runImport()
     console.log('[/api/import]', stats)
+    // Event-driven revalidation: refresh the cached concert data + the pages that
+    // consume it now that new events may have landed — instead of relying on
+    // per-page hourly ISR timers (the cause of the ISR-write overage).
+    revalidateTag('concerts')
     await writeCronRun({ started_at, success: true, stats_json: stats, error_message: null })
     return NextResponse.json(stats)
   } catch (err) {

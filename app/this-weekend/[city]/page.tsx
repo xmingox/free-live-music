@@ -1,4 +1,4 @@
-export const revalidate = 3600
+export const revalidate = 86400 // daily backstop; import cron refreshes via revalidateTag('concerts')
 
 import { Metadata } from 'next'
 import Link from 'next/link'

@@ -61,5 +61,5 @@ async function fetchConcerts(metroCode?: string): Promise<Concert[]> {
 export const getConcerts = unstable_cache(
   fetchConcerts,
   ['concerts'],
-  { revalidate: 3600, tags: ['concerts'] }
+  { revalidate: 86400, tags: ['concerts'] } // daily backstop; import cron busts this via revalidateTag('concerts')
 )
