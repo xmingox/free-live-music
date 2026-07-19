@@ -129,9 +129,14 @@ Secrets live in `.env.local` (Supabase URL/keys, Mapbox token) — never commit 
 
 ---
 
-## 8. Status & priorities (updated July 19)
+## 8. Status & priorities (updated July 20)
 
 See `AUDIT_AND_PLAN.md` for the full tiered roadmap.
+
+**Shipped / applied July 20:**
+- **Las Vegas residency dataset — the pivot's first published, indexable artifact.** The formerly-empty `event_series` table is now the live residency model: added provenance (`source_url`, `last_verified_at`, `confidence` A/B/C) + `internal_notes` (editorial state, kept OUT of the render-path `description`); widened `recurrence_type` to allow `daily`; replaced `day_of_week int` with `days_of_week text[]`; RLS tightened to **`USING (is_active=true)`** so unverified drafts are structurally unleakable via the anon key; dedup guard on `series_name`. Nine Vegas candidates were hand-researched and staged `is_active=false`; only **Fremont Street Experience 1st & 3rd Street stages** cleared the primary-source bar (official site, modified 2026-07-03) and were flipped `is_active=true`. Container Park and RUSH Lounge correctly *failed* verification (their own pages don't confirm a free music residency) and stayed drafts. New `lib/residencies.ts` + a "Free live music every night in {city}" section on `/concerts/[city]` renders active residencies **as schedules, never synthetic dated rows** (hard rule — also protects the runway monitor, which reads `concerts` only). A city with ≥1 published residency is now **indexable** even off-season (durable content is not the dated-event cliff). EventSeries + `Schedule` JSON-LD puts recurrence in markup without fabricating instances. Vegas page verified live + `index`. Candidate list + one-action-per-row verification checklist: `docs/vegas-residency-candidates.md`.
+- **Honesty + calibration fixes** (from an independent Fable code review): dropped the "typically returns in {Month}" prediction — all concert data is a single year, so it was an unfounded guess; now factual "last hosted {Month Year}". Unified the indexability predicate so metadata (DB filter) and body (JS predicate) cannot disagree on `null is_verified`. Runway `tail_thin` now warns on a week-over-week drop instead of an always-true absolute floor. Explicit UTC parse in the middleware fast path.
+- **Process:** every change this session was checked by a Fable subagent, which caught a real fabrication ("The Mantis" is Container Park's fire sculpture, not a band), a draft-leak via the anon RLS policy, and editorial notes leaking into render-path copy — all fixed pre-ship.
 
 **Shipped / applied July 19:**
 - **Middleware per-request DB read removed from the hot path** (`middleware.ts`, Tier 1 #5). Slugs end with the event date (`…-nyc-2026-07-19`) and that trailing date is a verified-exact proxy for the row's `date` (0 mismatches in the DB). The middleware now parses it first: any event not 7+ days past passes straight through with **no Supabase read**. The DB read only runs for slugs encoding a 7+‑day‑past date or with no date (legacy ~356 rows) — where the lookup is still needed to distinguish a real 410 from a `previous_slug` of a still-active concert (page 301s it). Reads now scale with stale-URL crawls, not live traffic.
@@ -148,13 +153,17 @@ See `AUDIT_AND_PLAN.md` for the full tiered roadmap.
 - **Security:** revoked anon-callable `rls_auto_enable`; closed anon INSERT on `event_submissions`/`event_reports`; locked `increment_event_views` to server; dropped inert permissive write policies on 6 ops tables; pinned function search_paths. (Regression caught + fixed by independent review: a `REVOKE … FROM public` had stripped `service_role` and broken `/api/report` + `/api/track` — see §0.)
 - **Deploy:** `deploy.sh` added with a `tsc --noEmit` preflight gate; `gh` auth fixed as `xmingox`.
 
-**Cron status:** `gsc-pull` has failed on `invalid_grant` for **7+ days straight** (expired Google OAuth) — **owner must re-authenticate Google** to restore Search Console data; still open as of July 19. `seo-daily` is NOT broken — it's a working audit that logs a red run whenever it finds a real SEO issue (currently: past events missing noindex meta + a few canonical issues — flagged for a later pass).
+**Cron status:** `gsc-pull` has failed on `invalid_grant` since **May 18** (~2 months of no Search Console data; expired Google OAuth) — **owner must re-authenticate Google**; still open as of July 20. `seo-daily` is NOT broken — it's a working audit that logs a red run whenever it finds a real SEO issue (currently: past events missing noindex meta + a few canonical issues — flagged for a later pass).
 
 **September cliff decision:** protect empty city pages (graceful degradation) + start Vegas/year-round sourcing; do NOT spend on Apify scrapes (breadth + partly a seasonal demand trough). Add weekly runway monitoring. Data: Sep 174 / Oct 39 / Nov+ 23 events; only 22 metros have Oct+ content.
 
 **Next up:**
-- **Re-authenticate Google** (restore `gsc-pull`) — blocking the demand feedback loop; 7+ days dark.
-- **Tier 1:** ~~middleware slug-date parsing~~ (done July 19), consolidate `/free-music`→`/free-live-music` + `/series` vs `/artist` URLs, noindex the ~312 TBA pages, harden JSON-LD, slim `select('*')`.
-- Fold the same graceful-degradation fallback into the alias city pages (`/concerts/city/[alias]`) — this pass covered `/concerts/[city]` only.
+- **Re-authenticate Google** (restore `gsc-pull`) — still dark since **May 18**; blocks all demand measurement. Owner action, ~5 min.
+- **Vercel Pro, or drop `affiliate.ts`** — Hobby was ~1.9× over ISR/CPU and prohibits commercial use while affiliate links are live; a suspension at the wrong moment is the risk. Owner action.
+- **Extend Vegas depth:** add the Fremont **Main Street stage** (verified by the same official source — 2→3 for free); resolve **RUSH Lounge**'s free/no-cover status (first non-Fremont venue, fixes the "two cards, one venue" look); build an activation flow that calls `revalidateTag('residencies')` when flipping `is_active`. Then decide on city #2.
+- **Email capture** — still absent. Fable's "single worst omission": peak season with no way to keep the audience. A day of work.
+- **Tier 1 hygiene:** consolidate `/free-music`→`/free-live-music` + `/series` vs `/artist` URLs (also unblocks the show-page series idea), noindex the ~312 TBA pages, harden JSON-LD, slim `select('*')`.
+- Fold the residency + graceful-degradation sections into the alias city pages (`/concerts/city/[alias]`) — this pass covered `/concerts/[city]` only.
+- **Presentation:** group multi-stage venues (the two Fremont cards) into one venue-family card.
 - **Series on the show page (future iteration).** Surface "Part of {series}" + `superEvent` JSON-LD on `/concert/[slug]` to flow crawl authority from show pages (where the clicks land) into the durable series asset. **Blocked on Tier 1 first:** the series entity must be made evergreen (`/series/[city]/[series]` currently 404s off-season) and one canonical URL chosen between `/series` and `/artist` (301 the other) — else this just deepens the URL split. Also settle the series *definition* (artist-repeat vs named venue/program series like SummerStage — the latter is likely higher-demand but isn't modeled; `event_series` is empty). Detection logic already exists in `lib/city-fallback.ts` to reuse once unblocked.
-- **Tier 2:** Las Vegas depth — Fremont Street importer, residency data model, newsletter + subreddit.
+- **Tier 2:** Las Vegas depth — ~~residency data model~~ (shipped July 20; `event_series` live with 2 verified Fremont residencies); remaining: Fremont *dated-event* importer, newsletter + subreddit, more verified residencies.
