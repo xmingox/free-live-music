@@ -7,6 +7,16 @@
  *
  * Concerts 0–6 days past still reach the page component, which renders them
  * with noindex metadata — useful for people searching for recent show info.
+ *
+ * Cost: slugs end with the event date (`…-nyc-2026-07-19`), and that trailing
+ * date is a verified-exact proxy for the row's `date` (0 mismatches in the DB).
+ * So we parse it first: any event that is NOT 7+ days past skips the Supabase
+ * read entirely and passes straight through — that's every future/recent event,
+ * i.e. essentially all legitimate traffic. The DB read now only runs for slugs
+ * that encode a 7+‑day‑past date or have no date (legacy), where a lookup is
+ * still needed to distinguish a genuine 410 from a `previous_slug` of a still
+ * active concert (which the page 301-redirects). This turns "one DB read per
+ * request" into "reads only on crawls of stale/dead URLs."
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -53,6 +63,20 @@ function goneHtml(cityPath: string): string {
 export async function middleware(req: NextRequest) {
   const slug = req.nextUrl.pathname.replace(/^\/concert\//, '').split('?')[0]
   if (!slug) return NextResponse.next()
+
+  // Fast path (no DB read): parse the trailing YYYY-MM-DD from the slug. If the
+  // event is not 7+ days past, it can't be a 410 — let the page render. This
+  // covers all future/recent events (the traffic that matters) and preserves
+  // the page's previous_slug 301 + 0–6 day noindex-grace behavior untouched.
+  const dateMatch = slug.match(/-(\d{4}-\d{2}-\d{2})$/)
+  if (dateMatch) {
+    const slugDateMs = new Date(dateMatch[1] + 'T00:00:00').getTime()
+    if (!Number.isNaN(slugDateMs) && Date.now() - slugDateMs <= GONE_THRESHOLD_MS) {
+      return NextResponse.next()
+    }
+    // else: slug encodes a 7+‑day‑past date → fall through to the authoritative
+    // DB check below (needed for the genuine-410 vs previous_slug distinction).
+  }
 
   try {
     const res = await fetch(
