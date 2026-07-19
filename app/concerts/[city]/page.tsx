@@ -17,6 +17,8 @@ import {
 import { computeRecurringSeries } from '@/lib/series'
 import { buildFaqPageJsonLd, buildItemListJsonLd } from '@/lib/jsonld'
 import { CITY_GUIDES } from '@/lib/city-guides-data'
+import { CITY_MIN_UPCOMING, countIndexable } from '@/lib/city-visibility'
+import { getCityFallback } from '@/lib/city-fallback'
 
 export const revalidate = 86400 // 24h: this page queries Supabase directly (getConcertsByCity) and is NOT tag-covered, so new events surface within a day, not on import
 
@@ -53,14 +55,21 @@ export async function generateMetadata({
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   )
   const today = getUsToday()
+  // Count indexable upcoming events the SAME way the page body does
+  // (isIndexableUpcoming: verified, not TBA, not cancelled) and over the same
+  // set of city codes (metro + aliases) the body renders — so the noindex
+  // decision here can never disagree with the degraded view the body shows.
+  const cityNames = [metro.city, ...(metro.aliases || [])]
   const { count: upcomingCount } = await supabase
     .from('concerts')
     .select('id', { count: 'exact', head: true })
-    .eq('city', cityCode)
+    .in('city', cityNames)
     .gte('date', today)
     .eq('is_verified', true)
+    .eq('is_tbd', false)
+    .eq('is_cancelled', false)
 
-  const sparse = (upcomingCount ?? 0) < 10
+  const sparse = (upcomingCount ?? 0) < CITY_MIN_UPCOMING
 
   return {
     title,
@@ -171,13 +180,18 @@ async function getConcertsByCity(metro: ReturnType<typeof getMetroByCode>): Prom
       .order('date', { ascending: true })
       .limit(200)
 
-    if (error || !data?.length) {
-      return MOCK_CONCERTS.filter(c => c.city === metro.code)
+    if (error) {
+      console.error(`Error fetching concerts for ${metro.city}:`, error)
+      return []
     }
-    return data as Concert[]
+    // A genuinely empty city returns [] (not mock) so the graceful-degradation
+    // view actually triggers. Mock data is dev-only (missing env, handled above)
+    // — surfacing fabricated events on a real city page would violate the
+    // "no unverified events" invariant and hide the empty state we want to show.
+    return (data ?? []) as Concert[]
   } catch (error) {
     console.error(`Error fetching concerts for ${metro.city}:`, error)
-    return MOCK_CONCERTS.filter(c => c.city === metro.code)
+    return []
   }
 }
 
@@ -198,6 +212,14 @@ export default async function CityPage({
   const concerts = await getConcertsByCity(metro)
   const insights = getCityInsights(concerts, metro)
   const recurringSeries = computeRecurringSeries(concerts)
+
+  // Graceful degradation: use the SAME "indexable upcoming" definition the
+  // metadata/sitemap use, so what the user sees (rich fallback) and what
+  // crawlers see (noindex) always agree. When sparse, pull series history,
+  // top venues, and nearby cities with events (all cached, concerts-tagged).
+  const indexableUpcoming = countIndexable(concerts)
+  const sparse = indexableUpcoming < CITY_MIN_UPCOMING
+  const fallback = sparse ? await getCityFallback(cityCode) : null
 
   // FAQPage structured data — answers vary by city based on real concert data
   const faqItems: { q: string; a: string }[] = [
@@ -306,17 +328,98 @@ export default async function CityPage({
           )}
         </div>
 
-        {/* Thin-season degraded view — surfaces guide + venues when events are sparse */}
-        {concerts.length < 10 && (
-          <div className="mb-8 rounded-2xl border border-slate-200 bg-slate-50 p-6 space-y-4">
+        {/* Thin-season degraded view — keeps the page useful (and non-empty for
+            crawlers) during the autumn supply cliff: recurring-series history
+            with a "typically returns" hint, top venues, and nearby cities that
+            do have upcoming shows. */}
+        {sparse && (
+          <div className="mb-10 rounded-2xl border border-slate-200 bg-slate-50 p-6 space-y-6">
             <p className="text-sm text-slate-500">
-              {concerts.length === 0
-                ? `No upcoming free concerts listed in ${metro.city} right now — check back as new shows are added.`
-                : `${concerts.length} upcoming show${concerts.length !== 1 ? 's' : ''} listed right now. More are added as venues announce their schedules.`}
+              {indexableUpcoming === 0
+                ? `No upcoming free concerts are on the calendar in ${metro.city} right now. Many of ${metro.city}'s free music series run seasonally — here's what typically returns, plus nearby cities with shows this season.`
+                : `${indexableUpcoming} upcoming show${indexableUpcoming !== 1 ? 's' : ''} on the calendar in ${metro.city} right now. More are added as venues announce their schedules — here's what usually runs here, plus where to find free music nearby.`}
             </p>
-            {CITY_GUIDES[citySlug] && (
+
+            {/* Recurring series that typically return */}
+            {fallback && fallback.recurringSeries.length > 0 && (
               <div>
-                <p className="text-slate-700 text-sm leading-relaxed mb-3">
+                <h2 className="text-sm font-bold uppercase tracking-wide text-slate-700 mb-3">
+                  Free music series in {metro.city}
+                </h2>
+                <ul className="grid sm:grid-cols-2 gap-3">
+                  {fallback.recurringSeries.slice(0, 6).map((s) => (
+                    <li key={s.slug + (s.venue ?? '')} className="rounded-xl border border-slate-200 bg-white px-4 py-3">
+                      <Link
+                        href={`/series/${citySlug}/${s.slug}`}
+                        className="font-medium text-slate-800 hover:text-blue-700 transition"
+                      >
+                        {s.artistName}
+                      </Link>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        {s.venue ? `${s.venue} · ` : ''}
+                        {s.occurrences} show{s.occurrences !== 1 ? 's' : ''} on record
+                        {s.dormant && s.typicalReturnMonth
+                          ? ` · typically returns in ${s.typicalReturnMonth}`
+                          : !s.dormant
+                          ? ' · currently running'
+                          : ''}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Nearby cities that have upcoming events */}
+            {fallback && fallback.nearby.length > 0 && (
+              <div>
+                <h2 className="text-sm font-bold uppercase tracking-wide text-slate-700 mb-3">
+                  Free concerts near {metro.city}
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {fallback.nearby.map((n) => (
+                    <Link
+                      key={n.code}
+                      href={`/concerts/${n.slug}`}
+                      className="group flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition text-sm"
+                    >
+                      <span className="font-medium text-slate-800 group-hover:text-blue-700">{n.cityName}</span>
+                      <span className="text-slate-400 text-xs">{n.upcomingCount} shows · {n.distanceMi} mi</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Top venues from the city's history */}
+            {fallback && fallback.topVenues.length > 0 && (
+              <div>
+                <h2 className="text-sm font-bold uppercase tracking-wide text-slate-700 mb-3">
+                  Venues that host free music in {metro.city}
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {fallback.topVenues.map((v) => (
+                    <span
+                      key={v.name}
+                      className="px-3 py-1.5 rounded-full bg-white border border-slate-200 text-sm text-slate-700"
+                    >
+                      {v.name}
+                    </span>
+                  ))}
+                </div>
+                <Link
+                  href={`/venues/${citySlug}`}
+                  className="inline-flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-slate-900 transition mt-3"
+                >
+                  Browse all {metro.city} music venues →
+                </Link>
+              </div>
+            )}
+
+            {/* Year-round guide */}
+            {CITY_GUIDES[citySlug] && (
+              <div className="pt-2 border-t border-slate-200">
+                <p className="text-slate-700 text-sm leading-relaxed mb-2">
                   {CITY_GUIDES[citySlug].intro.split('. ').slice(0, 2).join('. ') + '.'}
                 </p>
                 <Link
@@ -327,12 +430,6 @@ export default async function CityPage({
                 </Link>
               </div>
             )}
-            <Link
-              href={`/venues/${citySlug}`}
-              className="inline-flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-slate-900 transition"
-            >
-              Browse {metro.city} music venues →
-            </Link>
           </div>
         )}
 

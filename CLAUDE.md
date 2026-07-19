@@ -129,9 +129,17 @@ Secrets live in `.env.local` (Supabase URL/keys, Mapbox token) — never commit 
 
 ---
 
-## 8. Status & priorities (updated July 18)
+## 8. Status & priorities (updated July 19)
 
 See `AUDIT_AND_PLAN.md` for the full tiered roadmap.
+
+**Shipped / applied July 19:**
+- **Empty-page protection on `/concerts/[city]`** (graceful degradation for the autumn cliff). New `lib/city-fallback.ts`: when a city is sparse, renders recurring-series *history* (grouped by artist+venue, 3+ occurrences) with a data-supported "typically returns in {Month}" for dormant series, top venues, and nearest cities that have upcoming events (venue-centroid haversine — every venue is geocoded, no API cost). All fallback queries go through `unstable_cache` (daily backstop + `tags:['concerts']`) so reads scale with imports, not traffic.
+- **Centralized the noindex threshold** in `lib/city-visibility.ts` (`CITY_MIN_UPCOMING = 10` + `isIndexableUpcoming`/`countIndexable`). Both the city-page metadata and `sitemap.ts` import it, ending the drift where they disagreed (metadata counted `is_verified` only; sitemap counted `is_verified && !is_tbd`). Metadata now counts over metro+alias codes with `is_verified && !is_tbd && !is_cancelled`, matching what the body renders.
+- **Fixed a latent bug:** empty cities were returning `MOCK_CONCERTS` (fabricated cards on a real page — violated the "no unverified events" invariant and hid the empty state). Now a genuinely empty city returns `[]`; mock is dev-only (missing env).
+- **Weekly runway monitor** — new `lib/runway.ts` + `GET /api/maintenance/runway` (Mondays 14:00 UTC in `vercel.json`). Measures events/city over the next 90d + the 60–90d tail, diffs against the prior run in the new **`runway_runs`** table, and alerts via `sendCronAlert` when a previously-covered city (≥3 in 90d) drops below 3, or 90-day supply falls >20% WoW. Mirrors to `cron_runs` for the daily digest. First run has no baseline → no alerts until the second Monday (expected).
+  - `runway_runs` grants were **verified both sides** (§0): the table did NOT inherit `service_role` INSERT on creation — granted explicitly to match `seo_daily_runs` (service_role writes, anon/authenticated read-only). Without this the cron would have silently failed to write.
+- ⚠️ **Deploy caveat (July 19):** this session's cloud sandbox **cannot `git push`** (no git identity in the mount, `.git` object writes denied, GitHub egress blocked by proxy 403). The migration was applied live via MCP, but the *code* push must be run from the owner's macOS terminal: `bash deploy.sh "…"`. Verify after deploy that `/api/maintenance/runway` registered as the 13th Vercel cron (Hobby may cap cron count — unverified).
 
 **Shipped / applied July 18:**
 - **Event-driven revalidation** to cut the ISR-write overage (was 383K/200K): hourly→daily timers on data-driven pages + `revalidateTag('concerts')` from the import cron. Caveat: only `getConcerts`-backed surfaces (homepage, `/api/concerts`) are tag-refreshed; other pages rely on the 24h backstop. `/tonight`, `/this-week`, `/this-weekend` kept hourly (date-volatile).
@@ -139,12 +147,12 @@ See `AUDIT_AND_PLAN.md` for the full tiered roadmap.
 - **Security:** revoked anon-callable `rls_auto_enable`; closed anon INSERT on `event_submissions`/`event_reports`; locked `increment_event_views` to server; dropped inert permissive write policies on 6 ops tables; pinned function search_paths. (Regression caught + fixed by independent review: a `REVOKE … FROM public` had stripped `service_role` and broken `/api/report` + `/api/track` — see §0.)
 - **Deploy:** `deploy.sh` added with a `tsc --noEmit` preflight gate; `gh` auth fixed as `xmingox`.
 
-**Cron status:** `gsc-pull` fails on `invalid_grant` (expired Google OAuth — needs a user re-auth to restore Search Console data). `seo-daily` is NOT broken — it's a working audit that logs a red run whenever it finds a real SEO issue.
+**Cron status:** `gsc-pull` has failed on `invalid_grant` for **7+ days straight** (expired Google OAuth) — **owner must re-authenticate Google** to restore Search Console data; still open as of July 19. `seo-daily` is NOT broken — it's a working audit that logs a red run whenever it finds a real SEO issue (currently: past events missing noindex meta + a few canonical issues — flagged for a later pass).
 
 **September cliff decision:** protect empty city pages (graceful degradation) + start Vegas/year-round sourcing; do NOT spend on Apify scrapes (breadth + partly a seasonal demand trough). Add weekly runway monitoring. Data: Sep 174 / Oct 39 / Nov+ 23 events; only 22 metros have Oct+ content.
 
 **Next up:**
-- **Empty-page protection** on `/concerts/[city]` — graceful degradation (series history, top venues, nearby cities) when few/no upcoming events. SEO-critical before October.
-- **Weekly runway monitor** — events per city over the next 90 days, alert on drops.
+- **Re-authenticate Google** (restore `gsc-pull`) — blocking the demand feedback loop; 7+ days dark.
 - **Tier 1:** middleware slug-date parsing (kills the per-request DB read), consolidate `/free-music`→`/free-live-music` + `/series` vs `/artist` URLs, noindex the ~312 TBA pages, harden JSON-LD, slim `select('*')`.
+- Fold the same graceful-degradation fallback into the alias city pages (`/concerts/city/[alias]`) — this pass covered `/concerts/[city]` only.
 - **Tier 2:** Las Vegas depth — Fremont Street importer, residency data model, newsletter + subreddit.

@@ -6,6 +6,7 @@ import { GUIDE_CITIES } from '@/lib/city-guides'
 import { GUIDE_SLUGS } from '@/lib/city-guides-data'
 import { getActiveStateSlugs, stateCodeToSlug } from '@/lib/state-slugs'
 import { seriesSlug } from '@/lib/series'
+import { CITY_MIN_UPCOMING } from '@/lib/city-visibility'
 
 // Refresh hourly so slug renames, new concerts, and is_tbd flips surface in
 // crawler-facing sitemap.xml without needing a deploy.
@@ -42,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (c.city) cityCountMap[c.city] = (cityCountMap[c.city] ?? 0) + 1
     if (c.venue_id) venueIdsWithConcerts.add(c.venue_id)
   }
-  const CITY_MIN_CONCERTS = 10
+  const CITY_MIN_CONCERTS = CITY_MIN_UPCOMING // shared floor — keeps sitemap inclusion in lockstep with the page's noindex threshold
 
   const { data: venueRows } = await supabase
     .from('venues')
