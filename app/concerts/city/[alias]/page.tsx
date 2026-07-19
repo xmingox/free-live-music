@@ -12,7 +12,7 @@ import {
   cityToSlug,
 } from '@/lib/city-slugs'
 
-export const revalidate = 86400 // daily backstop; import cron refreshes via revalidateTag('concerts')
+export const revalidate = 86400 // 24h: queries Supabase directly (NOT tag-covered), so refresh is the daily backstop, not import-driven
 
 const CITY_PAGE_THRESHOLD = 5
 

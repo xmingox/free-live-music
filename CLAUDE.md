@@ -18,6 +18,12 @@
 **Show your work before side effects.**
 - Read-only audit first, then propose, then change. Show diffs before committing. Never deploy without the user seeing what ships.
 
+**Verify both sides of every change.**
+- After a permission/RLS change, confirm BOTH that the blocked role is denied AND that every legitimate role/route still has the access it needs. Precedent: a `REVOKE EXECUTE … FROM public` on a function silently stripped `service_role` and broke `/api/report` + `/api/track` — the restriction was verified, the still-works side was not. **Never `REVOKE … FROM public` on a function without re-granting the roles that need it** (esp. `service_role`).
+- After any DB DDL, re-run `get_advisors` and spot-check with `has_table_privilege` / `has_function_privilege`.
+- `bash deploy.sh` runs `tsc --noEmit` as a preflight gate — but that only catches type errors, not logic/permission/caching regressions. For security-sensitive, DB, or multi-file changes, run an independent review (a subagent) before calling it done.
+- Caching/ISR changes: confirm which surfaces are actually tag-covered (`unstable_cache` with `tags`) vs. rely on the time-based backstop — `revalidateTag` only refreshes the former.
+
 **Keep this file current.** When you change architecture, costs, or invariants, update the relevant section here in the same session.
 
 ---
@@ -123,9 +129,22 @@ Secrets live in `.env.local` (Supabase URL/keys, Mapbox token) — never commit 
 
 ---
 
-## 8. Current priorities
+## 8. Status & priorities (updated July 18)
 
-See `AUDIT_AND_PLAN.md` for the full tiered roadmap. Near-term:
-- **Tier 0 (this week):** timezone fix, repair/kill broken SEO crons + alerting, revoke anon-callable `SECURITY DEFINER` RPCs, start the fall data drive (September cliff).
-- **Tier 1 (2 weeks):** middleware slug-date parsing, event-driven revalidation, consolidate series/guide URLs, noindex TBA pages, harden JSON-LD, slim `select('*')`.
-- **Tier 2 (strategic pilot):** Las Vegas depth — Fremont Street importer, residency data model, newsletter + subreddit.
+See `AUDIT_AND_PLAN.md` for the full tiered roadmap.
+
+**Shipped / applied July 18:**
+- **Event-driven revalidation** to cut the ISR-write overage (was 383K/200K): hourly→daily timers on data-driven pages + `revalidateTag('concerts')` from the import cron. Caveat: only `getConcerts`-backed surfaces (homepage, `/api/concerts`) are tag-refreshed; other pages rely on the 24h backstop. `/tonight`, `/this-week`, `/this-weekend` kept hourly (date-volatile).
+- **Timezone fix:** all "today" boundary logic routes through `getUsToday()` (Pacific-lenient) in `lib/timezone.ts`; ~23 UTC usages replaced.
+- **Security:** revoked anon-callable `rls_auto_enable`; closed anon INSERT on `event_submissions`/`event_reports`; locked `increment_event_views` to server; dropped inert permissive write policies on 6 ops tables; pinned function search_paths. (Regression caught + fixed by independent review: a `REVOKE … FROM public` had stripped `service_role` and broken `/api/report` + `/api/track` — see §0.)
+- **Deploy:** `deploy.sh` added with a `tsc --noEmit` preflight gate; `gh` auth fixed as `xmingox`.
+
+**Cron status:** `gsc-pull` fails on `invalid_grant` (expired Google OAuth — needs a user re-auth to restore Search Console data). `seo-daily` is NOT broken — it's a working audit that logs a red run whenever it finds a real SEO issue.
+
+**September cliff decision:** protect empty city pages (graceful degradation) + start Vegas/year-round sourcing; do NOT spend on Apify scrapes (breadth + partly a seasonal demand trough). Add weekly runway monitoring. Data: Sep 174 / Oct 39 / Nov+ 23 events; only 22 metros have Oct+ content.
+
+**Next up:**
+- **Empty-page protection** on `/concerts/[city]` — graceful degradation (series history, top venues, nearby cities) when few/no upcoming events. SEO-critical before October.
+- **Weekly runway monitor** — events per city over the next 90 days, alert on drops.
+- **Tier 1:** middleware slug-date parsing (kills the per-request DB read), consolidate `/free-music`→`/free-live-music` + `/series` vs `/artist` URLs, noindex the ~312 TBA pages, harden JSON-LD, slim `select('*')`.
+- **Tier 2:** Las Vegas depth — Fremont Street importer, residency data model, newsletter + subreddit.

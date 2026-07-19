@@ -18,7 +18,7 @@ import { computeRecurringSeries } from '@/lib/series'
 import { buildFaqPageJsonLd, buildItemListJsonLd } from '@/lib/jsonld'
 import { CITY_GUIDES } from '@/lib/city-guides-data'
 
-export const revalidate = 86400 // daily backstop; import cron triggers refresh via revalidateTag('concerts')
+export const revalidate = 86400 // 24h: this page queries Supabase directly (getConcertsByCity) and is NOT tag-covered, so new events surface within a day, not on import
 
 // Generate static params for all cities
 export async function generateStaticParams() {

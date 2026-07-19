@@ -1,4 +1,4 @@
-export const revalidate = 86400 // daily backstop; import cron refreshes via revalidateTag('concerts')
+export const revalidate = 3600 // hourly: date-volatile "tonight" page (noindexed, low-traffic) needs a fresh local date
 
 import { Metadata } from 'next'
 import Link from 'next/link'
