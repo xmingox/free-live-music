@@ -19,6 +19,7 @@ import { buildFaqPageJsonLd, buildItemListJsonLd } from '@/lib/jsonld'
 import { CITY_GUIDES } from '@/lib/city-guides-data'
 import { CITY_MIN_UPCOMING, countIndexable } from '@/lib/city-visibility'
 import { getCityFallback } from '@/lib/city-fallback'
+import { getActiveResidencies, scheduleLabel, residencySchedule } from '@/lib/residencies'
 
 export const revalidate = 86400 // 24h: this page queries Supabase directly (getConcertsByCity) and is NOT tag-covered, so new events surface within a day, not on import
 
@@ -70,6 +71,11 @@ export async function generateMetadata({
     .eq('is_cancelled', false)
 
   const sparse = (upcomingCount ?? 0) < CITY_MIN_UPCOMING
+  // A city with published year-round residencies has durable, indexable content
+  // even when its dated-event count is thin — so it should NOT be noindexed just
+  // for being off-season. This is the whole point of the residency inventory.
+  const residencies = await getActiveResidencies(cityCode)
+  const indexable = !sparse || residencies.length > 0
 
   return {
     title,
@@ -100,7 +106,7 @@ export async function generateMetadata({
       },
     },
     robots: {
-      index: !sparse,
+      index: indexable,
       follow: true,
     },
   }
@@ -221,6 +227,10 @@ export default async function CityPage({
   const sparse = indexableUpcoming < CITY_MIN_UPCOMING
   const fallback = sparse ? await getCityFallback(cityCode) : null
 
+  // Published year-round free residencies (renders as schedules, never as
+  // synthetic dated events). This is the cliff-proof inventory.
+  const residencies = await getActiveResidencies(cityCode)
+
   // FAQPage structured data — answers vary by city based on real concert data
   const faqItems: { q: string; a: string }[] = [
     {
@@ -277,12 +287,47 @@ export default async function CityPage({
     })),
   })
 
+  // EventSeries JSON-LD for published residencies — honest structured data
+  // (real venue, free offer), no fabricated dated instances.
+  const residencyJsonLd = residencies.map((r) => ({
+    '@context': 'https://schema.org',
+    '@type': 'EventSeries',
+    name: r.seriesName,
+    ...(r.description ? { description: r.description } : {}),
+    ...(r.venueName
+      ? {
+          location: {
+            '@type': 'Place',
+            name: r.venueName,
+            address: {
+              '@type': 'PostalAddress',
+              addressLocality: metro.city,
+              addressRegion: metro.state,
+            },
+          },
+        }
+      : {}),
+    eventSchedule: residencySchedule(r),
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', availability: 'https://schema.org/InStock' },
+    url: `https://www.freelivemusic.co/concerts/${citySlug}`,
+  }))
+
+  // Headline is derived from the data, not hardcoded: "every night" only when a
+  // daily residency actually exists, so the claim can never outrun the rows.
+  const residenciesNightly = residencies.some((r) => r.recurrence === 'daily')
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
+      {residencyJsonLd.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(residencyJsonLd) }}
+        />
+      )}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
@@ -327,6 +372,42 @@ export default async function CityPage({
             </Link>
           )}
         </div>
+
+        {/* Year-round free residencies — the cliff-proof inventory. Renders as
+            SCHEDULES (never synthetic dated rows), so it stays true off-season. */}
+        {residencies.length > 0 && (
+          <section className="mb-10 rounded-2xl border border-emerald-200 bg-emerald-50/60 p-6">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <h2 className="text-lg font-bold text-slate-900">
+                Free live music {residenciesNightly ? 'every night ' : ''}in {metro.city}
+              </h2>
+            </div>
+            <p className="text-sm text-slate-500 mb-5">
+              Year-round free residencies — no tickets, no cover, on a regular schedule.
+            </p>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {residencies.map((r) => (
+                <div key={r.id} className="rounded-xl border border-slate-200 bg-white px-4 py-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="font-semibold text-slate-900">{r.venueName ?? r.seriesName}</p>
+                    <span className="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
+                      Free
+                    </span>
+                  </div>
+                  {r.description && (
+                    <p className="text-sm text-slate-600 mt-1 leading-relaxed">{r.description}</p>
+                  )}
+                  <p className="text-xs text-slate-500 mt-2">
+                    <span className="font-medium text-slate-700">{scheduleLabel(r)}</span>
+                    {r.time ? ` · ${r.time}` : ''}
+                    {r.genre ? ` · ${r.genre}` : ''}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Thin-season degraded view — keeps the page useful (and non-empty for
             crawlers) during the autumn supply cliff: recurring-series history
