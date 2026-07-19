@@ -20,16 +20,20 @@ export const CITY_MIN_UPCOMING = 10
 
 /**
  * Does a concert count as an indexable, real upcoming listing?
- * Excludes TBA/placeholder rows and anything explicitly unverified.
+ * Excludes TBA/placeholder rows and anything not explicitly verified.
+ *
+ * IMPORTANT — single source of truth: this predicate must stay byte-for-byte
+ * equivalent to the DB filter used everywhere the count is computed server-side:
+ *     .eq('is_verified', true).eq('is_tbd', false).eq('is_cancelled', false)
+ * That is why we test `is_verified === true` (not `!== false`): a null
+ * is_verified is excluded by the DB `.eq(true)`, so the JS side must exclude it
+ * too, or metadata (DB count) and body (this predicate) could disagree on nulls.
  * (Past/archived filtering is done at the query level via `date >= today`.)
  */
 export function isIndexableUpcoming(
   c: Pick<Concert, 'is_verified' | 'is_tbd' | 'is_cancelled'>,
 ): boolean {
-  if (c.is_verified === false) return false
-  if (c.is_tbd === true) return false
-  if (c.is_cancelled === true) return false
-  return true
+  return c.is_verified === true && c.is_tbd !== true && c.is_cancelled !== true
 }
 
 /** Count only the indexable upcoming events in an already date-filtered list. */

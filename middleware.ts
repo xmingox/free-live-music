@@ -68,9 +68,10 @@ export async function middleware(req: NextRequest) {
   // event is not 7+ days past, it can't be a 410 — let the page render. This
   // covers all future/recent events (the traffic that matters) and preserves
   // the page's previous_slug 301 + 0–6 day noindex-grace behavior untouched.
-  const dateMatch = slug.match(/-(\d{4}-\d{2}-\d{2})$/)
+  const dateMatch = slug.match(/-(\d{4})-(\d{2})-(\d{2})$/)
   if (dateMatch) {
-    const slugDateMs = new Date(dateMatch[1] + 'T00:00:00').getTime()
+    // Parse explicitly as UTC midnight — no implicit runtime-local Date parsing.
+    const slugDateMs = Date.UTC(+dateMatch[1], +dateMatch[2] - 1, +dateMatch[3])
     if (!Number.isNaN(slugDateMs) && Date.now() - slugDateMs <= GONE_THRESHOLD_MS) {
       return NextResponse.next()
     }

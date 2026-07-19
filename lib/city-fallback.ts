@@ -24,21 +24,15 @@ import { getUsToday } from './timezone'
 import { getMetroByCode, cityCodeToSlug, type Metro } from './city-slugs'
 import { seriesSlug } from './series'
 
-const MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-]
-
 export interface RecurringSeriesHistory {
   artistName: string
   venue: string | null
   slug: string
   occurrences: number
+  /** YYYY-MM-DD of the most recent show on record */
   lastDate: string
   /** true when the series has no upcoming (>= today) show on the books */
   dormant: boolean
-  /** e.g. "July" — the month this series most often runs; null if too scattered */
-  typicalReturnMonth: string | null
 }
 
 export interface TopVenue {
@@ -238,7 +232,6 @@ async function fetchCityHistory(metroCode: string): Promise<{
     artistName: string
     venue: string | null
     dates: string[]
-    monthCounts: number[] // index 0..11
   }
   const groups = new Map<string, Group>()
   const venueShowCounts = new Map<string, number>()
@@ -248,34 +241,28 @@ async function fetchCityHistory(metroCode: string): Promise<{
     const key = `${r.artist_name}|||${r.venue ?? ''}`
     let g = groups.get(key)
     if (!g) {
-      g = { artistName: r.artist_name, venue: r.venue, dates: [], monthCounts: new Array(12).fill(0) }
+      g = { artistName: r.artist_name, venue: r.venue, dates: [] }
       groups.set(key, g)
     }
     g.dates.push(r.date)
-    const month = Number(r.date.slice(5, 7)) - 1 // "YYYY-MM-DD" → 0..11
-    if (month >= 0 && month < 12) g.monthCounts[month] += 1
   }
 
+  // NOTE: we deliberately do NOT predict a "typically returns in {Month}" —
+  // all data is currently a single year (2026), so any seasonal claim would be
+  // an unfounded guess (and skewed by the summer-heavy static importers). We
+  // report only the factual last-seen date. Revisit once ≥2 years of history
+  // exists and an annual pattern is actually observable.
   const recurringSeries: RecurringSeriesHistory[] = [...groups.values()]
     .filter((g) => g.dates.length >= 3)
     .map((g) => {
-      const lastDate = g.dates[g.dates.length - 1]
-      const dormant = lastDate < today
-      // typical month = the modal month, but only if reasonably concentrated
-      // (audit: dormant series footprints are ≤4 distinct months, so a mode is meaningful).
-      const maxCount = Math.max(...g.monthCounts)
-      const modeMonth = g.monthCounts.indexOf(maxCount)
-      const distinctMonths = g.monthCounts.filter((n) => n > 0).length
-      const typicalReturnMonth =
-        distinctMonths > 0 && distinctMonths <= 4 && maxCount >= 1 ? MONTHS[modeMonth] : null
+      const lastDate = g.dates[g.dates.length - 1] // dates are ordered asc
       return {
         artistName: g.artistName,
         venue: g.venue,
         slug: seriesSlug(g.artistName),
         occurrences: g.dates.length,
         lastDate,
-        dormant,
-        typicalReturnMonth,
+        dormant: lastDate < today,
       }
     })
     // Surface dormant-but-recurring first (that's the "it'll be back" story),

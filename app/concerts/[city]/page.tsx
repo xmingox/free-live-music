@@ -358,11 +358,9 @@ export default async function CityPage({
                       <p className="text-xs text-slate-500 mt-0.5">
                         {s.venue ? `${s.venue} · ` : ''}
                         {s.occurrences} show{s.occurrences !== 1 ? 's' : ''} on record
-                        {s.dormant && s.typicalReturnMonth
-                          ? ` · typically returns in ${s.typicalReturnMonth}`
-                          : !s.dormant
-                          ? ' · currently running'
-                          : ''}
+                        {s.dormant
+                          ? ` · last hosted ${new Date(s.lastDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`
+                          : ' · currently running'}
                       </p>
                     </li>
                   ))}

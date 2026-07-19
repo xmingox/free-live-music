@@ -172,18 +172,31 @@ export function diffRunway(
     }
   }
 
-  // Always-on warn: how thin is the 60–90d tail? (leading edge of the cliff)
-  if (current.totals.cities_60_90d < 45) {
-    findings.push({
-      name: 'tail_thin',
-      status: 'warn',
-      message: `Only ${current.totals.cities_60_90d} cities have events 60–90 days out (${current.totals.events_60_90d} events). The cliff forms here.`,
-    })
+  // 60–90d tail = the leading edge of the cliff. Warn only when it SHRINKS
+  // meaningfully vs the prior run (a fixed absolute floor would warn on every
+  // run — pure noise); otherwise report it as an informational pass.
+  const prevTail = prev?.totals?.cities_60_90d
+  if (typeof prevTail === 'number' && prevTail > 0) {
+    const drop = prevTail - current.totals.cities_60_90d
+    const dropPct = drop / prevTail
+    if (drop >= 3 && dropPct > 0.15) {
+      findings.push({
+        name: 'tail_thin',
+        status: 'warn',
+        message: `60–90d tail coverage shrank ${drop} cities (${(dropPct * 100).toFixed(0)}%): ${prevTail} → ${current.totals.cities_60_90d} cities (${current.totals.events_60_90d} events).`,
+      })
+    } else {
+      findings.push({
+        name: 'tail_thin',
+        status: 'pass',
+        message: `60–90d tail: ${current.totals.cities_60_90d} cities, ${current.totals.events_60_90d} events (prev ${prevTail}).`,
+      })
+    }
   } else {
     findings.push({
       name: 'tail_thin',
       status: 'pass',
-      message: `${current.totals.cities_60_90d} cities have events 60–90 days out.`,
+      message: `60–90d tail: ${current.totals.cities_60_90d} cities, ${current.totals.events_60_90d} events (baseline).`,
     })
   }
 
