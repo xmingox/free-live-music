@@ -23,7 +23,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Summer (June–August) is peak season, with SummerStage, Celebrate Brooklyn!, and Bryant Park Picnic Performances all running simultaneously. The parks fill up early for popular acts — arrive 30–45 minutes ahead. Independence Day weekend brings multiple free outdoor concert events across all boroughs.\n\nSpring and fall offer smaller but often more intimate free shows. Lincoln Center Out of Doors runs in late July and August with free performances on the plaza. The New York Philharmonic\'s free Concerts in the Parks each summer draws tens of thousands to Central Park, Prospect Park, and Van Cortlandt Park. Winter indoors: Jazz at Lincoln Center hosts occasional free concerts in the atrium at Columbus Circle, and the Metropolitan Museum of Art runs free Friday evening concerts in the Great Hall.',
     howToFind:
-      'The Parks Department\'s free concert calendar at nycgovparks.org covers all borough events. SummerStage\'s own website lists the full season lineup in April. For jazz specifically, check the Village Vanguard and Blue Note\'s free late-night sets and the Lincoln Center Jazz calendar. Brooklyn Vegan and Gothamist post weekly free show roundups. Our listing page is updated daily with verified free concerts across all five boroughs.',
+      'The Parks Department\'s free concert calendar at nycgovparks.org covers all borough events. SummerStage\'s own website lists the full season lineup in April. For jazz specifically, check the Village Vanguard and Blue Note\'s free late-night sets and the Lincoln Center Jazz calendar. Brooklyn Vegan and Gothamist post weekly free show roundups. Our listing page tracks verified free concerts across all five boroughs.',
     faqs: [
       {
         q: 'Do I need tickets for SummerStage concerts in Central Park?',
@@ -52,7 +52,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Summer (June–September) is the golden season, with the Santa Monica Pier Twilight series, Levitt Pavilion, and dozens of park concert series all running simultaneously. The weather is reliably perfect. Grand Performances at California Plaza in downtown runs free midday and evening concerts from June through September on weekdays — a beloved lunchtime escape for workers.\n\nSpring brings free concerts as part of neighborhood festivals across the city. The Korean Festival, Fiesta Broadway, and various cultural celebrations feature free live music stages. Fall weather remains concert-friendly, and October often sees free shows tied to LA\'s arts events like the Hammer Museum\'s Friday evening free concerts and the Museum of Contemporary Art\'s programming.',
     howToFind:
-      'LA Parks (laparks.org) lists city-run concert series across all neighborhoods. Grand Performances (grandperformances.org) publishes its full summer schedule in April. For beach city shows, check Santa Monica\'s visitSantaMonica.com and individual city parks departments. LAist and LA Weekly maintain weekly free show calendars. Our listings page is updated daily with verified upcoming free concerts across the greater LA area.',
+      'LA Parks (laparks.org) lists city-run concert series across all neighborhoods. Grand Performances (grandperformances.org) publishes its full summer schedule in April. For beach city shows, check Santa Monica\'s visitSantaMonica.com and individual city parks departments. LAist and LA Weekly maintain weekly free show calendars. Our listings page tracks verified upcoming free concerts across the greater LA area.',
     faqs: [
       {
         q: 'Is the Santa Monica Pier Twilight Concert Series always free?',
@@ -81,7 +81,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Chicago\'s summers are intense and packed with free music. The Grant Park Music Festival runs June through August. The Chicago Jazz Festival takes over Millennium Park for Labor Day weekend — free, outdoor, world-class. The Taste of Chicago food festival includes multiple free live music stages. The Chicago Folk & Roots Festival at Welles Park in July features free performances.\n\nWinter brings free indoor programming: the Chicago Cultural Center, a free public building with stunning Tiffany glass domes, hosts regular free concerts year-round. The Chicago Symphony Orchestra occasionally offers free Community Concerts. Many bars in Andersonville, Lincoln Square, and Logan Square maintain free music nights through the cold months.',
     howToFind:
-      'The Chicago Park District\'s calendar at chicagoparkdistrict.com is the definitive source for park-based events. Millennium Park\'s own website (millenniumpark.org) lists the full summer concert season in spring. The Chicago Reader\'s listings section covers smaller free shows at bars and venues. Time Out Chicago maintains a free events roundup. Our listings page is updated daily with verified upcoming concerts across Chicagoland.',
+      'The Chicago Park District\'s calendar at chicagoparkdistrict.com is the definitive source for park-based events. Millennium Park\'s own website (millenniumpark.org) lists the full summer concert season in spring. The Chicago Reader\'s listings section covers smaller free shows at bars and venues. Time Out Chicago maintains a free events roundup. Our listings page tracks verified upcoming concerts across Chicagoland.',
     faqs: [
       {
         q: 'Is the Grant Park Music Festival really free?',
@@ -110,7 +110,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Spring (March–May) and fall (September–November) are Dallas\'s best outdoor concert seasons. Klyde Warren Park\'s programming peaks during these shoulder seasons when temperatures are comfortable. The AT&T Performing Arts Center\'s free Sounds of the Season events run in the plaza through the fall. Summer is hot but not impossible — most summer concerts are scheduled in the evening and located outdoors.\n\nThe Deep Ellum Arts Festival in April is the city\'s largest free music event, with multiple outdoor stages. The State Fair of Texas in October includes free live music on multiple stages inside the fairgrounds (though admission is required to enter).',
     howToFind:
-      'Klyde Warren Park\'s website (klydewarrenpark.org) lists its full events calendar. The City of Dallas Parks and Recreation department lists outdoor concert events at dallasopendata.com. The Dallas Observer\'s event listings cover Deep Ellum and smaller shows. Dallas Morning News maintains a free events calendar. Our listings page is updated daily with verified free concerts across the Dallas metro.',
+      'Klyde Warren Park\'s website (klydewarrenpark.org) lists its full events calendar. The City of Dallas Parks and Recreation department lists outdoor concert events at dallasopendata.com. The Dallas Observer\'s event listings cover Deep Ellum and smaller shows. Dallas Morning News maintains a free events calendar. Our listings page tracks verified free concerts across the Dallas metro.',
     faqs: [
       {
         q: 'Is Klyde Warren Park free?',
@@ -139,7 +139,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Houston\'s subtropical climate makes year-round outdoor concerts possible, though summer humidity means most outdoor events are scheduled for evening hours. Discovery Green runs programming 12 months a year. The Houston Livestock Show and Rodeo (February–March) includes a massive free outdoor music component for those who don\'t buy tickets to the main arena shows.\n\nHouston\'s signature free music event is the Free Press Summer Festival season — the Free Press Houston covers free shows extensively. The Houston Greek Festival, Houston International Festival, and numerous neighborhood festivals throughout fall and spring feature free music stages. Fall and spring evenings in Houston are exceptionally pleasant for outdoor concerts.',
     howToFind:
-      'Discovery Green\'s website (discoverygreenpark.com) lists its full concert calendar. The Houston Parks and Recreation Department lists events at houstontx.gov. Free Press Houston and Houstonia magazine maintain free event listings. The Menil Collection and Rothko Chapel both list their free music events on their own websites. Our listings page is updated daily with verified free concerts across Houston.',
+      'Discovery Green\'s website (discoverygreenpark.com) lists its full concert calendar. The Houston Parks and Recreation Department lists events at houstontx.gov. Free Press Houston and Houstonia magazine maintain free event listings. The Menil Collection and Rothko Chapel both list their free music events on their own websites. Our listings page tracks verified free concerts across Houston.',
     faqs: [
       {
         q: 'Are Discovery Green concerts always free?',
@@ -168,7 +168,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Summer is peak season, with Penn\'s Landing, Rittenhouse Square, and the Parkway all hosting free events. The Philadelphia Folk Festival in late August is one of the oldest and largest folk festivals in the country — the main stage events require tickets, but there\'s substantial free acoustic music in the parking lot and along the roads.\n\nThe Philadelphia Orchestra occasionally offers free outdoor concerts at Mann Center, where a hillside area outside the venue provides a free listening experience for those who don\'t buy seats. Winter in Philadelphia means moving indoors: the Pennsylvania Academy of the Fine Arts, the Free Library of Philadelphia, and the Barnes Foundation all host occasional free music events.',
     howToFind:
-      'The Philly Parks and Recreation department lists events at phila.gov/recreation. Penn\'s Landing\'s calendar is at delawareriverwaterfront.com. The Philadelphia Inquirer and Billy Penn maintain comprehensive free events calendars. For bar shows, Fishtown\'s neighborhood website and Northern Liberties Neighbors Association social media post free show announcements. Our listings page is updated daily with verified free concerts across Philadelphia.',
+      'The Philly Parks and Recreation department lists events at phila.gov/recreation. Penn\'s Landing\'s calendar is at delawareriverwaterfront.com. The Philadelphia Inquirer and Billy Penn maintain comprehensive free events calendars. For bar shows, Fishtown\'s neighborhood website and Northern Liberties Neighbors Association social media post free show announcements. Our listings page tracks verified free concerts across Philadelphia.',
     faqs: [
       {
         q: 'Are there free concerts at Penn\'s Landing in Philadelphia?',
@@ -197,7 +197,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Atlanta\'s springs are exceptional for outdoor concerts — the Atlanta Jazz Festival at Memorial Day weekend is the season\'s centerpiece. The weather from March through May is reliably pleasant, and fall from September through November is equally good. Summer heat and humidity push some outdoor shows to covered or evening venues.\n\nThe Atlanta Music Midtown festival in September is a major paid event, but the weeks surrounding it produce a surge of free shows across the city. The Inman Park Festival in April and the Little Five Points Halloween Festival include substantial free music programming.',
     howToFind:
-      'Atlanta Parks and Recreation lists events at atlantaga.gov. The Atlanta Jazz Festival has its own website with the full lineup published in April. The Atlanta BeltLine calendar (beltline.org) lists trail events. Creative Loafing Atlanta is the go-to source for free show listings, and Do404 Atlanta covers local music events comprehensively. Our listings page is updated daily with verified free concerts across Atlanta.',
+      'Atlanta Parks and Recreation lists events at atlantaga.gov. The Atlanta Jazz Festival has its own website with the full lineup published in April. The Atlanta BeltLine calendar (beltline.org) lists trail events. Creative Loafing Atlanta is the go-to source for free show listings, and Do404 Atlanta covers local music events comprehensively. Our listings page tracks verified free concerts across Atlanta.',
     faqs: [
       {
         q: 'Is the Atlanta Jazz Festival really free?',
@@ -226,7 +226,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Miami\'s winter and spring (November–April) are the prime free concert season, with comfortable temperatures and low humidity perfect for outdoor events. The Calle Ocho Festival in March is the city\'s biggest free music event. Ultra Music Festival, though largely ticketed, generates substantial free spillover events in Wynwood and the Design District.\n\nSummer in Miami is hot and humid with afternoon thunderstorms, pushing many outdoor events to early morning or evening hours. Miami\'s Art Basel week in December is remarkable for free music events — galleries, hotels, and public spaces host dozens of free performances across the city during the art fair.',
     howToFind:
-      'Miami-Dade County Parks lists events at miamidade.gov/parks. The City of Miami\'s events calendar is at miamigov.com. The Miami New Times is the best source for free show listings. Viernes Culturales\' own website lists each month\'s performers. For Wynwood events, follow the Wynwood BID social media accounts. Our listings page is updated daily with verified free concerts across Miami.',
+      'Miami-Dade County Parks lists events at miamidade.gov/parks. The City of Miami\'s events calendar is at miamigov.com. The Miami New Times is the best source for free show listings. Viernes Culturales\' own website lists each month\'s performers. For Wynwood events, follow the Wynwood BID social media accounts. Our listings page tracks verified free concerts across Miami.',
     faqs: [
       {
         q: 'What is Viernes Culturales and is it free?',
@@ -255,7 +255,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'The Stern Grove Festival (June–August) is San Francisco\'s free music anchor. Despite the city\'s famously foggy summers, the grove is naturally sheltered and warm. Arrive 90 minutes early for popular shows — the grove fills to capacity. Outside of Stern Grove, summer weekends at Dolores Park often include informal musical gatherings.\n\nThe San Francisco Jazz Festival in late October and November includes some free outdoor events. The Chinese New Year parade in February features free music, and Carnaval in the Mission in late May includes free live stages. Year-round, the San Francisco Symphony occasionally offers free community concerts, and the San Francisco Opera has free outdoor performances.',
     howToFind:
-      'Stern Grove Festival\'s website (sterngrove.org) lists the full summer lineup when announced in spring. SF Recreation and Parks (sfrecpark.org) lists city-managed events. The SF Chronicle\'s free events guide and KQED\'s arts calendar are good secondary sources. For Mission shows, follow the SF Music Commission and local venue social media. Our listings page is updated daily with verified free concerts in San Francisco.',
+      'Stern Grove Festival\'s website (sterngrove.org) lists the full summer lineup when announced in spring. SF Recreation and Parks (sfrecpark.org) lists city-managed events. The SF Chronicle\'s free events guide and KQED\'s arts calendar are good secondary sources. For Mission shows, follow the SF Music Commission and local venue social media. Our listings page tracks verified free concerts in San Francisco.',
     faqs: [
       {
         q: 'How do I get tickets to the Stern Grove Festival?',
@@ -284,7 +284,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Summer peaks from July 4th (Hatch Shell Pops concert) through August with daily Esplanade concerts. The Boston Calling Music Festival in May is a paid event, but the surrounding weeks generate free spillover shows. Cambridge\'s fall festival season includes the Cambridge Arts River Festival (free) and Harvard Square Oktoberfest (free live music stages).\n\nWinter brings Berklee and NEC\'s free concert season, with recitals and ensemble performances several times per week at both campuses. The Isabella Stewart Gardner Museum hosts free musical Sunday concerts in its extraordinary courtyard through the fall.',
     howToFind:
-      'The Esplanade Association\'s website (esplanadeassociation.org) lists Hatch Shell events. Boston Parks and Recreation lists city events. The Boston Globe\'s free events guide and DigBoston cover smaller shows and venues. For student concerts, Berklee\'s and NEC\'s event calendars are publicly accessible. Our listings page is updated daily with verified free concerts across Boston.',
+      'The Esplanade Association\'s website (esplanadeassociation.org) lists Hatch Shell events. Boston Parks and Recreation lists city events. The Boston Globe\'s free events guide and DigBoston cover smaller shows and venues. For student concerts, Berklee\'s and NEC\'s event calendars are publicly accessible. Our listings page tracks verified free concerts across Boston.',
     faqs: [
       {
         q: 'When is the Boston Pops Fourth of July concert and is it free?',
@@ -313,7 +313,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Summer on the National Mall is spectacular — the Smithsonian Folklife Festival (late June/early July), various military band concerts on the Capitol steps, and the National Symphony Orchestra\'s free Labor Day concert on the Capitol Lawn are seasonal highlights. The Kennedy Center\'s Millennium Stage runs 365 days a year at 6 pm.\n\nFall brings the Adams Morgan Day festival (free outdoor music stages in September) and the H Street Festival (one of DC\'s best free outdoor music events in September). Winter means moving indoors to the Kennedy Center, the Smithsonian American Art Museum (SAAM), and the Library of Congress, all of which run free concert series.',
     howToFind:
-      'The Kennedy Center\'s Millennium Stage calendar (kennedy-center.org) is updated monthly — all performances are free at 6 pm in the Grand Foyer. The Smithsonian\'s events calendar (si.edu/events) lists all free museum concerts. DC\'s cultural calendar (washington.org) covers public events. The Washington Post\'s free events guide is comprehensive. Our listings page is updated daily with verified free concerts across Washington DC.',
+      'The Kennedy Center\'s Millennium Stage calendar (kennedy-center.org) is updated monthly — all performances are free at 6 pm in the Grand Foyer. The Smithsonian\'s events calendar (si.edu/events) lists all free museum concerts. DC\'s cultural calendar (washington.org) covers public events. The Washington Post\'s free events guide is comprehensive. Our listings page tracks verified free concerts across Washington DC.',
     faqs: [
       {
         q: 'What is the Kennedy Center Millennium Stage?',
@@ -342,7 +342,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Summer in Seattle is glorious and brief (July–September), with Seattle Center concerts, waterfront events, and neighborhood festivals all competing for attention. The Northwest Folklife Festival at Memorial Day is the season opener. Seattle PrideFest in late June includes substantial free outdoor music.\n\nWinter is where Seattle distinguishes itself — the city\'s bars and venues don\'t slow down when rain returns. Capitol Hill bars maintain free music nights year-round. The Earshot Jazz Festival in October and November includes some free events. The Seattle Symphony\'s Benaroya Hall presents occasional free community concerts.',
     howToFind:
-      'Seattle Parks and Recreation (seattle.gov/parks) lists outdoor concert events. Seattle Center\'s website lists Mural Amphitheatre events. The Stranger\'s music section is the definitive source for Seattle free show listings, updated weekly. KEXP, Seattle\'s legendary music radio station, maintains an online events calendar and occasionally presents free in-studio performances streamed online. Our listings page is updated daily with verified free concerts across Seattle.',
+      'Seattle Parks and Recreation (seattle.gov/parks) lists outdoor concert events. Seattle Center\'s website lists Mural Amphitheatre events. The Stranger\'s music section is the definitive source for Seattle free show listings, updated weekly. KEXP, Seattle\'s legendary music radio station, maintains an online events calendar and occasionally presents free in-studio performances streamed online. Our listings page tracks verified free concerts across Seattle.',
     faqs: [
       {
         q: 'Is the Northwest Folklife Festival free?',
@@ -371,7 +371,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Summer (June–September) is Portland\'s free music zenith. Last Thursday runs on its summer schedule, Pioneer Courthouse Square is busy with events, and the Tom McCall Waterfront Park hosts major free events including the Portland Rose Festival, Blues Festival (historically free, check current status), and Waterfront Blues Festival. The Oregon Zoo Summer Concert Series is ticketed, but the surrounding park area allows free listening.\n\nFall brings the Portland Jazz Festival (some free events) and continuing Last Thursday through September. Winter in Portland means coffee shop shows, bar music nights, and the city\'s strong small-venue culture carrying the free music tradition indoors.',
     howToFind:
-      'Portland Parks & Recreation lists outdoor events at portland.gov. Last Thursday\'s schedule is posted on the Alberta Main Street website and neighborhood social media. The Portland Mercury is the best source for free show listings citywide. Don\'t overlook the Portland Community Radio station XRAY.fm\'s events listings for DIY and small-venue shows. Our listings page is updated daily with verified free concerts across Portland.',
+      'Portland Parks & Recreation lists outdoor events at portland.gov. Last Thursday\'s schedule is posted on the Alberta Main Street website and neighborhood social media. The Portland Mercury is the best source for free show listings citywide. Don\'t overlook the Portland Community Radio station XRAY.fm\'s events listings for DIY and small-venue shows. Our listings page tracks verified free concerts across Portland.',
     faqs: [
       {
         q: 'What is Last Thursday on Alberta Street?',
@@ -400,7 +400,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Summer is Denver\'s free music peak. The Colorado Symphony\'s free outdoor concerts at Civic Center and Red Rocks (occasional free or cheap shows) draw large crowds. The Bluebird Theater, Ogden Theatre, and other established venues run free parking-lot or plaza shows during Denver\'s active summer arts festival season.\n\nThe Denver Arts Week each October includes free events across the city. The Great American Beer Festival in October draws free outdoor music to the convention center plaza area. Winter drives the scene indoors, where Denver\'s strong bar music culture continues uninterrupted on South Broadway, LoDo, and RiNo.',
     howToFind:
-      'Denver Parks and Recreation (denvergov.org) lists outdoor concert events. The Denver Day of Rock has its own website. Westword, Denver\'s alt-weekly, maintains the most comprehensive free show listings. The Colorado Symphony lists any free community concerts on their website. For RiNo events, the RiNo Art District\'s website and social media are the best sources. Our listings page is updated daily with verified free concerts across Denver.',
+      'Denver Parks and Recreation (denvergov.org) lists outdoor concert events. The Denver Day of Rock has its own website. Westword, Denver\'s alt-weekly, maintains the most comprehensive free show listings. The Colorado Symphony lists any free community concerts on their website. For RiNo events, the RiNo Art District\'s website and social media are the best sources. Our listings page tracks verified free concerts across Denver.',
     faqs: [
       {
         q: 'Does Red Rocks Amphitheatre have free concerts?',
@@ -429,7 +429,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'SXSW in March is Austin\'s musical zenith. While badge-holders pay thousands, the free unofficial showcases across dozens of venues and outdoor stages run simultaneously during the day — no badge required. This is genuinely one of the best free music experiences in America. Austin City Limits Music Festival in October is ticketed, but the surrounding period brings many free outdoor shows.\n\nSummer (June–August) is hot but the outdoor venues on 6th Street and Stubb\'s outdoor space compensate with open-air cooling. Free outdoor concerts at Barton Springs and various parks happen throughout the warmer months. Austin\'s year-round warm climate means 6th Street free shows run 365 days a year.',
     howToFind:
-      'The Austin Chronicle is the essential source for Austin free show listings, particularly during SXSW. Austin\'s Parks and Recreation department lists outdoor events. The Do512 events platform covers all Austin concerts. Red River Cultural District has its own events calendar. Stubb\'s Amphitheater lists any free backyard shows on their website. Our listings page is updated daily with verified free concerts across Austin.',
+      'The Austin Chronicle is the essential source for Austin free show listings, particularly during SXSW. Austin\'s Parks and Recreation department lists outdoor events. The Do512 events platform covers all Austin concerts. Red River Cultural District has its own events calendar. Stubb\'s Amphitheater lists any free backyard shows on their website. Our listings page tracks verified free concerts across Austin.',
     faqs: [
       {
         q: 'What free music happens during SXSW in Austin?',
@@ -458,7 +458,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Nashville free music is year-round on Broadway — rain or shine, hot or cold. The CMA Music Festival in June brings enormous paid events but also generates free outdoor music across the city. The Americana Music Festival in September brings the city\'s folk and roots community together with some free programming. The Nashville Film Festival and various cultural events throughout the year include free music stages.\n\nSpring and fall offer the best weather for wandering from honky tonk to honky tonk on Broadway. Summer is hot and busy with tourists; Broadway remains active but packed. Winter sees fewer tourists and a more authentic Broadway experience.',
     howToFind:
-      'Honky Tonk Row requires no planning — just show up on Broadway any day of the year. For East Nashville shows, the Nashville Scene is the best source for free listings. Nashville\'s Parks and Recreation department lists outdoor events. The Nashville Arts Blog covers gallery and arts space music events. Do615 covers Nashville events comprehensively. Our listings page is updated daily with verified free concerts across Nashville.',
+      'Honky Tonk Row requires no planning — just show up on Broadway any day of the year. For East Nashville shows, the Nashville Scene is the best source for free listings. Nashville\'s Parks and Recreation department lists outdoor events. The Nashville Arts Blog covers gallery and arts space music events. Do615 covers Nashville events comprehensively. Our listings page tracks verified free concerts across Nashville.',
     faqs: [
       {
         q: 'Is music on Lower Broadway (Honky Tonk Row) always free?',
@@ -487,7 +487,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Memphis in May brings the Beale Street Music Festival (ticketed) to Tom Lee Park, but the surrounding weeks have enormous amounts of free spillover music across Beale Street and the South Main district. The World Championship Barbecue Cooking Contest at the Memphis in May events includes free live music stages.\n\nFall brings the Cooper-Young Community Festival in September with free outdoor music stages in Midtown — one of the city\'s most beloved community events. The Memphis Music Heritage Festival, held at various times, celebrates the city\'s musical legacy with free outdoor programming. Winter is quiet for outdoor events but Beale Street never stops.',
     howToFind:
-      'The Memphis Tourism Board (visitmemphis.com) lists major events. Memphis Flyer is the alt-weekly source for free show listings citywide. Beale Street\'s own website lists event programming. The South Main Association lists Trolley Night events and First Friday programming. Crosstown Concourse\'s website lists all free events at that venue. Our listings page is updated daily with verified free concerts across Memphis.',
+      'The Memphis Tourism Board (visitmemphis.com) lists major events. Memphis Flyer is the alt-weekly source for free show listings citywide. Beale Street\'s own website lists event programming. The South Main Association lists Trolley Night events and First Friday programming. Crosstown Concourse\'s website lists all free events at that venue. Our listings page tracks verified free concerts across Memphis.',
     faqs: [
       {
         q: 'Is Beale Street free to enter?',
@@ -516,7 +516,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'New Orleans free music has no off-season. The Jazz & Heritage Festival (JazzFest) in late April and early May is ticketed, but the two weeks surrounding it generate more free music across the city than any equivalent period. Second line parades happen nearly every Sunday from fall through spring, following a published schedule from the Social Aid and Pleasure Club Task Force.\n\nMardi Gras season (January–Fat Tuesday) includes free brass band performances at every parade and free music at virtually every bar. French Quarter Festival in April is larger than JazzFest and has historically featured more free outdoor stages. New Year\'s Eve on the Mississippi River and Thanksgiving are the city\'s biggest free outdoor music events of the year.',
     howToFind:
-      'The Social Aid and Pleasure Club Task Force publishes the second line parade schedule for the season — available at saplctaskforce.com. The Offbeat Magazine (offbeat.com) is the authoritative source for New Orleans music events. WWOZ 90.7 FM\'s website lists free and ticketed events. French Quarter Festival\'s website publishes its free lineup in March. Our listings page is updated daily with verified free concerts across New Orleans.',
+      'The Social Aid and Pleasure Club Task Force publishes the second line parade schedule for the season — available at saplctaskforce.com. The Offbeat Magazine (offbeat.com) is the authoritative source for New Orleans music events. WWOZ 90.7 FM\'s website lists free and ticketed events. French Quarter Festival\'s website publishes its free lineup in March. Our listings page tracks verified free concerts across New Orleans.',
     faqs: [
       {
         q: 'Is Frenchmen Street in New Orleans free?',
@@ -545,7 +545,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Summer is the peak season, with Lake Harriet Bandshell running its full schedule and the Minneapolis Sculpture Garden hosting occasional free events. The Minnesota State Fair in late August and early September has free music on multiple stages throughout the fairgrounds (admission required to the fair). The Basilica Block Party in July is a partially ticketed outdoor event, but surrounding programming includes free shows.\n\nWinter in Minneapolis drives music indoors but doesn\'t stop it — the Walker Art Center, Minneapolis Institute of Art, and various brewery taprooms maintain regular free programming. The Holidazzle festival in December includes free outdoor music on Loring Park.',
     howToFind:
-      'The Minneapolis Parks and Recreation Board lists events at minneapolisparks.org, including the Lake Harriet Bandshell schedule. City Pages (and its successor local arts coverage) maintains free event listings. The Walker Art Center\'s website lists free public programming. For NE Minneapolis shows, the Northeast Minneapolis Arts Association\'s calendar covers gallery and venue events. Our listings page is updated daily with verified free concerts across Minneapolis.',
+      'The Minneapolis Parks and Recreation Board lists events at minneapolisparks.org, including the Lake Harriet Bandshell schedule. City Pages (and its successor local arts coverage) maintains free event listings. The Walker Art Center\'s website lists free public programming. For NE Minneapolis shows, the Northeast Minneapolis Arts Association\'s calendar covers gallery and venue events. Our listings page tracks verified free concerts across Minneapolis.',
     faqs: [
       {
         q: 'How do I get to Lake Harriet Bandshell concerts?',
@@ -574,7 +574,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Labor Day weekend is Detroit\'s free music zenith: the Detroit Jazz Festival at Hart Plaza on the riverfront features world-class jazz performances on multiple outdoor stages over four days, all completely free. It is consistently ranked among the top jazz festivals globally and the largest free jazz festival in the world.\n\nSummer brings Eastern Market programming and various Midtown arts events. The Movement Electronic Music Festival in May (ticketed) generates free spillover events in the surrounding areas. Winter drives programming indoors, but the Detroit Institute of Arts and various club shows continue.',
     howToFind:
-      'The Detroit Jazz Festival (detroitjazzfest.com) publishes its full Labor Day weekend lineup in August. Eastern Market\'s website (easternmarket.com) lists events throughout the year. The Detroit Riverfront Conservancy lists events at detroitriverfront.org. Metro Times, Detroit\'s alt-weekly, has comprehensive free show listings. The DIA\'s website lists free programming at the museum. Our listings page is updated daily with verified free concerts across Detroit.',
+      'The Detroit Jazz Festival (detroitjazzfest.com) publishes its full Labor Day weekend lineup in August. Eastern Market\'s website (easternmarket.com) lists events throughout the year. The Detroit Riverfront Conservancy lists events at detroitriverfront.org. Metro Times, Detroit\'s alt-weekly, has comprehensive free show listings. The DIA\'s website lists free programming at the museum. Our listings page tracks verified free concerts across Detroit.',
     faqs: [
       {
         q: 'Is the Detroit Jazz Festival really free?',
@@ -603,7 +603,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'The Kansas City Jazz & Heritage Festival in June is the city\'s free music anchor — a multi-day outdoor event at 18th and Vine with free admission celebrating the city\'s jazz heritage with both local and nationally recognized performers. Summer brings outdoor concerts at Loose Park and various neighborhood events. The Plaza Art Fair in September in the Country Club Plaza area includes free music stages.\n\nKansas City hosts a late-fall free outdoor music season in October before winter sets in. The Sprint Center/T-Mobile Center plaza hosts free community events tied to the holiday season.',
     howToFind:
-      'The American Jazz Museum\'s website (americanjazzmuseum.org) lists free concerts and events. Kansas City Parks and Recreation lists outdoor events. The Pitch is Kansas City\'s source for free show listings. The Crossroads KC events calendar covers First Friday and district events. Power & Light District\'s social media announces free outdoor shows. Our listings page is updated daily with verified free concerts across Kansas City.',
+      'The American Jazz Museum\'s website (americanjazzmuseum.org) lists free concerts and events. Kansas City Parks and Recreation lists outdoor events. The Pitch is Kansas City\'s source for free show listings. The Crossroads KC events calendar covers First Friday and district events. Power & Light District\'s social media announces free outdoor shows. Our listings page tracks verified free concerts across Kansas City.',
     faqs: [
       {
         q: 'Is the American Jazz Museum in Kansas City free?',
@@ -632,7 +632,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Summer is the core free music season: the Whitaker Festival (May–July), various Forest Park events, and the Gateway Arch Blues Festival in August. The Blues at the Arch event at Gateway Arch National Park in August is a spectacular free outdoor blues festival with the Arch as backdrop.\n\nThe fall SLSO concert at Art Hill in Forest Park is one of the city\'s most-attended free events. Spring brings the Tower Grove Art Festival and neighborhood events with free music. The St. Louis Jazz Festival in the spring and various Soulard events run through the winter.',
     howToFind:
-      'The Missouri Botanical Garden\'s website (missouribotanicalgarden.org) lists the Whitaker Festival schedule. Forest Park Forever lists events at forestparkforever.org. Gateway Arch National Park\'s website (gatewayarch.com) lists free programming. St. Louis Magazine and Riverfront Times cover free show listings. The SLSO\'s website lists any free community concerts. Our listings page is updated daily with verified free concerts across St. Louis.',
+      'The Missouri Botanical Garden\'s website (missouribotanicalgarden.org) lists the Whitaker Festival schedule. Forest Park Forever lists events at forestparkforever.org. Gateway Arch National Park\'s website (gatewayarch.com) lists free programming. St. Louis Magazine and Riverfront Times cover free show listings. The SLSO\'s website lists any free community concerts. Our listings page tracks verified free concerts across St. Louis.',
     faqs: [
       {
         q: 'Is the Whitaker Music Festival at the Missouri Botanical Garden free?',
@@ -661,7 +661,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'The Indy Jazz Fest in June includes some free outdoor performances. The Indiana State Fair in August has free music on multiple outdoor stages throughout the fairgrounds (admission required to the fair). Summer in Indianapolis has consistent outdoor free music programming through the Cultural Trail events and neighborhood festivals.\n\nFall brings the Broad Ripple Art Fair with free music stages and the Fountain Square Festival. Winter in Indianapolis means the Circle of Lights festival at Monument Circle with free music, and the city\'s indoor bar music culture sustains free shows year-round.',
     howToFind:
-      'Indy Parks lists outdoor events at indyparks.com. The Indiana State Museum occasionally hosts free outdoor concerts on its plaza. NUVO, Indianapolis\'s alt-weekly, covers free show listings comprehensively. Mass Avenue\'s First Fridays calendar is available at discovermassave.com. The Indianapolis Cultural Trail events page lists trail programming. Our listings page is updated daily with verified free concerts across Indianapolis.',
+      'Indy Parks lists outdoor events at indyparks.com. The Indiana State Museum occasionally hosts free outdoor concerts on its plaza. NUVO, Indianapolis\'s alt-weekly, covers free show listings comprehensively. Mass Avenue\'s First Fridays calendar is available at discovermassave.com. The Indianapolis Cultural Trail events page lists trail programming. Our listings page tracks verified free concerts across Indianapolis.',
     faqs: [
       {
         q: 'Are there free outdoor concerts in Indianapolis?',
@@ -690,7 +690,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Summer brings the Cleveland Orchestra\'s free outdoor Blossom concerts (some reserved seating ticketed; lawn areas sometimes free) and various lakefront events. The Cuyahoga Valley National Park near Cleveland hosts free ranger-led programs and occasional concerts. The Cleveland Museum of Art\'s Solstice concert series is one of the city\'s best free music events in June.\n\nFall brings the Tremont Arts Festival and neighborhood events. The Cleveland International Film Festival in March occasionally incorporates free music. Winter drives programming indoors but the Cleveland Orchestra occasionally offers free community performances, and Ohio City\'s bar scene continues year-round.',
     howToFind:
-      'Cleveland Metroparks lists outdoor events at clevelandmetroparks.com. Cleveland Magazine and Scene Magazine cover free show listings. The Cleveland Museum of Art\'s events calendar (clevelandart.org) lists free programming. Ohio City\'s neighborhood website lists events on West 25th. The Cuyahoga Arts & Culture board lists funded arts events. Our listings page is updated daily with verified free concerts across Cleveland.',
+      'Cleveland Metroparks lists outdoor events at clevelandmetroparks.com. Cleveland Magazine and Scene Magazine cover free show listings. The Cleveland Museum of Art\'s events calendar (clevelandart.org) lists free programming. Ohio City\'s neighborhood website lists events on West 25th. The Cuyahoga Arts & Culture board lists funded arts events. Our listings page tracks verified free concerts across Cleveland.',
     faqs: [
       {
         q: 'Does the Cleveland Orchestra perform free concerts?',
@@ -719,7 +719,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       'Phoenix\'s best free music season is fall through spring (October–April). First Friday in Roosevelt Row runs year-round but is most pleasant in the cool months. The Phoenix Art Museum\'s free Art After Dark events are fall through spring. The Desert Botanical Garden\'s free Butterfly Exhibit opening in spring includes music. The Scottsdale Arts Festival in March is a major free outdoor event.\n\nSummer in Phoenix means moving free music to evenings after 7 pm or to air-conditioned indoor venues. The Heard Museum hosts summer programs in its shaded courtyards. Phoenix Public Market Café on Saturday mornings has live music during the cooler morning hours even in summer.',
     howToFind:
-      'Phoenix Parks and Recreation lists events at phoenix.gov. Roosevelt Row\'s website (rooseveltrow.org) lists First Friday details and monthly programming. The Phoenix New Times is the best source for free show listings citywide. Downtown Tempe\'s website lists Mill Avenue events. The Heard Museum\'s website lists all free and paid public programming. Our listings page is updated daily with verified free concerts across the Phoenix metro.',
+      'Phoenix Parks and Recreation lists events at phoenix.gov. Roosevelt Row\'s website (rooseveltrow.org) lists First Friday details and monthly programming. The Phoenix New Times is the best source for free show listings citywide. Downtown Tempe\'s website lists Mill Avenue events. The Heard Museum\'s website lists all free and paid public programming. Our listings page tracks verified free concerts across the Phoenix metro.',
     faqs: [
       {
         q: 'What is First Friday in downtown Phoenix?',
@@ -748,7 +748,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       "The core free concert season runs from late May through early September, when every major series is active simultaneously. Twilight in the Park, the Coronado Promenade, Music on Main, and Santee's series all overlap, creating a summer calendar with multiple free options nearly every evening. June and July offer the densest scheduling.\n\nOutside summer, the Balboa Park museums host free community events with music on museum-free days (second Tuesday of each month). The year-round temperate climate means outdoor performance rarely gets weathered out, even in the off-season.",
     howToFind:
-      "Balboa Park's event calendar (balboapark.org) covers Twilight in the Park and all other park programming. The City of Coronado lists Promenade concert schedules at coronado.ca.us. San Diego's Parks and Recreation department (sandiego.gov) maintains a city-wide free events calendar. The San Diego Reader publishes weekly free show guides. Our listings page is updated daily with verified upcoming free concerts across all San Diego neighborhoods.",
+      "Balboa Park's event calendar (balboapark.org) covers Twilight in the Park and all other park programming. The City of Coronado lists Promenade concert schedules at coronado.ca.us. San Diego's Parks and Recreation department (sandiego.gov) maintains a city-wide free events calendar. The San Diego Reader publishes weekly free show guides. Our listings page tracks verified upcoming free concerts across all San Diego neighborhoods.",
     faqs: [
       {
         q: 'Is Twilight in the Park at Balboa Park really free?',
@@ -777,7 +777,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       "Cincinnati's free concert season runs from May through September, with June, July, and August being the most active months. Fountain Square programming starts as early as April for special events. The Smale Riverfront and Blue Ash series peak in midsummer. Sawyer Point and Eden Park's Seasongood Pavilion host free Cincinnati Symphony Orchestra performances in summer.\n\nWinter brings indoor free music at Cincinnati Art Museum's monthly Art After Dark events and at various neighborhood bars. The Over-the-Rhine neighborhood, Cincinnati's main music district, has multiple venues with regular free live music on weeknights throughout the year.",
     howToFind:
-      "Cincinnati Parks (cincinnatiparks.com) lists all city-run concert series. Fountain Square's events calendar (myfountainsquare.com) covers downtown programming. Blue Ash's event listings are at blueash.com. The Cincinnati Enquirer and Cincinnati Magazine both publish free event guides. For the Over-the-Rhine bar music scene, CityBeat is the local go-to. Our listings page is updated daily with verified free concerts across the Cincinnati metro.",
+      "Cincinnati Parks (cincinnatiparks.com) lists all city-run concert series. Fountain Square's events calendar (myfountainsquare.com) covers downtown programming. Blue Ash's event listings are at blueash.com. The Cincinnati Enquirer and Cincinnati Magazine both publish free event guides. For the Over-the-Rhine bar music scene, CityBeat is the local go-to. Our listings page tracks verified free concerts across the Cincinnati metro.",
     faqs: [
       {
         q: 'Are the Cincinnati Symphony Orchestra outdoor concerts really free?',
@@ -806,7 +806,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       "June through August is Pittsburgh's prime free concert season. The Hartwood Acres and South Park series run simultaneously on Sunday evenings, and the Three Rivers Arts Festival (early June) opens the season with multiple free outdoor stages.\n\nPittsburgh's springs and falls bring occasional free outdoor events through May and September. In winter, free music retreats to indoor venues in the Strip District, Lawrenceville, and South Side — neighborhoods with active bar music scenes that feature no-cover shows on weeknights.",
     howToFind:
-      "Allegheny County Parks (alleghenycounty.us/parks) lists all Hartwood Acres and South Park concert schedules. The Three Rivers Arts Festival (3riversartsfest.org) publishes its full lineup in spring. Arts Landing schedules are at pointspark.org. Pittsburgh Post-Gazette and NEXTpittsburgh publish regular free-event guides. Our listings page is updated daily with verified upcoming free concerts across the Pittsburgh metro.",
+      "Allegheny County Parks (alleghenycounty.us/parks) lists all Hartwood Acres and South Park concert schedules. The Three Rivers Arts Festival (3riversartsfest.org) publishes its full lineup in spring. Arts Landing schedules are at pointspark.org. Pittsburgh Post-Gazette and NEXTpittsburgh publish regular free-event guides. Our listings page tracks verified upcoming free concerts across the Pittsburgh metro.",
     faqs: [
       {
         q: 'Are the Hartwood Acres concerts really free?',
@@ -835,7 +835,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       "San Antonio's mild winters mean free outdoor music is truly a year-round proposition. The biggest free concert season is October through April, when weather is ideal. Fiesta San Antonio each April is the city's major free music blowout — a ten-day event with dozens of free outdoor stages across the city. Summer shows continue but shift to evening hours.\n\nThe holiday season brings particularly rich free programming. Fiesta de las Luminarias on the River Walk features caroling and cultural music performances on candlelit evenings each December, drawing enormous crowds.",
     howToFind:
-      "The San Antonio River Authority (thesanantonioriver.org) posts River Walk event schedules. Visit San Antonio (visitsanantonio.com) maintains a comprehensive free events calendar. The San Antonio Express-News and San Antonio Current publish weekly free event guides. The City of San Antonio's Parks and Recreation calendar lists neighborhood park programming. Our listings page is updated daily with verified upcoming free concerts across San Antonio.",
+      "The San Antonio River Authority (thesanantonioriver.org) posts River Walk event schedules. Visit San Antonio (visitsanantonio.com) maintains a comprehensive free events calendar. The San Antonio Express-News and San Antonio Current publish weekly free event guides. The City of San Antonio's Parks and Recreation calendar lists neighborhood park programming. Our listings page tracks verified upcoming free concerts across San Antonio.",
     faqs: [
       {
         q: 'What is the Arneson River Theatre and are shows free?',
@@ -864,7 +864,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       "Omaha's free concert season runs from late May through early September, peaking in July and August. Turner Park, Heartwood Park, and the Dundee series all operate concurrently in midsummer, giving residents multiple options most weekends. The Nebraska Wind Symphony performs free outdoor concerts in summer.\n\nWinter in Omaha drives free music indoors. The Slowdown, Reverb Lounge, and O'Leaver's are the main venues for no-cover or low-cost live music through the colder months.",
     howToFind:
-      "Omaha Parks and Recreation (cityofomaha.org/parks) posts city-run concert series. Midtown Crossing's website (midtowncrossing.com) lists Turner Park events. The Omaha World-Herald and Omaha Magazine publish free event roundups. For bar music, the Omaha Reader's weekly calendar is the best source. Our listings page is updated daily with verified upcoming free concerts across the Omaha metro.",
+      "Omaha Parks and Recreation (cityofomaha.org/parks) posts city-run concert series. Midtown Crossing's website (midtowncrossing.com) lists Turner Park events. The Omaha World-Herald and Omaha Magazine publish free event roundups. For bar music, the Omaha Reader's weekly calendar is the best source. Our listings page tracks verified upcoming free concerts across the Omaha metro.",
     faqs: [
       {
         q: 'What is Music in Dundee?',
@@ -893,7 +893,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       "Salt Lake City's free outdoor concert season is June through August. The Gallivan Friday concerts and the Liberty Park folk series run concurrently, giving the city consistent weekly options. July 24th (Pioneer Day) is a major Utah holiday with free outdoor music citywide.\n\nWinter concerts are sparse. The Utah Arts Festival in late June is the season opener and features free outdoor stages alongside ticketed programming.",
     howToFind:
-      "The Gallivan Center (thegallivancenter.com) publishes its concert schedule in late spring. Salt Lake City Arts Council (saltlakeartscouncil.org) lists city-supported free events. Liberty Park programming is at slc.gov/parks. Holladay City Hall concert schedules are at holladaycity.com. The Salt Lake Tribune and City Weekly are the main sources for free-event guides. Our listings page is updated daily with verified upcoming free concerts across the Salt Lake City metro.",
+      "The Gallivan Center (thegallivancenter.com) publishes its concert schedule in late spring. Salt Lake City Arts Council (saltlakeartscouncil.org) lists city-supported free events. Liberty Park programming is at slc.gov/parks. Holladay City Hall concert schedules are at holladaycity.com. The Salt Lake Tribune and City Weekly are the main sources for free-event guides. Our listings page tracks verified upcoming free concerts across the Salt Lake City metro.",
     faqs: [
       {
         q: 'What is the Gallivan Center Concert series?',
@@ -922,7 +922,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       "Jacksonville's free concert calendar is most active from May through October, though Florida's mild winters allow for occasional year-round events. May is the marquee month thanks to the Jacksonville Jazz Festival. Summer brings the Riverside Arts Market weekly, and beach community events through August. September sees events like Florida Fin Fest at Seawalk Pavilion.\n\nWinter free music in Jacksonville leans toward bars and smaller venues in Riverside and Five Points. The Riverside Ave corridor and King Street in Avondale have consistent no-cover music at bars on weekends.",
     howToFind:
-      "The Jacksonville Jazz Festival (jaxjazzfest.com) publishes lineup details in March–April. The Riverside Arts Market (riversideartsmarket.com) lists weekly music performers on their site and social media. Visit Jacksonville (visitjacksonville.com) maintains a comprehensive free events guide. The Florida Times-Union and Folio Weekly cover free shows across the city. Our listings page is updated daily with verified upcoming free concerts across Jacksonville.",
+      "The Jacksonville Jazz Festival (jaxjazzfest.com) publishes lineup details in March–April. The Riverside Arts Market (riversideartsmarket.com) lists weekly music performers on their site and social media. Visit Jacksonville (visitjacksonville.com) maintains a comprehensive free events guide. The Florida Times-Union and Folio Weekly cover free shows across the city. Our listings page tracks verified upcoming free concerts across Jacksonville.",
     faqs: [
       {
         q: 'Is the Jacksonville Jazz Festival really free?',
@@ -951,7 +951,7 @@ export const CITY_GUIDES: Record<string, CityGuide> = {
     seasons:
       "Baltimore's free concert season runs from late May through September, with Artscape in July as the year's signature event. The Patterson Park series, WTMD First Thursdays, and Belvedere Square run concurrently through summer.\n\nFall and winter see free music move indoors. The Charles Village and Station North neighborhoods have the most active bar-music scenes with no-cover shows on weekends. The Ottobar, Sidebar, and various bars along Charles Street host free or very low-cost shows regularly through the colder months.",
     howToFind:
-      "Baltimore City Recreation and Parks (bcrp.baltimorecity.gov) lists city-run free events. WTMD's First Thursday schedule is at wtmd.org. Artscape information is at artscape.org. The Baltimore Banner and Baltimore Fishbowl publish free event calendars. For bar and club free shows, Baltimore Beat is the essential guide. Our listings page is updated daily with verified upcoming free concerts across Baltimore.",
+      "Baltimore City Recreation and Parks (bcrp.baltimorecity.gov) lists city-run free events. WTMD's First Thursday schedule is at wtmd.org. Artscape information is at artscape.org. The Baltimore Banner and Baltimore Fishbowl publish free event calendars. For bar and club free shows, Baltimore Beat is the essential guide. Our listings page tracks verified upcoming free concerts across Baltimore.",
     faqs: [
       {
         q: 'What is Artscape in Baltimore and is it free?',

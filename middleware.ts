@@ -27,7 +27,7 @@ const SB_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 const GONE_THRESHOLD_MS = 7 * 24 * 60 * 60 * 1000
 
 export const config = {
-  matcher: '/concert/:slug*',
+  matcher: ['/concert/:slug*', '/venues/:path*'],
 }
 
 function goneHtml(cityPath: string): string {
@@ -61,6 +61,16 @@ function goneHtml(cityPath: string): string {
 }
 
 export async function middleware(req: NextRequest) {
+  // De-index the venue directory (thin, ~zero-traffic pages). noindex,follow so
+  // crawlers stop indexing venue pages but still flow link equity onward to the
+  // concert and guide pages they reference. Reversible: delete this block and the
+  // '/venues/:path*' matcher entry.
+  if (req.nextUrl.pathname.startsWith('/venues')) {
+    const res = NextResponse.next()
+    res.headers.set('X-Robots-Tag', 'noindex, follow')
+    return res
+  }
+
   const slug = req.nextUrl.pathname.replace(/^\/concert\//, '').split('?')[0]
   if (!slug) return NextResponse.next()
 

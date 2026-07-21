@@ -38,25 +38,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   const cityCountMap: Record<string, number> = {}
-  const venueIdsWithConcerts = new Set<string>()
   for (const c of allConcerts) {
     if (c.city) cityCountMap[c.city] = (cityCountMap[c.city] ?? 0) + 1
-    if (c.venue_id) venueIdsWithConcerts.add(c.venue_id)
   }
   const CITY_MIN_CONCERTS = CITY_MIN_UPCOMING // shared floor — keeps sitemap inclusion in lockstep with the page's noindex threshold
-
-  const { data: venueRows } = await supabase
-    .from('venues')
-    .select('id, slug, city, updated_at, music_score, music_schedule')
-
-  // Only include venues that will actually be indexed:
-  // - Must have music_score >= 0 or a music_schedule (baseline quality)
-  // - Must have upcoming concerts (venue_id match) or a music_schedule
-  // This aligns with the noindex logic in the venue detail page.
-  const venues = (venueRows ?? []).filter(v =>
-    ((v.music_score ?? 0) >= 0 || v.music_schedule != null) &&
-    (v.music_schedule != null || venueIdsWithConcerts.has(v.id))
-  )
 
   const concertUrls: MetadataRoute.Sitemap = allConcerts.map((c) => ({
     url: `https://www.freelivemusic.co/concert/${c.slug}`,
@@ -104,20 +89,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }
     }
   }
-
-  const venueListUrls: MetadataRoute.Sitemap = getAllMetros().map((metro) => ({
-    url: `https://www.freelivemusic.co/venues/${cityCodeToSlug[metro.code]}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  }))
-
-  const venueDetailUrls: MetadataRoute.Sitemap = (venues ?? []).map((v) => ({
-    url: `https://www.freelivemusic.co/venues/${cityCodeToSlug[v.city] ?? v.city.toLowerCase()}/${v.slug}`,
-    lastModified: v.updated_at,
-    changeFrequency: 'weekly',
-    priority: 0.6,
-  }))
 
   const weekendUrls: MetadataRoute.Sitemap = GUIDE_CITIES.map((c) => ({
     url: `https://www.freelivemusic.co/this-weekend/${c.slug}`,
@@ -199,10 +170,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...tonightUrls,
     ...weekendUrls,
     ...thisWeekUrls,
-    ...venueListUrls,
     ...aliasUrls,
     ...artistUrls,
     ...concertUrls,
-    ...venueDetailUrls,
   ]
 }

@@ -8,13 +8,13 @@ import { GUIDE_CITIES } from '@/lib/city-guides'
 
 export const metadata: Metadata = {
   title: 'Free Live Music Near You | freelivemusic.co',
-  description: 'Find free live music concerts and outdoor shows in your city — NYC, LA, Chicago, Austin, Seattle, and 70+ more US cities. Updated daily.',
+  description: 'Find free live music concerts and outdoor shows in your city — NYC, LA, Chicago, Austin, Seattle, and 70+ more US cities.',
   alternates: {
     canonical: 'https://www.freelivemusic.co',
   },
   openGraph: {
     title: 'Free Live Music Near You',
-    description: 'Find free live music concerts and outdoor shows in your city. Updated daily.',
+    description: 'Find free live music concerts and outdoor shows in your city.',
     url: 'https://www.freelivemusic.co',
     siteName: 'Free Live Music',
     type: 'website',
@@ -69,6 +69,14 @@ export default async function Home({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
       />
       <ConcertsClient initialConcerts={concerts.slice(0, 24)} defaultCity={metroCode} />
+      {/* Traditions hub — durable, editorial free-music content */}
+      <div className="bg-slate-950 border-t border-slate-800/50 px-4 pt-8">
+        <div className="max-w-7xl mx-auto">
+          <Link href="/traditions" className="inline-flex items-center gap-2 text-sm font-semibold text-violet-300 hover:text-violet-200 transition-colors">
+            Explore free live music traditions across America →
+          </Link>
+        </div>
+      </div>
       {/* Server-rendered city directory — crawlable canonical links for all city pages */}
       <nav
         aria-label="Browse free concerts by city"

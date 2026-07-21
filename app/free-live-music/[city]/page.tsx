@@ -156,7 +156,7 @@ export default async function CityGuidePage({
               Ready to find shows this week?
             </p>
             <p className="text-slate-600 text-sm mt-1">
-              Browse verified upcoming free concerts in {guide.cityName}, updated daily.
+              Browse verified upcoming free concerts in {guide.cityName}.
             </p>
           </div>
           <Link

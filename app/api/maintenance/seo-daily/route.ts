@@ -141,7 +141,7 @@ async function handle(req: NextRequest) {
 
   const expected: ExpectedCounts = {
     concerts: concertsCount,
-    venues_eligible: venuesEligible,
+    venues_eligible: 0, // venues noindexed + removed from sitemap 2026-07-21 — excluded from expected count
     cities_eligible: citiesEligible,
     artists_eligible: artistsEligible,
     states_active: statesActive,

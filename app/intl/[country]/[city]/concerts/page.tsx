@@ -35,7 +35,7 @@ export async function generateMetadata({
   }
 
   const title = `Free Live Music & Concerts in ${metro.city}`
-  const description = `Discover free live music events and concerts in ${metro.city}. Find upcoming shows, venues, and performers. Updated daily.`
+  const description = `Discover free live music events and concerts in ${metro.city}. Find upcoming shows, venues, and performers.`
 
   return {
     title,

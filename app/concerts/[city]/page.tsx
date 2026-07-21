@@ -49,7 +49,7 @@ export async function generateMetadata({
   }
 
   const title = `Free Live Music & Concerts in ${metro.city}, ${metro.state}`
-  const description = `Discover free live music events and concerts in ${metro.city}. Find upcoming shows, venues, and performers. Updated daily.`
+  const description = `Discover free live music events and concerts in ${metro.city}. Find upcoming shows, venues, and performers.`
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -255,7 +255,7 @@ export default async function CityPage({
       : []),
     {
       q: `How often are new free concerts added for ${metro.city}?`,
-      a: `This page is updated daily as new events are announced. ${insights?.lastDateLabel ? `Current listings run through ${insights.lastDateLabel}.` : 'Check back regularly for the latest shows.'}`,
+      a: `We add new free shows here as they're announced and confirmed. ${insights?.lastDateLabel ? `Current listings run through ${insights.lastDateLabel}.` : 'Check back regularly for the latest shows.'}`,
     },
   ]
 
@@ -342,7 +342,7 @@ export default async function CityPage({
             {concerts.length} upcoming concerts and live music events
           </p>
           <p className="text-slate-500">
-            Discover free performances across {metro.city}. Venues and dates updated daily.
+            Discover free performances across {metro.city}.
           </p>
         </div>
       </section>

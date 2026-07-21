@@ -145,7 +145,7 @@ export function checkSitemapDrift(
     expected.cities_eligible +
     expected.artists_eligible +
     expected.states_active +
-    20 // ≈ overhead (homepage + guides + tonight/weekend/this-week + venue list pages)
+    20 // ≈ overhead (homepage + traditions + guides + tonight/weekend/this-week)
 
   const ratioVsExpected = urlCount / Math.max(expectedTotal, 1)
   const ratioVsYesterday =

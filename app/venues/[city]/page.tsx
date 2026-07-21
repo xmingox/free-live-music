@@ -101,7 +101,7 @@ export async function generateMetadata(
 
   return {
     title: `Free Music Venues in ${metro.city} | Free Live Music`,
-    description: `Discover parks, amphitheaters, bars, and restaurants with free live music in ${metro.city}, ${metro.state}. Updated regularly.`,
+    description: `Discover parks, amphitheaters, bars, and restaurants with free live music in ${metro.city}, ${metro.state}.`,
     alternates: { canonical: `https://www.freelivemusic.co/venues/${citySlug}` },
     openGraph: {
       title: `Free Music Venues in ${metro.city}`,

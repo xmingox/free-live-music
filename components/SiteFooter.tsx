@@ -88,6 +88,10 @@ export default function SiteFooter({ cityLine, venueTypeSlug }: { cityLine?: str
             <Link href="/venues/new-york" className="text-sm text-slate-500 hover:text-slate-300 transition-colors">
               Venues
             </Link>
+            <span className="text-slate-700">·</span>
+            <Link href="/traditions" className="text-sm text-slate-500 hover:text-slate-300 transition-colors">
+              Traditions
+            </Link>
           </div>
           <p className="text-xs text-slate-600">
             {cityLine ?? 'Free live music across America · All shows free admission'}
