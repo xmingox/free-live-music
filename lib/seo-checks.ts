@@ -673,14 +673,15 @@ export async function checkPastEventNoindex(slugs: string[]): Promise<CheckResul
         const res = await fetchText(url, {}, 10_000)
         if (res.status !== 200) return
         const hasNoindex = /<meta\s+name=["']robots["']\s+content=["'][^"']*noindex/i.test(res.text)
-        if (!hasNoindex) failures.push({ url, reason: 'past event missing noindex meta' })
+          || /noindex/i.test(res.headers.get('x-robots-tag') ?? '')
+        if (!hasNoindex) failures.push({ url, reason: 'past event missing noindex meta/header' })
       } catch {
         // ignore
       }
     }),
   )
   return failures.length === 0
-    ? { name: 'past_event_noindex', status: 'pass', message: `All ${slugs.length} sampled past events have noindex meta` }
+    ? { name: 'past_event_noindex', status: 'pass', message: `All ${slugs.length} sampled past events have noindex meta/header` }
     : {
         name: 'past_event_noindex',
         status: 'fail',

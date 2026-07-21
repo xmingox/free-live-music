@@ -20,6 +20,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { getUsToday } from '@/lib/timezone'
 
 const SB_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const SB_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -83,6 +84,16 @@ export async function middleware(req: NextRequest) {
     // Parse explicitly as UTC midnight — no implicit runtime-local Date parsing.
     const slugDateMs = Date.UTC(+dateMatch[1], +dateMatch[2] - 1, +dateMatch[3])
     if (!Number.isNaN(slugDateMs) && Date.now() - slugDateMs <= GONE_THRESHOLD_MS) {
+      // Within the 7-day window (not a 410). If the event is already past, still
+      // serve it but noindex via header — per-request, so it beats the concert
+      // page's 24h ISR cache, which otherwise keeps serving the stale *upcoming*
+      // (indexable) HTML for up to a day after the show passes.
+      const slugDate = `${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]}`
+      if (slugDate < getUsToday()) {
+        const out = NextResponse.next()
+        out.headers.set('X-Robots-Tag', 'noindex, follow')
+        return out
+      }
       return NextResponse.next()
     }
     // else: slug encodes a 7+‑day‑past date → fall through to the authoritative
@@ -122,6 +133,14 @@ export async function middleware(req: NextRequest) {
           'Cache-Control': 'public, max-age=86400',
         },
       })
+    }
+
+    // Past within the 7-day grace window (dateless/legacy slugs reach here): still
+    // served, but noindex via header to beat the concert page's ISR cache.
+    if (concert.date < getUsToday()) {
+      const out = NextResponse.next()
+      out.headers.set('X-Robots-Tag', 'noindex, follow')
+      return out
     }
   } catch {
     // Supabase unreachable — let the page component handle it gracefully
