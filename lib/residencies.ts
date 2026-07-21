@@ -15,6 +15,7 @@ import { createClient } from '@supabase/supabase-js'
 export interface Residency {
   id: string
   seriesName: string
+  cityCode: string | null
   venueName: string | null
   genre: string | null
   price: string | null
@@ -62,48 +63,50 @@ export function scheduleLabel(r: Pick<Residency, 'recurrence' | 'days'>): string
   }
 }
 
-async function fetchResidencies(cityCode: string): Promise<Residency[]> {
+async function fetchAllActive(): Promise<Residency[]> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   if (!url || !key) return []
 
   try {
     const supabase = createClient(url, key)
-    // Inner join to venues: an active residency must resolve to a venue (that's
-    // how it's city-scoped). Rows with a null venue_id are drafts and excluded.
+    // LEFT join to venues: a residency is city-scoped either by its own `city`
+    // tag (named fixtures with no DB venue) OR by its venue's city (venue-backed
+    // residencies). Fetch all active once; filter per city in getActiveResidencies.
     const { data, error } = await supabase
       .from('event_series')
       .select(
-        'id, series_name, default_genre, default_price, default_time, recurrence_type, days_of_week, description, venues!inner(name, city)',
+        'id, series_name, city, default_genre, default_price, default_time, recurrence_type, days_of_week, description, venues(name, city)',
       )
       .eq('is_active', true)
-      .eq('venues.city', cityCode)
 
     if (error || !data) return []
 
     return (data as unknown as Array<{
       id: string
       series_name: string
+      city: string | null
       default_genre: string | null
       default_price: string | null
       default_time: string | null
       recurrence_type: string | null
       days_of_week: string[] | null
       description: string | null
-      venues: { name: string | null } | { name: string | null }[] | null
+      venues: { name: string | null; city: string | null } | { name: string | null; city: string | null }[] | null
     }>).map((r) => {
       // PostgREST returns a to-one embed as an object, but tolerate an array too.
       const venue = Array.isArray(r.venues) ? r.venues[0] ?? null : r.venues
       return {
-      id: r.id,
-      seriesName: r.series_name,
-      venueName: venue?.name ?? null,
-      genre: r.default_genre,
-      price: r.default_price,
-      time: r.default_time,
-      recurrence: r.recurrence_type,
-      days: r.days_of_week,
-      description: r.description,
+        id: r.id,
+        seriesName: r.series_name,
+        cityCode: r.city ?? venue?.city ?? null, // own tag wins, else the venue's city
+        venueName: venue?.name ?? null,
+        genre: r.default_genre,
+        price: r.default_price,
+        time: r.default_time,
+        recurrence: r.recurrence_type,
+        days: r.days_of_week,
+        description: r.description,
       }
     })
   } catch {
@@ -111,11 +114,15 @@ async function fetchResidencies(cityCode: string): Promise<Residency[]> {
   }
 }
 
-/** Cached per city code; daily backstop, bustable via revalidateTag('residencies'). */
-export function getActiveResidencies(cityCode: string): Promise<Residency[]> {
-  return unstable_cache(
-    () => fetchResidencies(cityCode),
-    ['residencies', cityCode],
-    { revalidate: 86400, tags: ['residencies'] },
-  )()
+// One cached fetch of ALL active residencies (small set), daily backstop, bustable
+// via revalidateTag('residencies'). Filtered per city below.
+const getAllActiveResidencies = unstable_cache(fetchAllActive, ['residencies-all'], {
+  revalidate: 86400,
+  tags: ['residencies'],
+})
+
+/** Published residencies for a city (via the row's `city` tag or its venue's city). */
+export async function getActiveResidencies(cityCode: string): Promise<Residency[]> {
+  const all = await getAllActiveResidencies()
+  return all.filter((r) => r.cityCode === cityCode)
 }
