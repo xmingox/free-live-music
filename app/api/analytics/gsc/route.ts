@@ -9,6 +9,7 @@
  *
  * Required env vars:
  *   CRON_SECRET
+ *   GOOGLE_SERVICE_ACCOUNT_JSON — (preferred) full service-account JSON key; add the SA email as a Full user on the GSC property
  *   GOOGLE_CLIENT_ID       — OAuth 2.0 Desktop app client ID
  *   GOOGLE_CLIENT_SECRET   — OAuth 2.0 Desktop app client secret
  *   GOOGLE_REFRESH_TOKEN   — long-lived refresh token for the GSC property owner
@@ -34,15 +35,15 @@ const GSC_SCOPE = 'https://www.googleapis.com/auth/webmasters.readonly'
 
 async function getGscClient() {
   // Preferred: service account (no refresh-token expiry, no consent screen).
-  // Set GOOGLE_SERVICE_ACCOUNT_KEY to the full service-account JSON key, and add
+  // Set GOOGLE_SERVICE_ACCOUNT_JSON (or _KEY) to the full service-account JSON key, and add
   // the service account's email as a user on the Search Console property.
-  const saKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY
+  const saKey = process.env.GOOGLE_SERVICE_ACCOUNT_JSON || process.env.GOOGLE_SERVICE_ACCOUNT_KEY
   if (saKey) {
     let credentials: { client_email?: string; private_key?: string }
     try {
       credentials = JSON.parse(saKey)
     } catch {
-      throw new Error('GOOGLE_SERVICE_ACCOUNT_KEY is set but is not valid JSON')
+      throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON is set but is not valid JSON')
     }
     // Env vars often store the private key with escaped newlines — normalize them.
     if (credentials.private_key) {
@@ -58,7 +59,7 @@ async function getGscClient() {
   const refreshToken = process.env.GOOGLE_REFRESH_TOKEN
 
   if (!clientId || !clientSecret || !refreshToken) {
-    throw new Error('No GSC credentials: set GOOGLE_SERVICE_ACCOUNT_KEY, or GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET + GOOGLE_REFRESH_TOKEN')
+    throw new Error('No GSC credentials: set GOOGLE_SERVICE_ACCOUNT_JSON, or GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET + GOOGLE_REFRESH_TOKEN')
   }
 
   const oauth2 = new google.auth.OAuth2(clientId, clientSecret)
