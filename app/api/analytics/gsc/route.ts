@@ -67,18 +67,34 @@ async function getGscClient() {
   return google.searchconsole({ version: 'v1', auth: oauth2 })
 }
 
+// Allow up to 60s so a backfill chunk (multiple GSC day-pulls) can finish.
+export const maxDuration = 60
+
+// A backfill request supplies ?start=YYYY-MM-DD&end=YYYY-MM-DD. Absent = normal
+// daily pull of yesterday.
+function backfillRange(req: NextRequest): { start: string; end: string } | null {
+  const sp = req.nextUrl.searchParams
+  const start = sp.get('start')
+  const end = sp.get('end')
+  const iso = /^\d{4}-\d{2}-\d{2}$/
+  if (start && end && iso.test(start) && iso.test(end)) return { start, end }
+  return null
+}
+
 export async function GET(req: NextRequest) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-  return run()
+  const range = backfillRange(req)
+  return range ? backfill(range.start, range.end) : run()
 }
 
 export async function POST(req: NextRequest) {
   if (!isAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-  return run()
+  const range = backfillRange(req)
+  return range ? backfill(range.start, range.end) : run()
 }
 
 async function run() {
@@ -164,5 +180,97 @@ async function run() {
     }).eq('id', cronRunId)
 
     return NextResponse.json({ error: message }, { status: 500 })
+  }
+}
+
+
+// ── One-time historical backfill ──────────────────────────────────────────────
+// Pulls [start..end] inclusive, one GSC day-query per date, upserting into
+// search_metrics (idempotent via onConflict). Bounded to MAX_BACKFILL_DAYS per
+// call to stay under the function timeout; returns `nextStart` when more remains
+// so the caller can chain until it comes back null. Does NOT write cron_runs —
+// this is a manual op, not the daily cron. Trigger:
+//   curl -X POST ".../api/analytics/gsc?start=2026-05-19&end=2026-07-19" \
+//        -H "Authorization: Bearer $CRON_SECRET"
+const MAX_BACKFILL_DAYS = 14
+
+function addDays(date: string, n: number): string {
+  const d = new Date(date + 'T00:00:00Z')
+  d.setUTCDate(d.getUTCDate() + n)
+  return d.toISOString().split('T')[0]
+}
+
+async function backfill(start: string, end: string) {
+  try {
+    const siteUrl = process.env.GSC_SITE_URL
+    if (!siteUrl) throw new Error('GSC_SITE_URL not set')
+    if (start > end) throw new Error('start must be <= end')
+
+    const gsc = await getGscClient()
+
+    // Bounded list of dates for this call.
+    const dates: string[] = []
+    let cur = start
+    while (cur <= end && dates.length < MAX_BACKFILL_DAYS) {
+      dates.push(cur)
+      cur = addDays(cur, 1)
+    }
+
+    let totalRows = 0
+    let totalUpserted = 0
+    let totalErrors = 0
+
+    for (const date of dates) {
+      const response = await gsc.searchanalytics.query({
+        siteUrl,
+        requestBody: {
+          startDate: date,
+          endDate: date,
+          dimensions: ['page', 'query'],
+          rowLimit: 25000,
+          dataState: 'all',
+        },
+      })
+      const rows = response.data.rows ?? []
+      totalRows += rows.length
+
+      const CHUNK = 500
+      for (let i = 0; i < rows.length; i += CHUNK) {
+        const chunk = rows.slice(i, i + CHUNK).map(row => {
+          const [page, query] = row.keys ?? ['', '']
+          return {
+            date,
+            page,
+            query,
+            impressions: row.impressions ?? 0,
+            clicks: row.clicks ?? 0,
+            ctr: row.ctr != null ? Number(row.ctr.toFixed(4)) : null,
+            position: row.position != null ? Number(row.position.toFixed(2)) : null,
+          }
+        })
+        const { error } = await supabase
+          .from('search_metrics')
+          .upsert(chunk, { onConflict: 'date,page,query' })
+        if (error) { totalErrors += chunk.length } else { totalUpserted += chunk.length }
+      }
+    }
+
+    const lastDate = dates[dates.length - 1] ?? start
+    const nextStart = lastDate < end ? addDays(lastDate, 1) : null
+
+    return NextResponse.json({
+      ok: true,
+      mode: 'backfill',
+      from: dates[0] ?? start,
+      to: lastDate,
+      days: dates.length,
+      totalRows,
+      totalUpserted,
+      totalErrors,
+      nextStart,
+    })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ error: message, mode: 'backfill' }, { status: 500 })
   }
 }
