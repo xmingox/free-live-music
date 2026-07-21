@@ -19,7 +19,7 @@ import { buildFaqPageJsonLd, buildItemListJsonLd } from '@/lib/jsonld'
 import { CITY_GUIDES } from '@/lib/city-guides-data'
 import { CITY_MIN_UPCOMING, countIndexable } from '@/lib/city-visibility'
 import { getCityFallback } from '@/lib/city-fallback'
-import { getActiveResidencies, scheduleLabel, residencySchedule } from '@/lib/residencies'
+import { getActiveResidencies, residencySchedule, cadenceLabel } from '@/lib/residencies'
 
 export const revalidate = 86400 // 24h: this page queries Supabase directly (getConcertsByCity) and is NOT tag-covered, so new events surface within a day, not on import
 
@@ -384,28 +384,41 @@ export default async function CityPage({
               </h2>
             </div>
             <p className="text-sm text-slate-500 mb-5">
-              Year-round free residencies — no tickets, no cover, on a regular schedule.
+              Free, recurring live music — some year-round, some seasonal (it returns each year). No tickets, no cover.
             </p>
             <div className="grid sm:grid-cols-2 gap-4">
               {residencies.map((r) => (
                 <div key={r.id} className="rounded-xl border border-slate-200 bg-white px-4 py-3">
                   <div className="flex items-start justify-between gap-3">
                     <p className="font-semibold text-slate-900">{r.venueName ?? r.seriesName}</p>
-                    <span className="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
-                      Free
-                    </span>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {r.seasonal && (
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">
+                          Seasonal
+                        </span>
+                      )}
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
+                        Free
+                      </span>
+                    </div>
                   </div>
                   {r.description && (
                     <p className="text-sm text-slate-600 mt-1 leading-relaxed">{r.description}</p>
                   )}
                   <p className="text-xs text-slate-500 mt-2">
-                    <span className="font-medium text-slate-700">{scheduleLabel(r)}</span>
-                    {r.time ? ` · ${r.time}` : ''}
+                    <span className="font-medium text-slate-700">{cadenceLabel(r)}</span>
+                    {!r.seasonal && r.time ? ` · ${r.time}` : ''}
                     {r.genre ? ` · ${r.genre}` : ''}
                   </p>
                 </div>
               ))}
             </div>
+            <Link
+              href="/traditions"
+              className="inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:text-emerald-600 transition mt-4"
+            >
+              Explore free live-music traditions across the country →
+            </Link>
           </section>
         )}
 

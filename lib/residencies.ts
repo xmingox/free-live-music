@@ -22,6 +22,10 @@ export interface Residency {
   time: string | null
   recurrence: string | null // 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'annual' | 'irregular'
   days: string[] | null
+  /** true for annual/seasonal series (returns each year) vs year-round fixtures */
+  seasonal: boolean
+  /** e.g. "Summers", "Each May" — only for seasonal series */
+  season: string | null
   description: string | null
 }
 
@@ -76,7 +80,7 @@ async function fetchAllActive(): Promise<Residency[]> {
     const { data, error } = await supabase
       .from('event_series')
       .select(
-        'id, series_name, city, default_genre, default_price, default_time, recurrence_type, days_of_week, description, venues(name, city)',
+        'id, series_name, city, default_genre, default_price, default_time, recurrence_type, days_of_week, season, description, venues(name, city)',
       )
       .eq('is_active', true)
 
@@ -91,6 +95,7 @@ async function fetchAllActive(): Promise<Residency[]> {
       default_time: string | null
       recurrence_type: string | null
       days_of_week: string[] | null
+      season: string | null
       description: string | null
       venues: { name: string | null; city: string | null } | { name: string | null; city: string | null }[] | null
     }>).map((r) => {
@@ -106,6 +111,8 @@ async function fetchAllActive(): Promise<Residency[]> {
         time: r.default_time,
         recurrence: r.recurrence_type,
         days: r.days_of_week,
+        seasonal: r.recurrence_type === 'annual',
+        season: r.season,
         description: r.description,
       }
     })
@@ -125,4 +132,15 @@ const getAllActiveResidencies = unstable_cache(fetchAllActive, ['residencies-all
 export async function getActiveResidencies(cityCode: string): Promise<Residency[]> {
   const all = await getAllActiveResidencies()
   return all.filter((r) => r.cityCode === cityCode)
+}
+
+/** All published residencies across every city — for the traditions hub page. */
+export async function getAllResidencies(): Promise<Residency[]> {
+  return getAllActiveResidencies()
+}
+
+/** Human label for a residency's cadence: seasonal → its season, else the schedule. */
+export function cadenceLabel(r: Pick<Residency, 'seasonal' | 'season' | 'recurrence' | 'days'>): string {
+  if (r.seasonal) return r.season ? r.season : 'Seasonal'
+  return scheduleLabel(r)
 }
