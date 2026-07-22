@@ -1,6 +1,7 @@
 # freelivemusic.co — Project Context & Guardrails for Claude
-> Last updated: July 18, 2026. This file is auto-loaded every session. Keep it accurate — for an AI-steered project, this doc IS part of the architecture. Stale context causes wrong decisions.
+> Last updated: July 21, 2026. This file is auto-loaded every session. Keep it accurate — for an AI-steered project, this doc IS part of the architecture. Stale context causes wrong decisions.
 > Full diagnosis + roadmap lives in `AUDIT_AND_PLAN.md`. Prior session history is archived in `CLAUDE_ARCHIVE.md`.
+> **Read next (current state lives in docs/):** `docs/next-steps.md` (strategy + ranked next moves, parked 2026-07-21) · `docs/owner-action-checklist.md` (owner-only TODOs) · `docs/session-log-2026-07-21.md` (how GSC was fixed — never re-derive) · `docs/programmatic-seo-playbook.md` (portable methodology for the NEXT site).
 
 ---
 
@@ -52,7 +53,7 @@ The site is **pivoting from national breadth toward depth**. Evidence: across ~6
 | Service | Plan / free limit | Rules & lessons learned |
 |---|---|---|
 | **Supabase** | Free tier | Stay on it. **No per-request runtime DB reads that scale with traffic** (the `middleware.ts` per-`/concert/` lookup is the anti-pattern — reads should scale with imports, not visitors). No paid add-ons without approval. |
-| **Vercel** | Hobby (confirmed July 18) | **Currently OVER free limits (July 18 dashboard): ISR Writes 383K/200K (~1.9x) and Fluid Active CPU 7h47m/4h (~1.9x).** The June revalidate tuning did NOT fix ISR writes — needs event-driven `revalidateTag`, not blind timers. Fluid CPU is likely the daily crons (incl. the zombie `seo-daily`/`gsc-pull` still failing daily). Sustained Hobby overage can pause/throttle the project. ⚠️ **Hobby prohibits commercial use** — `lib/affiliate.ts` exists; if affiliate revenue is live, migration risk. |
+| **Vercel** | Hobby (confirmed July 18; project `free-live-music-1lwp`; all 13 crons in `vercel.json` allowed) | **Was OVER free limits (July 18 dashboard): ISR Writes 383K/200K (~1.9x) and Fluid Active CPU 7h47m/4h (~1.9x)** — event-driven `revalidateTag` shipped July 18; re-check the dashboard before assuming resolved. ✅ **Commercial-use risk closed July 21:** owner deleted `BOOKING_AFFILIATE_ID` from Vercel env — hotel links now render as plain (un-monetized) Booking.com links. Don't re-monetize while on Hobby. |
 | **Google Cloud (Places + Geocoding)** | — | **KEEP DISABLED.** A silent $1.28 Places charge already occurred (venue-health cron, now deleted). The manual scripts `discover-venues.mjs`, `enrich-venues.mjs`, `enrich-neighborhoods.mjs` call these APIs and **cost money** — run only on explicit request, re-enable the API deliberately, disable again after. Set a budget alert. |
 | **Mapbox** | 50k loads/month free | Fine at current scale. Don't add map calls to high-traffic pages without checking the counter. |
 | **Apify** (Eventbrite scrape) | ~$0.001/result | Batch runs only. Estimate cost (results × rate) and get approval before a large run. |
@@ -93,7 +94,7 @@ The site is **pivoting from national breadth toward depth**. Evidence: across ~6
 
 **Stack:** Next.js 15.5.x (App Router, TypeScript), React 19, Tailwind (dark theme). Supabase (Postgres 17). Vercel (project `free-live-music-1lwp`). Mapbox GL JS.
 
-**Data (live counts):** `concerts` 3,926 rows (1,600 future, ~2,326 past — past events are NOT being cleaned from the main table despite `is_archived`). `venues` 7,509 (`music_schedule` null on all of them). `event_series` exists with 0 rows. Future supply by month: Jul 537 / Aug 827 / Sep 174 / Oct 39 / Nov 11 / Dec 12 — **the September cliff is real and ~6 weeks out.**
+**Data (live counts, re-verified July 21):** `concerts` ~3,900 rows (~1,500 upcoming — NOT 10k; that figure was a myth, don't re-derive it, ~2,300 past — past events are NOT being cleaned from the main table despite `is_archived`). `venues` 7,509 (`music_schedule` null on all of them). `event_series` exists with 0 rows. Future supply by month: Jul 537 / Aug 827 / Sep 174 / Oct 39 / Nov 11 / Dec 12 — **the September cliff is real and ~6 weeks out.**
 
 **Ingestion:** ~55 importers in `lib/importers/`; only ~5 are live scrapers (SummerStage iCal is the model), the rest are hardcoded static arrays that expire. A daily cron (`/api/import`, 6am UTC) runs them. The generic Brave+Haiku extractor is effectively dead (10 submissions ever).
 
@@ -107,7 +108,11 @@ The site is **pivoting from national breadth toward depth**. Evidence: across ~6
 
 Git push to `main` → Vercel auto-deploys via GitHub webhook (~2–3 min). Data-only refresh: `git commit --allow-empty -m "bust ISR" && git push`.
 
-**Deploy helper:** run `bash deploy.sh "commit message"` — it commits all changes and pushes to `main` (Vercel auto-deploys).
+**Deploy helper:** run `bash deploy.sh "commit message"` **from the owner's Mac Terminal** — it runs `tsc --noEmit`, commits all changes, and pushes to `main` (Vercel auto-builds, ~2–3 min). This is the one and only deploy path.
+
+**Known snag:** a stale `.git/index.lock` recurs and blocks commits — fix with `rm -f .git/index.lock` and retry. Not a sign of anything deeper.
+
+**Key IDs:** Supabase project `rxdutrcjkmfhonzpsthb` · Vercel project `free-live-music-1lwp` · GSC property `sc-domain:freelivemusic.co` (owned by `laferrtrust@gmail.com`) · GSC reader service account `flm-gsc-reader@freelivemusic.iam.gserviceaccount.com`.
 
 **Git auth (RESOLVED July 18):** `gh` CLI is now authenticated as `xmingox` with `gh auth setup-git`, so a plain `git push origin main` works. (History: it was previously logged in as `evenaisle`, causing 403s.) **Never paste a PAT into chat.**
 
@@ -129,23 +134,17 @@ Secrets live in `.env.local` (Supabase URL/keys, Mapbox token) — never commit 
 
 ---
 
-## 8. Status & priorities (updated July 20)
+## 8. Status & priorities (updated July 21)
 
-See `AUDIT_AND_PLAN.md` for the full tiered roadmap.
+See `AUDIT_AND_PLAN.md` for the full tiered roadmap and `docs/next-steps.md` for the current ranked plan.
 
-**Shipped / applied July 20:**
-- **Las Vegas residency dataset — the pivot's first published, indexable artifact.** The formerly-empty `event_series` table is now the live residency model: added provenance (`source_url`, `last_verified_at`, `confidence` A/B/C) + `internal_notes` (editorial state, kept OUT of the render-path `description`); widened `recurrence_type` to allow `daily`; replaced `day_of_week int` with `days_of_week text[]`; RLS tightened to **`USING (is_active=true)`** so unverified drafts are structurally unleakable via the anon key; dedup guard on `series_name`. Nine Vegas candidates were hand-researched and staged `is_active=false`; only **Fremont Street Experience 1st & 3rd Street stages** cleared the primary-source bar (official site, modified 2026-07-03) and were flipped `is_active=true`. Container Park and RUSH Lounge correctly *failed* verification (their own pages don't confirm a free music residency) and stayed drafts. New `lib/residencies.ts` + a "Free live music every night in {city}" section on `/concerts/[city]` renders active residencies **as schedules, never synthetic dated rows** (hard rule — also protects the runway monitor, which reads `concerts` only). A city with ≥1 published residency is now **indexable** even off-season (durable content is not the dated-event cliff). EventSeries + `Schedule` JSON-LD puts recurrence in markup without fabricating instances. Vegas page verified live + `index`. Candidate list + one-action-per-row verification checklist: `docs/vegas-residency-candidates.md`.
-- **Honesty + calibration fixes** (from an independent Fable code review): dropped the "typically returns in {Month}" prediction — all concert data is a single year, so it was an unfounded guess; now factual "last hosted {Month Year}". Unified the indexability predicate so metadata (DB filter) and body (JS predicate) cannot disagree on `null is_verified`. Runway `tail_thin` now warns on a week-over-week drop instead of an always-true absolute floor. Explicit UTC parse in the middleware fast path.
-- **Process:** every change this session was checked by a Fable subagent, which caught a real fabrication ("The Mantis" is Container Park's fire sculpture, not a band), a draft-leak via the anon RLS policy, and editorial notes leaking into render-path copy — all fixed pre-ship.
+**Shipped / applied July 21** (full narrative + how-tos: `docs/session-log-2026-07-21.md`):
+- **SEO prune** (commit `2a2d4b9`): `/traditions` linked from homepage+nav+footer; entire `/venues/*` noindexed via middleware `X-Robots-Tag` + removed from sitemap; ~51 false "Updated daily" claims removed. `seo-daily` audit now reports `venues_eligible: 0`.
+- **GSC reconnected + backfilled** (`a804e9a`, `257ee83`): the 2-month outage is FIXED — daily pull now authenticates as the service account (never expires, identity-independent). Root cause was a stack of THREE bugs (env var name mismatch `GOOGLE_SERVICE_ACCOUNT_KEY` vs Vercel's `GOOGLE_SERVICE_ACCOUNT_JSON`; service account not added as a GSC property user; wrong `GSC_SITE_URL` — must be `sc-domain:freelivemusic.co`). `app/api/analytics/gsc/route.ts` gained a resumable backfill mode (`?start=&end=`, 14-day chunks); `search_metrics` is continuous May 19 → Jul 20. If GSC breaks again, read the session log before debugging.
+- **Past-event ISR-cache noindex fix** (`59771b7`): concert pages cached while upcoming were serving stale indexable HTML after the show passed; middleware now sets `X-Robots-Tag: noindex` per-request on recent past events (fast-path + DB-path), and the seo-daily audit accepts the header as satisfying noindex.
+- **Affiliate de-monetized:** owner removed `BOOKING_AFFILIATE_ID` from Vercel (Hobby compliance; see §2).
 
-**Shipped / applied July 19:**
-- **Middleware per-request DB read removed from the hot path** (`middleware.ts`, Tier 1 #5). Slugs end with the event date (`…-nyc-2026-07-19`) and that trailing date is a verified-exact proxy for the row's `date` (0 mismatches in the DB). The middleware now parses it first: any event not 7+ days past passes straight through with **no Supabase read**. The DB read only runs for slugs encoding a 7+‑day‑past date or with no date (legacy ~356 rows) — where the lookup is still needed to distinguish a real 410 from a `previous_slug` of a still-active concert (page 301s it). Reads now scale with stale-URL crawls, not live traffic.
-- **Empty-page protection on `/concerts/[city]`** (graceful degradation for the autumn cliff). New `lib/city-fallback.ts`: when a city is sparse, renders recurring-series *history* (grouped by artist+venue, 3+ occurrences) with a data-supported "typically returns in {Month}" for dormant series, top venues, and nearest cities that have upcoming events (venue-centroid haversine — every venue is geocoded, no API cost). All fallback queries go through `unstable_cache` (daily backstop + `tags:['concerts']`) so reads scale with imports, not traffic.
-- **Centralized the noindex threshold** in `lib/city-visibility.ts` (`CITY_MIN_UPCOMING = 10` + `isIndexableUpcoming`/`countIndexable`). Both the city-page metadata and `sitemap.ts` import it, ending the drift where they disagreed (metadata counted `is_verified` only; sitemap counted `is_verified && !is_tbd`). Metadata now counts over metro+alias codes with `is_verified && !is_tbd && !is_cancelled`, matching what the body renders.
-- **Fixed a latent bug:** empty cities were returning `MOCK_CONCERTS` (fabricated cards on a real page — violated the "no unverified events" invariant and hid the empty state). Now a genuinely empty city returns `[]`; mock is dev-only (missing env).
-- **Weekly runway monitor** — new `lib/runway.ts` + `GET /api/maintenance/runway` (Mondays 14:00 UTC in `vercel.json`). Measures events/city over the next 90d + the 60–90d tail, diffs against the prior run in the new **`runway_runs`** table, and alerts via `sendCronAlert` when a previously-covered city (≥3 in 90d) drops below 3, or 90-day supply falls >20% WoW. Mirrors to `cron_runs` for the daily digest. First run has no baseline → no alerts until the second Monday (expected).
-  - `runway_runs` grants were **verified both sides** (§0): the table did NOT inherit `service_role` INSERT on creation — granted explicitly to match `seo_daily_runs` (service_role writes, anon/authenticated read-only). Without this the cron would have silently failed to write.
-- ⚠️ **Deploy caveat (July 19):** this session's cloud sandbox **cannot `git push`** (no git identity in the mount, `.git` object writes denied, GitHub egress blocked by proxy 403). The migration was applied live via MCP, but the *code* push must be run from the owner's macOS terminal: `bash deploy.sh "…"`. Verify after deploy that `/api/maintenance/runway` registered as the 13th Vercel cron (Hobby may cap cron count — unverified).
+**Current posture:** the site is a healthy, zero-cost, self-tending passive asset. Nothing is urgent. The strategic conclusion (the machine, not the concert data, is the asset; next site should aim it at a higher-RPM niche) and the ranked FLM backlog live in `docs/next-steps.md`. The portable, site-agnostic version of the methodology is `docs/programmatic-seo-playbook.md`.
 
 **Shipped / applied July 18:**
 - **Event-driven revalidation** to cut the ISR-write overage (was 383K/200K): hourly→daily timers on data-driven pages + `revalidateTag('concerts')` from the import cron. Caveat: only `getConcerts`-backed surfaces (homepage, `/api/concerts`) are tag-refreshed; other pages rely on the 24h backstop. `/tonight`, `/this-week`, `/this-weekend` kept hourly (date-volatile).
@@ -153,17 +152,8 @@ See `AUDIT_AND_PLAN.md` for the full tiered roadmap.
 - **Security:** revoked anon-callable `rls_auto_enable`; closed anon INSERT on `event_submissions`/`event_reports`; locked `increment_event_views` to server; dropped inert permissive write policies on 6 ops tables; pinned function search_paths. (Regression caught + fixed by independent review: a `REVOKE … FROM public` had stripped `service_role` and broken `/api/report` + `/api/track` — see §0.)
 - **Deploy:** `deploy.sh` added with a `tsc --noEmit` preflight gate; `gh` auth fixed as `xmingox`.
 
-**Cron status:** `gsc-pull` has failed on `invalid_grant` since **May 18** (~2 months of no Search Console data; expired Google OAuth) — **owner must re-authenticate Google**; still open as of July 20. `seo-daily` is NOT broken — it's a working audit that logs a red run whenever it finds a real SEO issue (currently: past events missing noindex meta + a few canonical issues — flagged for a later pass).
+**Cron status (July 21):** `gsc-pull` is FIXED (service-account auth — see above; no more `invalid_grant`). `seo-daily` is NOT broken — it's a working audit that logs a red run whenever it finds a real SEO issue. One residual: the URL-Inspection API check still throws `invalid_grant` until the service account is made a verified *owner* (optional owner task in `docs/owner-action-checklist.md`).
 
 **September cliff decision:** protect empty city pages (graceful degradation) + start Vegas/year-round sourcing; do NOT spend on Apify scrapes (breadth + partly a seasonal demand trough). Add weekly runway monitoring. Data: Sep 174 / Oct 39 / Nov+ 23 events; only 22 metros have Oct+ content.
 
-**Next up:**
-- **Re-authenticate Google** (restore `gsc-pull`) — still dark since **May 18**; blocks all demand measurement. Owner action, ~5 min.
-- **Vercel Pro, or drop `affiliate.ts`** — Hobby was ~1.9× over ISR/CPU and prohibits commercial use while affiliate links are live; a suspension at the wrong moment is the risk. Owner action.
-- **Extend Vegas depth:** add the Fremont **Main Street stage** (verified by the same official source — 2→3 for free); resolve **RUSH Lounge**'s free/no-cover status (first non-Fremont venue, fixes the "two cards, one venue" look); build an activation flow that calls `revalidateTag('residencies')` when flipping `is_active`. Then decide on city #2.
-- **Email capture** — still absent. Fable's "single worst omission": peak season with no way to keep the audience. A day of work.
-- **Tier 1 hygiene:** consolidate `/free-music`→`/free-live-music` + `/series` vs `/artist` URLs (also unblocks the show-page series idea), noindex the ~312 TBA pages, harden JSON-LD, slim `select('*')`.
-- Fold the residency + graceful-degradation sections into the alias city pages (`/concerts/city/[alias]`) — this pass covered `/concerts/[city]` only.
-- **Presentation:** group multi-stage venues (the two Fremont cards) into one venue-family card.
-- **Series on the show page (future iteration).** Surface "Part of {series}" + `superEvent` JSON-LD on `/concert/[slug]` to flow crawl authority from show pages (where the clicks land) into the durable series asset. **Blocked on Tier 1 first:** the series entity must be made evergreen (`/series/[city]/[series]` currently 404s off-season) and one canonical URL chosen between `/series` and `/artist` (301 the other) — else this just deepens the URL split. Also settle the series *definition* (artist-repeat vs named venue/program series like SummerStage — the latter is likely higher-demand but isn't modeled; `event_series` is empty). Detection logic already exists in `lib/city-fallback.ts` to reuse once unblocked.
-- **Tier 2:** Las Vegas depth — ~~residency data model~~ (shipped July 20; `event_series` live with 2 verified Fremont residencies); remaining: Fremont *dated-event* importer, newsletter + subreddit, more verified residencies.
+**Next up:** the ranked, current list is `docs/next-steps.md` (top item: municipal-series `/artist/[slug]` page upgrade — full-season schedule pages targeting "{series} 2026 schedule" queries where the site already ranks 6–12). Owner-only tasks (GSC request-indexing, `event_series` backup, Bing) are in `docs/owner-action-checklist.md`. Older Tier 1/2 items from July 18 remain in `AUDIT_AND_PLAN.md` but are superseded in priority by the next-steps ranking.
